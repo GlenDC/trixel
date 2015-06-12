@@ -60,21 +60,38 @@ renderWorkSpace cx cy size w h mode trixels =
     renderTrixelRow cx cy size w h mode trixels
       |> renderWorkSpace cx (cy - 1) size w h mode
 
+renderMenu: Float -> Float -> Form
+renderMenu w h =
+  toForm (collage (round w) (round h) [
+    (filled grey (rect w h)),
+    (outlined (solid lightGrey) (rect w (h - 2)))
+    ])
+
 render : (Int, Int) -> Element
 render (x', y') =
   let x = toFloat x'
       y = toFloat y'
 
-      w = (min x y) - 50
-      h = w
+      mode = Vertical
+      cx = 20
+      cy = 20
 
-      cx = 15
-      cy = 8
-      trixelSize = w / cy
+      menuHeight = clamp 25 50 (y * 0.04)
+
+      (ccx, ccy) = if mode == Vertical then ((cx / 1.5), cy) else (cx, (cy / 1.5))
+      (rcx, rcy) = if mode == Vertical then ((cx * 2), cy) else (cx, (cy * 2))
+
+      mx = max ccx ccy
+
+      ts = ((min x (y - menuHeight)) * 0.95) / mx
+      w = ts * cx
+      h = ts * cy
+
   in
     collage x' y' [
-      (filled darkGrey (rect x y)),
-      (toForm
-        (collage (round (w + 2)) (round (h + 2))
-          (renderWorkSpace cx cy trixelSize w h Vertical [])
-        ))]
+      (filled darkGrey (rect x y)),                                     -- bg
+      (move (0, (y / 2) - (menuHeight / 2)) (renderMenu x menuHeight)), -- menu
+      (move (0, (-menuHeight / 2)) (toForm                              -- workspace
+        (collage (round (w + ts)) (round (h + ts))
+          (renderWorkSpace (round rcx) (round rcy) ts w h mode [])
+        )))]
