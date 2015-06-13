@@ -1,5 +1,4 @@
 # Elm Script GitIgnore Section
 **/*.swp
 **/*.js
-**/*.json
 elm-stuff/
