@@ -1,19 +1,26 @@
 module Trixel.Main where
 
 import Trixel.ColorScheme exposing (ColorScheme, zenburnScheme)
-import Trixel.Types exposing (State)
+import Trixel.Types exposing (..)
 import Trixel.WorkSpace
 import Trixel.Menu
 
 import Html exposing (Html, Attribute, text, toElement, div, input)
 import Html.Attributes exposing (style)
 import Html.Events exposing (on, targetValue)
-import Signal exposing (Address)
-import StartApp
+import Signal exposing (Address, Mailbox, mailbox)
+import Window
 import String
-import Debug
 
 ---
+
+actionQuery : Mailbox TrixelAction
+actionQuery = mailbox trixelAction
+
+main : Signal Html
+main =
+  Signal.map2 view Window.dimensions
+    (Signal.foldp update (createNewState 10 10) actionQuery.signal)
 
 ---
 
@@ -23,22 +30,24 @@ createNewState cx cy =
 
 ---
 
-main =
-  StartApp.start { model = createNewState 10 10, view = view, update = update }
+update: TrixelAction -> State -> State
+update action state =
+  state
 
 ---
 
-update newState oldState =
-  newState
+view: (Int, Int) -> State -> Html
+view (w', h') state =
+  let w = toFloat w'
+      h = toFloat h'
 
----
-
-view : Address State -> State -> Html
-view address state =
-  div [ createMainStyle state ] [
-    (Trixel.Menu.view address state),
-    (Trixel.WorkSpace.view address state)
-  ]
+      menu = dimensionContext w (clamp 40 80 (h * 0.04)) (5, 5) (0, 0)
+      workspace = dimensionContext w (h - menu.h) (0, 0) (20, 20)
+  in
+    div [ createMainStyle state ] [
+      (Trixel.Menu.view actionQuery.address menu state),
+      (Trixel.WorkSpace.view actionQuery.address workspace state)
+    ]
 
 ---
 
@@ -49,7 +58,7 @@ createMainStyle state  =
     ("height", "100%"),
     ("padding", "0 0"),
     ("margin", "0 0"),
-    ("background-color", state.colorScheme.bg.html),
+    ("background-color", state.colorScheme.subbg.html),
     ("position", "absolute"),
     ("box-sizing", "border-box")
   ]
