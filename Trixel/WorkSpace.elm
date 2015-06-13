@@ -7,8 +7,8 @@ import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
 import Signal exposing (Address)
 
-view : Address TrixelAction -> DimensionContext -> State -> Html
-view  address ctx state =
+view: Address TrixelAction -> DimensionContext -> State -> Html
+view address ctx state =
   div [ createMainStyle ctx state ] []
 
 createMainStyle: DimensionContext -> State -> Attribute

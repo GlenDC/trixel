@@ -11,12 +11,9 @@ type alias State = {
 
 ---
 
-type alias ActionContext = {}
-type ActionType = None | Resize
-type alias TrixelAction = { action: ActionType, context: ActionContext }
-
-trixelAction: TrixelAction
-trixelAction = { action = None, context = {} }
+type TrixelAction = None | Resize |
+  GridX | SetGridX Int |
+  GridY | SetGridY Int
 
 ---
 

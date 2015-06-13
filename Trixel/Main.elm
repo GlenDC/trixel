@@ -11,11 +11,12 @@ import Html.Events exposing (on, targetValue)
 import Signal exposing (Address, Mailbox, mailbox)
 import Window
 import String
+import Debug
 
 ---
 
 actionQuery : Mailbox TrixelAction
-actionQuery = mailbox trixelAction
+actionQuery = mailbox None
 
 main : Signal Html
 main =
@@ -32,7 +33,9 @@ createNewState cx cy =
 
 update: TrixelAction -> State -> State
 update action state =
-  state
+  case action of
+    SetGridX x -> { state | cx <- x }
+    SetGridY y -> { state | cy <- y }
 
 ---
 
