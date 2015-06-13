@@ -80,16 +80,7 @@ viewWorkSpace x y state =
 
       (cx, cy) = (toFloat state.cx, toFloat state.cy)
 
-      (ccx, ccy) =
-        if mode == Vertical
-          then ((cx / 1.5), cy)
-          else (cx, (cy / 1.5))
-      (rcx, rcy) =
-        if mode == Vertical
-          then ((cx * 2), cy)
-          else (cx, (cy * 2))
-
-      mx = max ccx ccy
+      mx = max cx cy
 
       ts = ((min x y) * 0.95) / mx
       w = ts * cx
@@ -98,6 +89,6 @@ viewWorkSpace x y state =
     collage (round x) (round y) [
       (toForm
         (collage (round (w + ts)) (round (h + ts))
-          (renderWorkSpace (round rcx) (round rcy) ts w h mode [])
+          (renderWorkSpace (round cx) (round cy) ts w h mode [])
         ))]
       |> fromElement
