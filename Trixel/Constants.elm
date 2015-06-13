@@ -1,11 +1,9 @@
 module Trixel.Constants where
 
+version = "0.0.1"
+githubPage = "https://github.com/GlenDC/trixel"
+email = "contact@glendc.com"
+
 ---
 
-version: String
-version = "0.1.0"
-
----
-
-footerSize: Float
 footerSize = 10

@@ -38,6 +38,10 @@ update action state =
   case action of
     SetGridX x -> { state | cx <- x }
     SetGridY y -> { state | cy <- y }
+    NewDoc -> (Debug.log "todo, NewDoc..." state)
+    OpenDoc -> (Debug.log "todo, OpenDoc..." state)
+    SaveDoc -> (Debug.log "todo, SaveDoc..." state)
+    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
 
 ---
 

@@ -14,7 +14,5 @@ view address ctx state =
 createMainStyle: DimensionContext -> State -> Attribute
 createMainStyle ctx state  =
   style ((dimensionToHtml ctx) ++ [
-    ("box-sizing", "inherit"),
-    ("border", "1px solid " ++ state.colorScheme.fg.html),
-    ("background-color", state.colorScheme.bg.html)
+    ("box-sizing", "inherit")
   ])

@@ -11,7 +11,9 @@ type alias State = {
 
 ---
 
-type TrixelAction = None | Resize |
+type TrixelAction =
+  None | Resize |
+  NewDoc | OpenDoc | SaveDoc | SaveDocAs |
   GridX | SetGridX Int |
   GridY | SetGridY Int
 

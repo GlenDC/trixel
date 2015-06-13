@@ -3,8 +3,8 @@ module Trixel.Menu where
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Types exposing (..)
 
-import Html exposing (Html, Attribute, div, input, text, label)
-import Html.Events exposing (on, targetValue)
+import Html exposing (Html, Attribute, div, input, button, text, label)
+import Html.Events exposing (on, onClick, targetValue)
 import Html.Attributes exposing (style, value)
 import Signal exposing (Address, forwardTo)
 import Json.Decode
@@ -15,8 +15,12 @@ import String
 view : Address TrixelAction -> DimensionContext -> State -> Html
 view  address ctx state =
   div [ createMainStyle ctx state ] [
-    (createInputStyle GridX ctx state address),
-    (createInputStyle GridY ctx state address)
+    (createButton "New" NewDoc ctx state address),
+    (createButton "Open" OpenDoc ctx state address),
+    (createButton "Save" SaveDoc ctx state address),
+    (createButton "SaveAs" SaveDocAs ctx state address),
+    (createInput GridX ctx state address),
+    (createInput GridY ctx state address)
   ]
 
 ---
@@ -35,8 +39,31 @@ toInt string =
     Ok value -> value
     Err error -> 0
 
-createInputStyle: TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
-createInputStyle action ctx state address =
+createButton: String -> TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createButton string action ctx state address =
+  let (px, py) = ctx.p
+      (w, h) = ((clamp 50 80 (ctx.w * 0.075)), (ctx.h - (py * 2)))
+
+      dimensions = dimensionContext w h (5, 5) (2, 2)
+
+      buttonStyle = style ((dimensionToHtml dimensions) ++ [
+        ("background-color", state.colorScheme.selbg.html),
+        ("color", state.colorScheme.selfg.html),
+        ("font-size", (toPx (dimensions.h / 1.75))),
+        ("box-sizing", "border-box"),
+        ("float", "left"),
+        ("border", "1px solid " ++ state.colorScheme.fg.html)
+      ])
+  in
+    button [
+      onClick address action,
+      buttonStyle
+      ] [text string]
+
+
+
+createInput: TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createInput action ctx state address =
   let (px, py) = ctx.p
       (w, h) = ((clamp 25 60 (ctx.w * 0.05)), (ctx.h - (py * 2)))
 
@@ -44,7 +71,7 @@ createInputStyle action ctx state address =
 
       inputStyle = style ((dimensionToHtml dimensions) ++ [
         ("background-color", state.colorScheme.selbg.html),
-        ("Color", state.colorScheme.selfg.html),
+        ("color", state.colorScheme.selfg.html),
         ("font-size", (toPx (dimensions.h / 1.75))),
         ("box-sizing", "border-box"),
         ("float", "left"),
