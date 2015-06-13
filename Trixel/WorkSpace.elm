@@ -20,8 +20,7 @@ view address ctx state =
 createMainStyle: DimensionContext -> State -> Attribute
 createMainStyle ctx state  =
   style ((dimensionToHtml ctx) ++ [
-    ("box-sizing", "inherit"),
-    ("border", "1px solid white")
+    ("box-sizing", "inherit")
   ])
 
 ---
@@ -79,14 +78,8 @@ viewWorkSpace x y state =
   let (cx, cy) = (toFloat state.cx, toFloat state.cy)
 
       mx = max cx cy
-
-      ts = ((min x y) * 0.95) / mx
-      w = ts * cx
-      h = ts * cy
+      ts = (min x y) / mx
   in
-    collage (round x) (round y) [
-      (toForm
-        (collage (round (w + ts)) (round (h + ts))
-          (renderWorkSpace (round cx) (round cy) ts w h state.mode [])
-        ))]
+    collage (round x) (round y)
+      (renderWorkSpace (round cx) (round cy) ts x y state.mode [])
       |> fromElement
