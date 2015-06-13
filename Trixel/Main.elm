@@ -33,6 +33,10 @@ createNewState cx cy =
     mode = Vertical,
     colorScheme = zenburnScheme }
 
+resetState: State -> State
+resetState oldState =
+  { oldState | cx <- 1, cy <- 1, mode <- Vertical }
+
 ---
 
 update: TrixelAction -> State -> State
@@ -41,7 +45,7 @@ update action state =
     SetGridX x -> { state | cx <- x }
     SetGridY y -> { state | cy <- y }
     SetMode mode -> { state | mode <- (Debug.log "mode -> " mode) }
-    NewDoc -> (Debug.log "todo, NewDoc..." state)
+    NewDoc -> resetState state
     OpenDoc -> (Debug.log "todo, OpenDoc..." state)
     SaveDoc -> (Debug.log "todo, SaveDoc..." state)
     SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
