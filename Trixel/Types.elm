@@ -43,3 +43,8 @@ dimensionToHtml ctx =
     ("margin", (toPx my) ++ " " ++ (toPx mx)),
     ("padding", (toPx py) ++ " " ++ (toPx px))
   ]
+
+---
+
+type TrixelOrientation = Up | Down | Left | Right
+type TrixelMode = Horizontal | Vertical
