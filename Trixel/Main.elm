@@ -29,7 +29,9 @@ main =
 
 createNewState: Int -> Int -> State
 createNewState cx cy =
-  { cx = cx, cy = cy, colorScheme = zenburnScheme }
+  { cx = cx, cy = cy, 
+    mode = Vertical,
+    colorScheme = zenburnScheme }
 
 ---
 
@@ -38,6 +40,7 @@ update action state =
   case action of
     SetGridX x -> { state | cx <- x }
     SetGridY y -> { state | cy <- y }
+    SetMode mode -> { state | mode <- (Debug.log "mode -> " mode) }
     NewDoc -> (Debug.log "todo, NewDoc..." state)
     OpenDoc -> (Debug.log "todo, OpenDoc..." state)
     SaveDoc -> (Debug.log "todo, SaveDoc..." state)

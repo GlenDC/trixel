@@ -3,12 +3,14 @@ module Trixel.Menu where
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Types exposing (..)
 
-import Html exposing (Html, Attribute, div, input, button, text, label)
+import Html exposing (Html, Attribute, div, input,
+  button, text, label, select, option)
 import Html.Events exposing (on, onClick, targetValue)
-import Html.Attributes exposing (style, value)
+import Html.Attributes exposing (style, value, selected)
 import Signal exposing (Address, forwardTo)
 import Json.Decode
 import String
+import Debug
 
 ---
 
@@ -19,8 +21,11 @@ view  address ctx state =
     (createButton "Open" OpenDoc ctx state address),
     (createButton "Save" SaveDoc ctx state address),
     (createButton "SaveAs" SaveDocAs ctx state address),
+
     (createInput GridX ctx state address),
-    (createInput GridY ctx state address)
+    (createInput GridY ctx state address),
+
+    (createModeList ctx state address)
   ]
 
 ---
@@ -33,11 +38,15 @@ createMainStyle ctx state  =
     ("border-bottom", "1px solid " ++ state.colorScheme.fg.html)
   ])
 
+---
+
 toInt: String -> Int
 toInt string =
   case (String.toInt string) of
     Ok value -> value
     Err error -> 0
+
+---
 
 createButton: String -> TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
 createButton string action ctx state address =
@@ -59,8 +68,6 @@ createButton string action ctx state address =
       onClick address action,
       buttonStyle
       ] [text string]
-
-
 
 createInput: TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
 createInput action ctx state address =
@@ -93,4 +100,38 @@ createInput action ctx state address =
           (forwardTo address fn)),
         inputStyle
         ] []
+    ]
+
+---
+
+createModeList: DimensionContext -> State -> Address TrixelAction -> Html
+createModeList ctx state address =
+  let (px, py) = ctx.p
+      (w, h) = ((clamp 115 130 (ctx.w * 0.08)), (ctx.h - (py * 2)))
+
+      dimensions = dimensionContext w h (5, 5) (2, 2)
+
+      selectStyle = style ((dimensionToHtml dimensions) ++ [
+        ("background-color", state.colorScheme.selbg.html),
+        ("color", state.colorScheme.selfg.html),
+        ("font-size", (toPx (dimensions.h / 1.85))),
+        ("box-sizing", "border-box"),
+        ("float", "left"),
+        ("border", "1px solid " ++ state.colorScheme.fg.html)
+      ])
+
+      fn txt =
+        SetMode (if (Debug.log "txt -> " txt) == "hor" then Horizontal else Vertical)
+  in
+    div [] [
+      label [style [
+        ("float", "left"), ("padding", "6px 10px"),
+        ("color", state.colorScheme.text.html)]] [text "Mode"],
+      select [selectStyle, on "change" targetValue (Signal.message 
+          (forwardTo address fn))] [
+        option [selected (state.mode == Horizontal), value "hor"]
+          [text "Horizontal"],
+        option [selected (state.mode == Vertical), value "ver"]
+          [text "Vertical"]
+      ]
     ]

@@ -6,6 +6,7 @@ import Trixel.ColorScheme exposing (ColorScheme)
 
 type alias State = {
   cx: Int, cy: Int,
+  mode: TrixelMode,
   colorScheme: ColorScheme
 }
 
@@ -13,6 +14,7 @@ type alias State = {
 
 type TrixelAction =
   None | Resize |
+  SetMode TrixelMode |
   NewDoc | OpenDoc | SaveDoc | SaveDocAs |
   GridX | SetGridX Int |
   GridY | SetGridY Int

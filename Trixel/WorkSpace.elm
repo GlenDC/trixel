@@ -76,9 +76,7 @@ renderWorkSpace cx cy size w h mode trixels =
 
 viewWorkSpace : Float -> Float -> State -> Html
 viewWorkSpace x y state =
-  let mode = Vertical
-
-      (cx, cy) = (toFloat state.cx, toFloat state.cy)
+  let (cx, cy) = (toFloat state.cx, toFloat state.cy)
 
       mx = max cx cy
 
@@ -89,6 +87,6 @@ viewWorkSpace x y state =
     collage (round x) (round y) [
       (toForm
         (collage (round (w + ts)) (round (h + ts))
-          (renderWorkSpace (round cx) (round cy) ts w h mode [])
+          (renderWorkSpace (round cx) (round cy) ts w h state.mode [])
         ))]
       |> fromElement
