@@ -12,6 +12,12 @@ main =
 type TrixelOrientation = Up | Down | Left | Right
 type TrixelMode = Horizontal | Vertical
 
+-- fromElement : Element -> Html
+
+-- todo: use proper MVC and make this the main file
+-- workspace stuff move to workspace.elm (main function returns html containing the workspace)
+-- menu move to menu.elm (main function returns the menu)
+
 weirdify: Float -> Float -> Float
 weirdify coordinate offset =
   coordinate - (offset / 2)
