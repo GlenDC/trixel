@@ -3,7 +3,7 @@ module Trixel.Menu where
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Types exposing (..)
 
-import Html exposing (Html, Attribute, div, input)
+import Html exposing (Html, Attribute, div, input, text, label)
 import Html.Events exposing (on, targetValue)
 import Html.Attributes exposing (style, value)
 import Signal exposing (Address, forwardTo)
@@ -51,12 +51,15 @@ createInputStyle action ctx state address =
         ("border", "1px solid " ++ state.colorScheme.fg.html)
       ])
 
-      (default, label, fn) =
+      (default, caption, fn) =
         case action of
           GridX -> (state.cx, "X", (\x -> SetGridX (toInt x)))
           GridY -> (state.cy, "y", (\y -> SetGridY (toInt y)))
   in
     div [] [
+      label [style [
+        ("float", "left"), ("padding", "6px 10px"),
+        ("color", state.colorScheme.text.html)]] [text caption],
       input [
         value (toString default),
         on "blur" targetValue (Signal.message 

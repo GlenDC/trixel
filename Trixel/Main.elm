@@ -3,6 +3,8 @@ module Trixel.Main where
 import Trixel.ColorScheme exposing (ColorScheme, zenburnScheme)
 import Trixel.Types exposing (..)
 import Trixel.WorkSpace
+import Trixel.Constants exposing (footerSize)
+import Trixel.Footer
 import Trixel.Menu
 
 import Html exposing (Html, Attribute, text, toElement, div, input)
@@ -45,10 +47,12 @@ view (w', h') state =
       h = toFloat h'
 
       menu = dimensionContext w (clamp 40 80 (h * 0.04)) (5, 5) (0, 0)
-      workspace = dimensionContext w (h - menu.h) (0, 0) (20, 20)
+      footer = dimensionContext w footerSize (0, 0) (5, 8)
+      workspace = dimensionContext w (h - menu.h - footerSize) (0, 0) (20, 20)
   in
     div [ createMainStyle state ] [
       (Trixel.Menu.view actionQuery.address menu state),
+      (Trixel.Footer.view actionQuery.address footer state),
       (Trixel.WorkSpace.view actionQuery.address workspace state)
     ]
 

@@ -10,7 +10,9 @@ type alias ColorScheme = {
   subbg: ColorInfo,
   subfg: ColorInfo,
   selbg: ColorInfo,
-  selfg: ColorInfo
+  selfg: ColorInfo,
+  text: ColorInfo,
+  subText: ColorInfo
 }
 
 createColorInfo: Int -> Int -> Int -> Int -> ColorInfo
@@ -27,7 +29,9 @@ zenburnScheme =
     subbg = createColorInfo 40 40 40 255,
     subfg = createColorInfo 225 230 210 255,
     selbg = createColorInfo 137 137 65 255,
-    selfg = createColorInfo 0 0 0 2555
+    selfg = createColorInfo 0 0 0 255,
+    text = createColorInfo 204 147 147 255,
+    subText = createColorInfo 172 193 172 255
   }
 
 {-

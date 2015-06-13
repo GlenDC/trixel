@@ -38,6 +38,6 @@ dimensionToHtml ctx =
   in [
     ("width", (toPx ctx.w)),
     ("height", (toPx ctx.h)),
-    ("margin", (toPx mx) ++ " " ++ (toPx my)),
-    ("padding", (toPx px) ++ " " ++ (toPx py))
+    ("margin", (toPx my) ++ " " ++ (toPx mx)),
+    ("padding", (toPx py) ++ " " ++ (toPx px))
   ]
