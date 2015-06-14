@@ -3,16 +3,17 @@ module Trixel.Main where
 import Trixel.ColorScheme exposing (ColorScheme, zenburnScheme)
 import Trixel.Types exposing (..)
 import Trixel.WorkSpace
-import Trixel.Constants exposing (footerSize)
+import Trixel.Constants exposing (..)
 import Trixel.Footer
 import Trixel.Menu
 
 import Html exposing (Html, Attribute, text, toElement, div, input)
 import Html.Attributes exposing (style)
 import Html.Events exposing (on, targetValue)
-import Signal exposing (Address, Mailbox, mailbox)
+import Signal exposing (..)
 import Window
 import String
+import Keyboard
 import Debug
 
 ---
@@ -20,17 +21,19 @@ import Debug
 actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
 
+input = (,) <~ Keyboard.presses ~ actionQuery.signal
+
 main : Signal Html
 main =
   Signal.map2 view Window.dimensions
-    (Signal.foldp update (createNewState 10 10) actionQuery.signal)
+    (Signal.foldp update (createNewState 10 10) input)
 
 ---
 
 createNewState: Int -> Int -> State
 createNewState cx cy =
   { cx = cx, cy = cy, scale = 1.0,
-    mode = Vertical,
+    offset = (0, 0), mode = Vertical,
     colorScheme = zenburnScheme }
 
 resetState: State -> State
@@ -38,18 +41,37 @@ resetState oldState =
   { oldState | cx <- 1, cy <- 1, mode <- Vertical }
 
 ---
+updateWSOffset: Int -> State -> State
+updateWSOffset keycode state =
+  if state.scale <= 1
+    then { state | offset <- (0, 0) }
+    else
+      let (ox, oy) = state.offset
+      in { state | offset <- (
+        if | keycode == keyLeft -> (ox - moveSpeed, oy)
+           | keycode == keyRight -> (ox + moveSpeed, oy)
+           | keycode == keyDown -> (ox, oy - moveSpeed)
+           | keycode == keyUp -> (ox, oy + moveSpeed)
+           | otherwise -> (ox, oy)
+        )}
 
-update: TrixelAction -> State -> State
-update action state =
-  case action of
-    SetGridX x -> { state | cx <- x }
-    SetGridY y -> { state | cy <- y }
-    SetScale scale -> { state | scale <- scale }
-    SetMode mode -> { state | mode <- mode }
-    NewDoc -> resetState state
-    OpenDoc -> (Debug.log "todo, OpenDoc..." state)
-    SaveDoc -> (Debug.log "todo, SaveDoc..." state)
-    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
+updateInput: Int -> State -> State
+updateInput keycode state =
+  updateWSOffset keycode state
+
+update: (Int, TrixelAction) -> State -> State
+update (keycode, action) state =
+  let state' =
+    case action of
+      SetGridX x -> { state | cx <- x }
+      SetGridY y -> { state | cy <- y }
+      SetScale scale -> { state | scale <- scale }
+      SetMode mode -> { state | mode <- mode }
+      NewDoc -> resetState state
+      OpenDoc -> (Debug.log "todo, OpenDoc..." state)
+      SaveDoc -> (Debug.log "todo, SaveDoc..." state)
+      SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
+  in updateInput keycode state'
 
 ---
 

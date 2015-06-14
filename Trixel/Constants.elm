@@ -14,3 +14,5 @@ keyLeft = 37
 keyRight = 39
 keyUp = 38
 keyDown = 40
+
+moveSpeed = 80

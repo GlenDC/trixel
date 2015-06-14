@@ -5,7 +5,8 @@ import Trixel.ColorScheme exposing (ColorScheme)
 ---
 
 type alias State = {
-  cx: Int, cy: Int, scale: Float,
+  cx: Int, cy: Int,
+  scale: Float, offset: (Float, Float),
   mode: TrixelMode,
   colorScheme: ColorScheme
 }

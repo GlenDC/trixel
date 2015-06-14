@@ -57,21 +57,22 @@ getCoordinateFromIndex: Int -> Float -> Float -> Float
 getCoordinateFromIndex c ts ws =
   weirdify (((toFloat c) - 1) * ts) ws
 
-renderTrixelRow: Int -> Int -> Float -> Float -> Float -> TrixelMode -> List Form -> List Form
-renderTrixelRow cx cy size w h mode trixels =
+renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
+renderTrixelRow state cx cy size w h trixels =
   if cx == 0 then trixels else
-    let (xs, ys) = getSizePairFromTrixelMode size mode
-        x = getCoordinateFromIndex cx xs w
-        y = getCoordinateFromIndex cy ys h
+    let (xs, ys) = getSizePairFromTrixelMode size state.mode
+        (ox, oy) = state.offset
+        x = (getCoordinateFromIndex cx xs w) + (ox * state.scale)
+        y = (getCoordinateFromIndex cy ys h) + (oy * state.scale)
     in
-      (renderTrixel (getTrixelOrientation cx cy mode) x y size) :: trixels
-        |> renderTrixelRow (cx - 1) cy size w h mode
+      (renderTrixel (getTrixelOrientation cx cy state.mode) x y size) :: trixels
+        |> renderTrixelRow state (cx - 1) cy size w h
 
-renderWorkSpace: Int -> Int -> Float -> Float -> Float -> TrixelMode -> List Form -> List Form
-renderWorkSpace cx cy size w h mode trixels =
+renderWorkSpace: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
+renderWorkSpace state cx cy size w h trixels =
   if cy == 0 then trixels else
-    renderTrixelRow cx cy size w h mode trixels
-      |> renderWorkSpace cx (cy - 1) size w h mode
+    renderTrixelRow state cx cy size w h trixels
+      |> renderWorkSpace state cx (cy - 1) size w h
 
 ---
 
@@ -101,6 +102,5 @@ viewWorkSpace x y state =
         (sy / cy') else (sx / cx')
   in
     collage x' y'
-      (renderWorkSpace state.cx state.cy ts (ts * cx') (ts * cy')
-        state.mode [])
-      |> container x' y' middle |> fromElement
+      (renderWorkSpace state state.cx state.cy ts (ts * cx') (ts * cy') [])
+      |> fromElement
