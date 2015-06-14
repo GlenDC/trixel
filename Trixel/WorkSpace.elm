@@ -11,8 +11,6 @@ import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-import Debug
-
 view: Address TrixelAction -> DimensionContext -> State -> Html
 view address ctx state =
   div [ createMainStyle ctx state ] [
@@ -96,9 +94,11 @@ viewWorkSpace x y state =
   let (x', y') = ((round x), (round y))
       (cx, cy) = (toFloat state.cx, toFloat state.cy)
 
+      (sx, sy) = (x * state.scale, y * state.scale)
+
       (cx', cy') = ((getCountX cx state.mode), (getCountY cy state.mode))
-      ts = if x / cx' * cy' > y then
-        (y / cy') else (x / cx')
+      ts = if sx / cx' * cy' > sy then
+        (sy / cy') else (sx / cx')
   in
     collage x' y'
       (renderWorkSpace state.cx state.cy ts (ts * cx') (ts * cy')

@@ -10,7 +10,6 @@ import Html.Attributes exposing (style, value, selected)
 import Signal exposing (Address, forwardTo)
 import Json.Decode
 import String
-import Debug
 
 ---
 
@@ -18,9 +17,9 @@ view : Address TrixelAction -> DimensionContext -> State -> Html
 view  address ctx state =
   div [ createMainStyle ctx state ] [
     (createButton "New" NewDoc ctx state address),
-    (createButton "Open" OpenDoc ctx state address),
+    {-(createButton "Open" OpenDoc ctx state address),
     (createButton "Save" SaveDoc ctx state address),
-    (createButton "SaveAs" SaveDocAs ctx state address),
+    (createButton "SaveAs" SaveDocAs ctx state address),-}
 
     (createInput GridX ctx state address),
     (createArithmeticButton "-" (SetGridX (max 1 (state.cx - 1))) ctx state address),
@@ -29,6 +28,10 @@ view  address ctx state =
     (createInput GridY ctx state address),
     (createArithmeticButton "-" (SetGridY (max 1 (state.cy - 1))) ctx state address),
     (createArithmeticButton "+" (SetGridY (state.cy + 1)) ctx state address),
+
+    (createInput Scale ctx state address),
+    (createArithmeticButton "-" (SetScale (max 0.05 (state.scale - 0.05))) ctx state address),
+    (createArithmeticButton "+" (SetScale (state.scale + 0.05)) ctx state address),
 
     (createModeList ctx state address)
   ]
@@ -117,6 +120,7 @@ createInput action ctx state address =
         case action of
           GridX -> (state.cx, "X", (\x -> SetGridX (toInt x)))
           GridY -> (state.cy, "Y", (\y -> SetGridY (toInt y)))
+          Scale -> (round (state.scale * 100), "Scale (%)", (\s -> SetScale ((toFloat (toInt s)) / 100)))
   in
     div [] [
       label [style [
@@ -149,7 +153,7 @@ createModeList ctx state address =
       ])
 
       fn txt =
-        SetMode (if (Debug.log "txt -> " txt) == "hor" then Horizontal else Vertical)
+        SetMode (if txt == "hor" then Horizontal else Vertical)
   in
     div [] [
       label [style [
