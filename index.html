@@ -13321,7 +13321,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.1";
+   var version = "0.0.2";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -13494,12 +13494,14 @@ Elm.Trixel.Main.make = function (_elm) {
               state);
             case "SetMode":
             return _U.replace([["mode"
-                               ,A2($Debug.log,
-                               "mode -> ",
-                               action._0)]],
+                               ,action._0]],
+              state);
+            case "SetScale":
+            return _U.replace([["scale"
+                               ,action._0]],
               state);}
          _U.badCase($moduleName,
-         "between lines 44 and 51");
+         "between lines 44 and 52");
       }();
    });
    var createNewState = F2(function (cx,
@@ -13508,17 +13510,18 @@ Elm.Trixel.Main.make = function (_elm) {
              ,colorScheme: $Trixel$ColorScheme.zenburnScheme
              ,cx: cx
              ,cy: cy
-             ,mode: $Trixel$Types.Vertical};
+             ,mode: $Trixel$Types.Vertical
+             ,scale: 1.0};
    });
    var actionQuery = $Signal.mailbox($Trixel$Types.None);
-   var view = F2(function (_v4,
+   var view = F2(function (_v5,
    state) {
       return function () {
-         switch (_v4.ctor)
+         switch (_v5.ctor)
          {case "_Tuple2":
             return function () {
-                 var h = $Basics.toFloat(_v4._1);
-                 var w = $Basics.toFloat(_v4._0);
+                 var h = $Basics.toFloat(_v5._1);
+                 var w = $Basics.toFloat(_v5._0);
                  var menu = A4($Trixel$Types.dimensionContext,
                  w,
                  A3($Basics.clamp,
@@ -13555,7 +13558,7 @@ Elm.Trixel.Main.make = function (_elm) {
                               state)]));
               }();}
          _U.badCase($moduleName,
-         "between lines 57 and 68");
+         "between lines 58 and 69");
       }();
    });
    var main = A3($Signal.map2,
@@ -13588,7 +13591,6 @@ Elm.Trixel.Menu.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Trixel.Menu",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -13601,9 +13603,7 @@ Elm.Trixel.Menu.make = function (_elm) {
    address) {
       return function () {
          var fn = function (txt) {
-            return $Trixel$Types.SetMode(_U.eq(A2($Debug.log,
-            "txt -> ",
-            txt),
+            return $Trixel$Types.SetMode(_U.eq(txt,
             "hor") ? $Trixel$Types.Horizontal : $Trixel$Types.Vertical);
          };
          var $ = ctx.p,
@@ -13677,6 +13677,58 @@ Elm.Trixel.Menu.make = function (_elm) {
                                    _L.fromArray([$Html.text("Vertical")]))]))]));
       }();
    });
+   var createArithmeticButton = F5(function (string,
+   action,
+   ctx,
+   state,
+   address) {
+      return function () {
+         var $ = ctx.p,
+         px = $._0,
+         py = $._1;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A3($Basics.clamp,
+                 25,
+                 35,
+                 ctx.w * 9.5e-2)
+                 ,_1: ctx.h - py * 2},
+         w = $._0,
+         h = $._1;
+         var dimensions = A4($Trixel$Types.dimensionContext,
+         w,
+         h,
+         {ctor: "_Tuple2",_0: 5,_1: 5},
+         {ctor: "_Tuple2",_0: 2,_1: 2});
+         var buttonStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types.dimensionToHtml(dimensions),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "background-color"
+                       ,_1: state.colorScheme.selbg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: state.colorScheme.selfg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types.toPx(dimensions.h / 1.75)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "box-sizing"
+                       ,_1: "border-box"}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "border"
+                       ,_1: A2($Basics._op["++"],
+                       "1px solid ",
+                       state.colorScheme.fg.html)}])));
+         return A2($Html.button,
+         _L.fromArray([A2($Html$Events.onClick,
+                      address,
+                      action)
+                      ,buttonStyle]),
+         _L.fromArray([$Html.text(string)]));
+      }();
+   });
    var createButton = F5(function (string,
    action,
    ctx,
@@ -13736,7 +13788,7 @@ Elm.Trixel.Menu.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 45 and 47");
+         "between lines 53 and 55");
       }();
    };
    var createInput = F4(function (action,
@@ -13756,12 +13808,19 @@ Elm.Trixel.Menu.make = function (_elm) {
                case "GridY":
                return {ctor: "_Tuple3"
                       ,_0: state.cy
-                      ,_1: "y"
+                      ,_1: "Y"
                       ,_2: function (y) {
                          return $Trixel$Types.SetGridY(toInt(y));
+                      }};
+               case "Scale":
+               return {ctor: "_Tuple3"
+                      ,_0: $Basics.round(state.scale * 100)
+                      ,_1: "Scale (%)"
+                      ,_2: function (s) {
+                         return $Trixel$Types.SetScale($Basics.toFloat(toInt(s)) / 100);
                       }};}
             _U.badCase($moduleName,
-            "between lines 89 and 92");
+            "between lines 120 and 124");
          }(),
          $default = $._0,
          caption = $._1,
@@ -13858,31 +13917,60 @@ Elm.Trixel.Menu.make = function (_elm) {
                    ctx,
                    state,
                    address)
-                   ,A5(createButton,
-                   "Open",
-                   $Trixel$Types.OpenDoc,
-                   ctx,
-                   state,
-                   address)
-                   ,A5(createButton,
-                   "Save",
-                   $Trixel$Types.SaveDoc,
-                   ctx,
-                   state,
-                   address)
-                   ,A5(createButton,
-                   "SaveAs",
-                   $Trixel$Types.SaveDocAs,
-                   ctx,
-                   state,
-                   address)
                    ,A4(createInput,
                    $Trixel$Types.GridX,
                    ctx,
                    state,
                    address)
+                   ,A5(createArithmeticButton,
+                   "-",
+                   $Trixel$Types.SetGridX(A2($Basics.max,
+                   1,
+                   state.cx - 1)),
+                   ctx,
+                   state,
+                   address)
+                   ,A5(createArithmeticButton,
+                   "+",
+                   $Trixel$Types.SetGridX(state.cx + 1),
+                   ctx,
+                   state,
+                   address)
                    ,A4(createInput,
                    $Trixel$Types.GridY,
+                   ctx,
+                   state,
+                   address)
+                   ,A5(createArithmeticButton,
+                   "-",
+                   $Trixel$Types.SetGridY(A2($Basics.max,
+                   1,
+                   state.cy - 1)),
+                   ctx,
+                   state,
+                   address)
+                   ,A5(createArithmeticButton,
+                   "+",
+                   $Trixel$Types.SetGridY(state.cy + 1),
+                   ctx,
+                   state,
+                   address)
+                   ,A4(createInput,
+                   $Trixel$Types.Scale,
+                   ctx,
+                   state,
+                   address)
+                   ,A5(createArithmeticButton,
+                   "-",
+                   $Trixel$Types.SetScale(A2($Basics.max,
+                   5.0e-2,
+                   state.scale - 5.0e-2)),
+                   ctx,
+                   state,
+                   address)
+                   ,A5(createArithmeticButton,
+                   "+",
+                   $Trixel$Types.SetScale(state.scale + 5.0e-2),
                    ctx,
                    state,
                    address)
@@ -13896,6 +13984,7 @@ Elm.Trixel.Menu.make = function (_elm) {
                              ,createMainStyle: createMainStyle
                              ,toInt: toInt
                              ,createButton: createButton
+                             ,createArithmeticButton: createArithmeticButton
                              ,createInput: createInput
                              ,createModeList: createModeList};
    return _elm.Trixel.Menu.values;
@@ -13974,10 +14063,10 @@ Elm.Trixel.Types.make = function (_elm) {
                                              ,_1: _v0._1}
                                          ,w: w - 2 * _v1._0};}
                  _U.badCase($moduleName,
-                 "on line 32, column 5 to 67");
+                 "on line 33, column 5 to 67");
               }();}
          _U.badCase($moduleName,
-         "on line 32, column 5 to 67");
+         "on line 33, column 5 to 67");
       }();
    });
    var DimensionContext = F4(function (a,
@@ -14000,6 +14089,11 @@ Elm.Trixel.Types.make = function (_elm) {
              ,_0: a};
    };
    var GridX = {ctor: "GridX"};
+   var SetScale = function (a) {
+      return {ctor: "SetScale"
+             ,_0: a};
+   };
+   var Scale = {ctor: "Scale"};
    var SaveDocAs = {ctor: "SaveDocAs"};
    var SaveDoc = {ctor: "SaveDoc"};
    var OpenDoc = {ctor: "OpenDoc"};
@@ -14010,15 +14104,17 @@ Elm.Trixel.Types.make = function (_elm) {
    };
    var Resize = {ctor: "Resize"};
    var None = {ctor: "None"};
-   var State = F4(function (a,
+   var State = F5(function (a,
    b,
    c,
-   d) {
+   d,
+   e) {
       return {_: {}
-             ,colorScheme: d
+             ,colorScheme: e
              ,cx: a
              ,cy: b
-             ,mode: c};
+             ,mode: d
+             ,scale: c};
    });
    _elm.Trixel.Types.values = {_op: _op
                               ,State: State
@@ -14029,6 +14125,8 @@ Elm.Trixel.Types.make = function (_elm) {
                               ,OpenDoc: OpenDoc
                               ,SaveDoc: SaveDoc
                               ,SaveDocAs: SaveDocAs
+                              ,Scale: Scale
+                              ,SetScale: SetScale
                               ,GridX: GridX
                               ,SetGridX: SetGridX
                               ,GridY: GridY
@@ -14060,11 +14158,32 @@ Elm.Trixel.WorkSpace.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $List = Elm.List.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Trixel$Types = Elm.Trixel.Types.make(_elm);
+   var getCountY = F2(function (y,
+   mode) {
+      return _U.eq(mode,
+      $Trixel$Types.Vertical) ? y : function () {
+         var a = $Basics.toFloat(A2($Basics._op["%"],
+         $Basics.round(y),
+         2));
+         return (y + (1 - a)) / 2 + a * 0.5;
+      }();
+   });
+   var getCountX = F2(function (x,
+   mode) {
+      return _U.eq(mode,
+      $Trixel$Types.Horizontal) ? x : function () {
+         var a = $Basics.toFloat(A2($Basics._op["%"],
+         $Basics.round(x),
+         2));
+         return (x + (1 - a)) / 2 + a * 0.5;
+      }();
+   });
    var getSizePairFromTrixelMode = F2(function (size,
    mode) {
       return _U.eq(mode,
@@ -14226,25 +14345,43 @@ Elm.Trixel.WorkSpace.make = function (_elm) {
    state) {
       return function () {
          var $ = {ctor: "_Tuple2"
+                 ,_0: x * state.scale
+                 ,_1: y * state.scale},
+         sx = $._0,
+         sy = $._1;
+         var $ = {ctor: "_Tuple2"
                  ,_0: $Basics.toFloat(state.cx)
                  ,_1: $Basics.toFloat(state.cy)},
          cx = $._0,
          cy = $._1;
-         var mx = A2($Basics.max,cx,cy);
-         var ts = A2($Basics.min,
-         x,
-         y) / mx;
-         return $Html.fromElement(A3($Graphics$Collage.collage,
-         $Basics.round(x),
-         $Basics.round(y),
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A2(getCountX,cx,state.mode)
+                 ,_1: A2(getCountY,
+                 cy,
+                 state.mode)},
+         cx$ = $._0,
+         cy$ = $._1;
+         var ts = _U.cmp(sx / cx$ * cy$,
+         sy) > 0 ? sy / cy$ : sx / cx$;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: $Basics.round(x)
+                 ,_1: $Basics.round(y)},
+         x$ = $._0,
+         y$ = $._1;
+         return $Html.fromElement(A3($Graphics$Element.container,
+         x$,
+         y$,
+         $Graphics$Element.middle)(A3($Graphics$Collage.collage,
+         x$,
+         y$,
          A7(renderWorkSpace,
-         $Basics.round(cx),
-         $Basics.round(cy),
+         state.cx,
+         state.cy,
          ts,
-         x,
-         y,
+         ts * cx$,
+         ts * cy$,
          state.mode,
-         _L.fromArray([]))));
+         _L.fromArray([])))));
       }();
    });
    var createMainStyle = F2(function (ctx,
@@ -14278,6 +14415,8 @@ Elm.Trixel.WorkSpace.make = function (_elm) {
                                   ,getCoordinateFromIndex: getCoordinateFromIndex
                                   ,renderTrixelRow: renderTrixelRow
                                   ,renderWorkSpace: renderWorkSpace
+                                  ,getCountX: getCountX
+                                  ,getCountY: getCountY
                                   ,viewWorkSpace: viewWorkSpace};
    return _elm.Trixel.WorkSpace.values;
 };Elm.VirtualDom = Elm.VirtualDom || {};
