@@ -14,6 +14,7 @@ import Signal exposing (..)
 import Window
 import String
 import Keyboard
+import Mouse
 import Debug
 
 ---
@@ -21,12 +22,21 @@ import Debug
 actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
 
-input = (,) <~ Keyboard.arrows ~ actionQuery.signal
+---
+
+moveOffsetSignal =
+  Signal.map (\p -> MoveOffset p) Keyboard.arrows
+
+moveMouseSignal =
+  Signal.map (\(x, y) -> MoveMouse { x = x, y = y }) Mouse.position
+
+---
 
 main : Signal Html
 main =
   Signal.map2 view Window.dimensions
-    (Signal.foldp update (createNewState 10 10) input)
+    (Signal.foldp update (createNewState 10 10)
+      (mergeMany [actionQuery.signal, moveOffsetSignal, moveMouseSignal]))
 
 ---
 
@@ -42,30 +52,39 @@ resetState oldState =
 
 ---
 
-updateInput: Int -> Int -> State -> State
-updateInput kh' kv' state =
-  if state.scale <= 1
-    then { state | offset <- (0, 0) }
-    else
-      let (ox, oy) = state.offset
-          (kh, kv) = ((toFloat kh'), (toFloat kv'))
-          nox = ox + (kh * moveSpeed)
-          noy = oy + (kv * moveSpeed)
-      in
-        { state | offset <- (nox, noy) }
+updateOffset: Int -> Int -> State -> State
+updateOffset kh' kv' state =
+  if state.scale <= 1 then state else
+    let (ox, oy) = state.offset
+        (kh, kv) = ((toFloat kh'), (toFloat kv'))
+        nox = ox + (kh * moveSpeed)
+        noy = oy + (kv * moveSpeed)
+    in
+      { state | offset <- (nox, noy) }
 
-update ({x, y}, action) state =
-  let state' =
-    case action of
-      SetGridX x -> { state | cx <- x }
-      SetGridY y -> { state | cy <- y }
-      SetScale scale -> { state | scale <- scale }
-      SetMode mode -> { state | mode <- mode }
-      NewDoc -> resetState state
-      OpenDoc -> (Debug.log "todo, OpenDoc..." state)
-      SaveDoc -> (Debug.log "todo, SaveDoc..." state)
-      SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
-  in updateInput x y state'
+updateMousePosition: Point -> State -> State
+updateMousePosition point state =
+  state
+
+updateScale: Float -> State -> State
+updateScale scale state =
+  { state | scale <- scale,
+      offset <- if scale <= 1 then (0, 0) else state.offset }
+
+update action state =
+  --let state' =
+  case action of
+    SetGridX x -> { state | cx <- x }
+    SetGridY y -> { state | cy <- y }
+    SetScale scale -> updateScale scale state
+    SetMode mode -> { state | mode <- mode }
+    MoveOffset {x,y} -> updateOffset x y state
+    MoveMouse point -> updateMousePosition point state
+    NewDoc -> resetState state
+    OpenDoc -> (Debug.log "todo, OpenDoc..." state)
+    SaveDoc -> (Debug.log "todo, SaveDoc..." state)
+    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
+  --in updateInput x y state'
 
 ---
 

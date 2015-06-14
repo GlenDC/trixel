@@ -13,13 +13,18 @@ type alias State = {
 
 ---
 
+type alias Point = { x: Int, y: Int }
+
+---
+
 type TrixelAction =
   None | Resize |
   SetMode TrixelMode |
   NewDoc | OpenDoc | SaveDoc | SaveDocAs |
   Scale | SetScale Float |
   GridX | SetGridX Int |
-  GridY | SetGridY Int
+  GridY | SetGridY Int |
+  MoveMouse Point | MoveOffset Point
 
 ---
 
