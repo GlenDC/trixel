@@ -21,7 +21,7 @@ import Debug
 actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
 
-input = (,) <~ Keyboard.presses ~ actionQuery.signal
+input = (,) <~ Keyboard.arrows ~ actionQuery.signal
 
 main : Signal Html
 main =
@@ -41,26 +41,20 @@ resetState oldState =
   { oldState | cx <- 1, cy <- 1, mode <- Vertical }
 
 ---
-updateWSOffset: Int -> State -> State
-updateWSOffset keycode state =
+
+updateInput: Int -> Int -> State -> State
+updateInput kh' kv' state =
   if state.scale <= 1
     then { state | offset <- (0, 0) }
     else
       let (ox, oy) = state.offset
-      in { state | offset <- (
-        if | keycode == keyLeft -> (ox - moveSpeed, oy)
-           | keycode == keyRight -> (ox + moveSpeed, oy)
-           | keycode == keyDown -> (ox, oy - moveSpeed)
-           | keycode == keyUp -> (ox, oy + moveSpeed)
-           | otherwise -> (ox, oy)
-        )}
+          (kh, kv) = ((toFloat kh'), (toFloat kv'))
+          nox = ox + (kh * moveSpeed)
+          noy = oy + (kv * moveSpeed)
+      in
+        { state | offset <- (nox, noy) }
 
-updateInput: Int -> State -> State
-updateInput keycode state =
-  updateWSOffset keycode state
-
-update: (Int, TrixelAction) -> State -> State
-update (keycode, action) state =
+update ({x, y}, action) state =
   let state' =
     case action of
       SetGridX x -> { state | cx <- x }
@@ -71,7 +65,7 @@ update (keycode, action) state =
       OpenDoc -> (Debug.log "todo, OpenDoc..." state)
       SaveDoc -> (Debug.log "todo, SaveDoc..." state)
       SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
-  in updateInput keycode state'
+  in updateInput x y state'
 
 ---
 
