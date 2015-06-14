@@ -1,4 +1,4 @@
-module Trixel.WorkSpace where
+module Trixel.WorkSpace (view) where
 
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Types exposing (..)

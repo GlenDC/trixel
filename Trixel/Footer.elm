@@ -1,4 +1,4 @@
-module Trixel.Footer where
+module Trixel.Footer (view) where
 
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Constants exposing (..)

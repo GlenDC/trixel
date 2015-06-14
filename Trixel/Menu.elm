@@ -1,4 +1,4 @@
-module Trixel.Menu where
+module Trixel.Menu (view) where
 
 import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Types exposing (..)
