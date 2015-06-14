@@ -23,7 +23,12 @@ view  address ctx state =
     (createButton "SaveAs" SaveDocAs ctx state address),
 
     (createInput GridX ctx state address),
+    (createArithmeticButton "-" (SetGridX (max 1 (state.cx - 1))) ctx state address),
+    (createArithmeticButton "+" (SetGridX (state.cx + 1)) ctx state address),
+
     (createInput GridY ctx state address),
+    (createArithmeticButton "-" (SetGridY (max 1 (state.cy - 1))) ctx state address),
+    (createArithmeticButton "+" (SetGridY (state.cy + 1)) ctx state address),
 
     (createModeList ctx state address)
   ]
@@ -69,6 +74,29 @@ createButton string action ctx state address =
       buttonStyle
       ] [text string]
 
+createArithmeticButton: String -> TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createArithmeticButton string action ctx state address =
+  let (px, py) = ctx.p
+      (w, h) = ((clamp 25 35 (ctx.w * 0.095)), (ctx.h - (py * 2)))
+
+      dimensions = dimensionContext w h (5, 5) (2, 2)
+
+      buttonStyle = style ((dimensionToHtml dimensions) ++ [
+        ("background-color", state.colorScheme.selbg.html),
+        ("color", state.colorScheme.selfg.html),
+        ("font-size", (toPx (dimensions.h / 1.75))),
+        ("box-sizing", "border-box"),
+        ("float", "left"),
+        ("border", "1px solid " ++ state.colorScheme.fg.html)
+      ])
+  in
+    button [
+      onClick address action,
+      buttonStyle
+      ] [text string]
+
+---
+
 createInput: TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
 createInput action ctx state address =
   let (px, py) = ctx.p
@@ -88,7 +116,7 @@ createInput action ctx state address =
       (default, caption, fn) =
         case action of
           GridX -> (state.cx, "X", (\x -> SetGridX (toInt x)))
-          GridY -> (state.cy, "y", (\y -> SetGridY (toInt y)))
+          GridY -> (state.cy, "Y", (\y -> SetGridY (toInt y)))
   in
     div [] [
       label [style [
