@@ -80,23 +80,27 @@ renderWorkSpace cx cy size w h mode trixels =
 getCountX: Float -> TrixelMode -> Float
 getCountX x mode =
   if mode == Horizontal then x else
-    ((x + 1) / 2) + ((toFloat ((round x) % 2)) * 0.5)
+    let a = toFloat ((round x) % 2)
+    in ((x + (1 - a)) / 2) + (a * 0.5)
 
 getCountY: Float -> TrixelMode -> Float
 getCountY y mode =
   if mode == Vertical then y else
-    ((y + 1) / 2) + ((toFloat ((round y) % 2)) * 0.5)
+    let a = toFloat ((round y) % 2)
+    in ((y + (1 - a)) / 2) + (a * 0.5)
 
 ---
 
 viewWorkSpace : Float -> Float -> State -> Html
 viewWorkSpace x y state =
-  let (cx, cy) = (toFloat state.cx, toFloat state.cy)
+  let (x', y') = ((round x), (round y))
+      (cx, cy) = (toFloat state.cx, toFloat state.cy)
 
       (cx', cy') = ((getCountX cx state.mode), (getCountY cy state.mode))
       ts = if x / cx' * cy' > y then
         (y / cy') else (x / cx')
   in
-    collage (round x) (round y)
-      (renderWorkSpace state.cx state.cy ts (ts * cx') (ts * cy') state.mode [])
-      |> fromElement
+    collage x' y'
+      (renderWorkSpace state.cx state.cy ts (ts * cx') (ts * cy')
+        state.mode [])
+      |> container x' y' middle |> fromElement
