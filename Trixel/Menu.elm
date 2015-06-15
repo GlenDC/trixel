@@ -13,34 +13,36 @@ import String
 
 ---
 
-view : Address TrixelAction -> HtmlDimensionContext -> State -> Html
-view  address ctx state =
-  div [ createMainStyle ctx state ] [
-    (createButton "New" NewDoc ctx state address),
-    {-(createButton "Open" OpenDoc ctx state address),
-    (createButton "Save" SaveDoc ctx state address),
-    (createButton "SaveAs" SaveDocAs ctx state address),-}
+view : Address TrixelAction -> State -> Html
+view  address state =
+  let ctx = state.html.dimensions.menu
+  in
+    div [ createMainStyle ctx state ] [
+      (createButton "New" NewDoc ctx state address),
+      {-(createButton "Open" OpenDoc ctx state address),
+      (createButton "Save" SaveDoc ctx state address),
+      (createButton "SaveAs" SaveDocAs ctx state address),-}
 
-    (createInput GridX ctx state address),
-    (createArithmeticButton "-"
-      (SetGridX (max 1 (state.trixelInfo.count.x - 1))) ctx state address),
-    (createArithmeticButton "+"
-      (SetGridX (state.trixelInfo.count.x + 1)) ctx state address),
+      (createInput GridX ctx state address),
+      (createArithmeticButton "-"
+        (SetGridX (max 1 (state.trixelInfo.count.x - 1))) ctx state address),
+      (createArithmeticButton "+"
+        (SetGridX (state.trixelInfo.count.x + 1)) ctx state address),
 
-    (createInput GridY ctx state address),
-    (createArithmeticButton "-"
-      (SetGridY (max 1 (state.trixelInfo.count.y - 1))) ctx state address),
-    (createArithmeticButton "+"
-      (SetGridY (state.trixelInfo.count.y + 1)) ctx state address),
+      (createInput GridY ctx state address),
+      (createArithmeticButton "-"
+        (SetGridY (max 1 (state.trixelInfo.count.y - 1))) ctx state address),
+      (createArithmeticButton "+"
+        (SetGridY (state.trixelInfo.count.y + 1)) ctx state address),
 
-    (createInput Scale ctx state address),
-    (createArithmeticButton "-"
-      (SetScale (max 0.05 (state.trixelInfo.scale - 0.05))) ctx state address),
-    (createArithmeticButton "+"
-      (SetScale (state.trixelInfo.scale + 0.05)) ctx state address),
+      (createInput Scale ctx state address),
+      (createArithmeticButton "-"
+        (SetScale (max 0.05 (state.trixelInfo.scale - 0.05))) ctx state address),
+      (createArithmeticButton "+"
+        (SetScale (state.trixelInfo.scale + 0.05)) ctx state address),
 
-    (createModeList ctx state address)
-  ]
+      (createModeList ctx state address)
+    ]
 
 ---
 

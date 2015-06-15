@@ -10,9 +10,9 @@ import Signal exposing (Address)
 
 ---
 
-view : Address TrixelAction -> HtmlDimensionContext -> State -> Html
-view  address ctx state =
-  div [ createMainStyle ctx state ] [
+view : State -> Html
+view state =
+  div [ createMainStyle state ] [
     div [ style [("text-align", "right"), ("float", "right")] ] [
       text ("Trixel v" ++ version)],
     div [style [("text-align", "left"), ("float", "left")]] [
@@ -23,12 +23,12 @@ view  address ctx state =
 
 ---
 
-createMainStyle: HtmlDimensionContext -> State -> Attribute
-createMainStyle ctx state  =
-  style ((dimensionToHtml ctx) ++ [
+createMainStyle: State -> Attribute
+createMainStyle state  =
+  style ((dimensionToHtml state.html.dimensions.footer) ++ [
     ("color", state.colorScheme.subText.html),
     ("position", "absolute"),
     ("font-size", (toPx (footerSize * 1.25))),
-    ("bottom", "0"),
+    ("bottom", (toPx footerSize)),
     ("box-sizing", "border-content")
   ])

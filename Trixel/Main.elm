@@ -47,13 +47,13 @@ windowDimemensionsSignal =
 
 main : Signal Html
 main =
-  Signal.map2 view Window.dimensions
+  Signal.map view
     (Signal.foldp update (createNewState 10 10)
       (mergeMany [
         actionQuery.signal,
+        windowDimemensionsSignal,
         moveOffsetSignal,
-        moveMouseSignal,
-        windowDimemensionsSignal
+        moveMouseSignal
         ]))
 
 ---
@@ -73,25 +73,26 @@ createNewState cx cy =
       offset = { x = 0, y = 0 }
     },
     trixelColor = red,
-    colorScheme = zenburnScheme
+    colorScheme = zenburnScheme,
+    html = {
+      dimensions = {
+        menu = dimensionContextDummy,
+        footer = dimensionContextDummy,
+        workspace = dimensionContextDummy
+      }
+    },
+    dimensions = { x = 0, y = 0 }
   }
 
 ---
 
-view: (Int, Int) -> State -> Html
-view (w', h') state =
-  let w = toFloat w'
-      h = toFloat h'
-
-      menu = dimensionContext w (clamp 40 80 (h * 0.04)) (5, 5) (0, 0)
-      footer = dimensionContext w footerSize (0, 0) (5, 8)
-      workspace = dimensionContext w (h - menu.h - footerSize) (0, 0) (20, 20)
-  in
-    div [ createMainStyle state ] [
-      (Trixel.Menu.view actionQuery.address menu state),
-      (Trixel.Footer.view actionQuery.address footer state),
-      (Trixel.WorkSpace.view actionQuery.address workspace state)
-    ]
+view: State -> Html
+view state =
+  div [ createMainStyle state ] [
+    (Trixel.Menu.view actionQuery.address state),
+    (Trixel.Footer.view state),
+    (Trixel.WorkSpace.view state)
+  ]
 
 ---
 

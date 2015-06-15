@@ -35,10 +35,24 @@ type alias TrixelInfo = {
 
 ---
 
+type alias HtmlDimensions = {
+  menu: HtmlDimensionContext,
+  footer: HtmlDimensionContext,
+  workspace: HtmlDimensionContext
+}
+
+---
+
+type alias HtmlInfo = { dimensions: HtmlDimensions }
+
+---
+
 type alias State = {
   trixelInfo: TrixelInfo,
   trixelColor: Color,
-  colorScheme: ColorScheme
+  colorScheme: ColorScheme,
+  html: HtmlInfo,
+  dimensions: FloatVec2D
 }
 
 ---
@@ -63,6 +77,8 @@ type alias HtmlDimensionContext = {
 dimensionContext: Float -> Float -> (Float, Float) -> (Float, Float) -> HtmlDimensionContext
 dimensionContext w h (px, py) (mx, my) =
   { w = w - (2 * mx), h = h - (2 * my), p = (px, py), m = (mx, my) }
+
+dimensionContextDummy = dimensionContext 0 0 (0, 0) (0, 0)
 
 toPx: Float -> String
 toPx value =

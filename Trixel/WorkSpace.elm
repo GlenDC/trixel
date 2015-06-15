@@ -11,15 +11,13 @@ import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-view: Address TrixelAction -> HtmlDimensionContext -> State -> Html
-view address ctx state =
-  div [ createMainStyle ctx state ] [
-    viewWorkSpace ctx.w ctx.h state
-  ]
+view: State -> Html
+view state =
+  div [ createMainStyle state ] [ viewWorkSpace state ]
 
-createMainStyle: HtmlDimensionContext -> State -> Attribute
-createMainStyle ctx state  =
-  style ((dimensionToHtml ctx) ++ [
+createMainStyle: State -> Attribute
+createMainStyle state  =
+  style ((dimensionToHtml state.html.dimensions.workspace) ++ [
     ("box-sizing", "inherit")
   ])
 
@@ -76,34 +74,17 @@ renderWorkSpace state cx cy size w h trixels =
 
 ---
 
-getCountX: Float -> TrixelMode -> Float
-getCountX x mode =
-  if mode == Horizontal then x else
-    let a = toFloat ((round x) % 2)
-    in ((x + (1 - a)) / 2) + (a * 0.5)
-
-getCountY: Float -> TrixelMode -> Float
-getCountY y mode =
-  if mode == Vertical then y else
-    let a = toFloat ((round y) % 2)
-    in ((y + (1 - a)) / 2) + (a * 0.5)
-
----
-
-viewWorkSpace : Float -> Float -> State -> Html
-viewWorkSpace x y state =
-  let (x', y') = ((round x), (round y))
-      count = state.trixelInfo.count
-      (cx, cy) = ((toFloat count.x), (toFloat count.y))
-
-      (sx, sy) = (x * state.trixelInfo.scale,
-                  y * state.trixelInfo.scale)
-
-      (cx', cy') = ((getCountX cx state.trixelInfo.mode),
-                    (getCountY cy state.trixelInfo.mode))
-      ts = if sx / cx' * cy' > sy then
-        (sy / cy') else (sx / cx')
+viewWorkSpace : State -> Html
+viewWorkSpace state =
+  let count = state.trixelInfo.count
+      dimensions = state.html.dimensions.workspace
+      bounds = state.trixelInfo.bounds
+      (w, h) = (
+        toFloat (bounds.max.x - bounds.min.x),
+        toFloat (bounds.max.y - bounds.min.y)
+        )
   in
-    collage x' y'
-      (renderWorkSpace state count.x count.y ts (ts * cx') (ts * cy') [])
+    collage (round dimensions.w) (round dimensions.h)
+      (renderWorkSpace state count.x count.y
+        state.trixelInfo.size w h [])
       |> fromElement

@@ -2,6 +2,7 @@ module Trixel.Update (update) where
 
 import Trixel.Types exposing (..)
 import Trixel.Constants exposing (..)
+import Trixel.Grid exposing (updateGrid)
 
 import Debug
 
@@ -39,7 +40,18 @@ updateScale scale state =
 
 updateDimensions: FloatVec2D -> State -> State
 updateDimensions dimensions state =
-  state
+  let menu = dimensionContext dimensions.x (clamp 40 80 (dimensions.y * 0.04)) (5, 5) (0, 0)
+      footer = dimensionContext dimensions.x footerSize (0, 0) (5, 8)
+      workspace = dimensionContext dimensions.x (dimensions.y - menu.h - footerSize) (0, 0) (20, 20)
+  in
+    { state |
+      html <- {
+        dimensions = {
+          menu = menu,
+          workspace = workspace,
+          footer = footer
+          } },
+      dimensions <- dimensions }
 
 updateGridX: Int -> State -> State
 updateGridX x state =
@@ -65,15 +77,16 @@ updateMode mode state =
       { trixelInfo | mode <- mode } }
 
 update action state =
-  case action of
-    SetGridX x -> updateGridX x state
-    SetGridY y -> updateGridY y state
-    SetScale scale -> updateScale scale state
-    SetMode mode -> updateMode mode state
-    Resize dimensions -> updateDimensions dimensions state
-    MoveOffset point -> updateOffset point state
-    MoveMouse point -> updateMousePosition point state
-    NewDoc -> resetState state
-    OpenDoc -> (Debug.log "todo, OpenDoc..." state)
-    SaveDoc -> (Debug.log "todo, SaveDoc..." state)
-    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
+  updateGrid
+    (case action of
+      SetGridX x -> updateGridX x state
+      SetGridY y -> updateGridY y state
+      SetScale scale -> updateScale scale state
+      SetMode mode -> updateMode mode state
+      Resize dimensions -> updateDimensions dimensions state
+      MoveOffset point -> updateOffset point state
+      MoveMouse point -> updateMousePosition point state
+      NewDoc -> resetState state 
+      OpenDoc -> (Debug.log "todo, OpenDoc..." state)
+      SaveDoc -> (Debug.log "todo, SaveDoc..." state)
+      SaveDocAs -> (Debug.log "todo, SaveDocAs..." state))
