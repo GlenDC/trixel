@@ -111,11 +111,11 @@ renderTrixelRow state cx cy size w h trixels =
 
 renderTrixelOnPosition: State -> FloatVec2D -> Float -> Float -> Form
 renderTrixelOnPosition state pos w h =
-  let hs = state.trixelInfo.size / 2
-      cx = round ((pos.x) / (state.trixelInfo.size / 2))
-      cy = round ((h - pos.y + hs) / state.trixelInfo.size)
+  let (xs, ys) = getSizePairFromTrixelMode state.trixelInfo.size state.trixelInfo.mode
+      hsz = state.trixelInfo.size / 2
+      cx = round ((pos.x + (xs - hsz)) / xs) |> clamp 1 state.trixelInfo.count.x
+      cy = round ((h - pos.y + (ys - hsz)) / ys) |> clamp 1 state.trixelInfo.count.y
       
-      (xs, ys) = getSizePairFromTrixelMode state.trixelInfo.size state.trixelInfo.mode
       x = (getCoordinateFromIndex cx xs w) + (state.trixelInfo.offset.x * state.trixelInfo.scale)
       y = (getCoordinateFromIndex cy ys h) + (state.trixelInfo.offset.y * state.trixelInfo.scale)
   in
@@ -147,6 +147,8 @@ renderGrid state cx cy size w h trixels =
     else
       renderTrixelRow state cx cy size w h trixels
         |> renderGrid state cx (cy - 1) size w h
+
+---
 
 renderMouse: State -> Float -> Float -> List Form -> List Form
 renderMouse state w h trixels =
