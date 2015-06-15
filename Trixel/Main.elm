@@ -82,7 +82,8 @@ createNewState cx cy =
       }
     },
     dimensions = { x = 0, y = 0 },
-    mouseState = MouseNone
+    mouseState = MouseNone,
+    grid = []
   }
 
 ---

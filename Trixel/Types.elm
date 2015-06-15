@@ -1,6 +1,9 @@
 module Trixel.Types where
 
 import Trixel.ColorScheme exposing (ColorScheme)
+
+import Graphics.Collage exposing (..)
+import Graphics.Element exposing (..)
 import Color exposing (Color)
 
 ---
@@ -57,7 +60,8 @@ type alias State = {
   colorScheme: ColorScheme,
   html: HtmlInfo,
   dimensions: FloatVec2D,
-  mouseState: MouseState
+  mouseState: MouseState,
+  grid: List Form
 }
 
 ---

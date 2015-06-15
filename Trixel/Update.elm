@@ -32,7 +32,7 @@ updateMousePosition point state =
       (x, y) = (point.x - minX, point.y - minY)
   in
     { state |
-      mouseState <- if x >= 0 && y >= 0 && x <= maxX && y <= maxY
+      mouseState <- if x >= 0 && y >= 0 && x <= maxX - minX && y <= maxY - minY
       then MouseHover { x = x, y = y }
       else MouseNone
       }
@@ -86,16 +86,15 @@ updateMode mode state =
       { trixelInfo | mode <- mode } }
 
 update action state =
-  updateGrid
-    (case action of
-      SetGridX x -> updateGridX x state
-      SetGridY y -> updateGridY y state
-      SetScale scale -> updateScale scale state
-      SetMode mode -> updateMode mode state
-      Resize dimensions -> updateDimensions dimensions state
-      MoveOffset point -> updateOffset point state
-      MoveMouse point -> updateMousePosition point state
-      NewDoc -> resetState state 
-      OpenDoc -> (Debug.log "todo, OpenDoc..." state)
-      SaveDoc -> (Debug.log "todo, SaveDoc..." state)
-      SaveDocAs -> (Debug.log "todo, SaveDocAs..." state))
+  (case action of
+    SetGridX x -> updateGridX x state |> updateGrid
+    SetGridY y -> updateGridY y state |> updateGrid
+    SetScale scale -> updateScale scale state |> updateGrid
+    SetMode mode -> updateMode mode state |> updateGrid
+    Resize dimensions -> updateDimensions dimensions state |> updateGrid
+    MoveOffset point -> updateOffset point state |> updateGrid
+    MoveMouse point -> updateMousePosition point state
+    NewDoc -> resetState state  |> updateGrid
+    OpenDoc -> (Debug.log "todo, OpenDoc..." state) |> updateGrid
+    SaveDoc -> (Debug.log "todo, SaveDoc..." state) |> updateGrid
+    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)) |> updateGrid
