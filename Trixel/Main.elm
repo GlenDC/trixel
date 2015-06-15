@@ -1,6 +1,7 @@
 module Trixel.Main where
 
 import Trixel.ColorScheme exposing (ColorScheme, zenburnScheme)
+import Color exposing (red)
 import Trixel.Types exposing (..)
 import Trixel.WorkSpace
 import Trixel.Constants exposing (..)
@@ -25,10 +26,22 @@ actionQuery = mailbox None
 ---
 
 moveOffsetSignal =
-  Signal.map (\p -> MoveOffset p) Keyboard.arrows
+  Signal.map (\{x, y} -> MoveOffset {
+    x = toFloat x,
+    y = toFloat y
+    }) Keyboard.arrows
 
 moveMouseSignal =
-  Signal.map (\(x, y) -> MoveMouse { x = x, y = y }) Mouse.position
+  Signal.map (\(x, y) -> MoveMouse {
+    x = toFloat x,
+    y = toFloat y
+    }) Mouse.position
+
+windowDimemensionsSignal =
+  Signal.map (\(x, y) -> Resize {
+    x = toFloat x,
+    y = toFloat y
+    }) Window.dimensions
 
 ---
 
@@ -36,55 +49,107 @@ main : Signal Html
 main =
   Signal.map2 view Window.dimensions
     (Signal.foldp update (createNewState 10 10)
-      (mergeMany [actionQuery.signal, moveOffsetSignal, moveMouseSignal]))
+      (mergeMany [
+        actionQuery.signal,
+        moveOffsetSignal,
+        moveMouseSignal,
+        windowDimemensionsSignal
+        ]))
 
 ---
 
 createNewState: Int -> Int -> State
 createNewState cx cy =
-  { cx = cx, cy = cy, scale = 1.0,
-    offset = (0, 0), mode = Vertical,
-    colorScheme = zenburnScheme }
+  {
+    trixelInfo = { 
+      bounds = {
+        min = { x = 0, y = 0 },
+        max = { x = 0, y = 0 }
+      },
+      size = 0,
+      mode = Vertical,
+      count = { x = cx, y = cy },
+      scale = 1,
+      offset = { x = 0, y = 0 }
+    },
+    trixelColor = red,
+    colorScheme = zenburnScheme
+  }
 
 resetState: State -> State
-resetState oldState =
-  { oldState | cx <- 1, cy <- 1, mode <- Vertical }
+resetState state =
+  let trixelInfo = state.trixelInfo
+  in { state | trixelInfo <- { trixelInfo |
+        count <- { x = 1, y = 1 },
+        mode <- Vertical } }
 
 ---
 
-updateOffset: Int -> Int -> State -> State
-updateOffset kh' kv' state =
-  if state.scale <= 1 then state else
-    let (ox, oy) = state.offset
-        (kh, kv) = ((toFloat kh'), (toFloat kv'))
-        nox = ox + (kh * moveSpeed)
-        noy = oy + (kv * moveSpeed)
+updateOffset: FloatVec2D -> State -> State
+updateOffset offset state =
+  if state.trixelInfo.scale <= 1 then state else
+    let trixelInfo = state.trixelInfo
+        {x, y} = trixelInfo.offset
+        nox = x + (offset.x * moveSpeed)
+        noy = y + (offset.y * moveSpeed)
     in
-      { state | offset <- (nox, noy) }
+      { state | trixelInfo <-
+        { trixelInfo | offset <- { x = nox, y = noy } } }
 
-updateMousePosition: Point -> State -> State
+updateMousePosition: FloatVec2D -> State -> State
 updateMousePosition point state =
   state
 
 updateScale: Float -> State -> State
 updateScale scale state =
-  { state | scale <- scale,
-      offset <- if scale <= 1 then (0, 0) else state.offset }
+  let trixelInfo = state.trixelInfo
+  in
+    { state | trixelInfo <-
+      { trixelInfo |
+        scale <- scale,
+        offset <- if scale <= 1 then { x = 0, y = 0 }
+                  else trixelInfo.offset } }
+
+updateDimensions: FloatVec2D -> State -> State
+updateDimensions dimensions state =
+  state
+
+updateGridX: Int -> State -> State
+updateGridX x state =
+  let trixelInfo = state.trixelInfo
+  in
+    { state | trixelInfo <-
+      { trixelInfo |
+        count <- { x = x, y = trixelInfo.count.y } } }
+
+updateGridY: Int -> State -> State
+updateGridY y state =
+  let trixelInfo = state.trixelInfo
+  in
+    { state | trixelInfo <-
+      { trixelInfo |
+        count <- { x = trixelInfo.count.x, y = y } } }
+
+updateMode: TrixelMode -> State -> State
+updateMode mode state =
+  let trixelInfo = state.trixelInfo
+  in
+    { state | trixelInfo <-
+      { trixelInfo | mode <- mode } }
 
 update action state =
-  --let state' =
   case action of
-    SetGridX x -> { state | cx <- x }
-    SetGridY y -> { state | cy <- y }
+    SetGridX x -> updateGridX x state
+    SetGridY y -> updateGridY y state
     SetScale scale -> updateScale scale state
-    SetMode mode -> { state | mode <- mode }
-    MoveOffset {x,y} -> updateOffset x y state
+    SetMode mode -> updateMode mode state
+    Resize dimensions -> updateDimensions dimensions state
+    MoveOffset point -> updateOffset point state
     MoveMouse point -> updateMousePosition point state
     NewDoc -> resetState state
     OpenDoc -> (Debug.log "todo, OpenDoc..." state)
     SaveDoc -> (Debug.log "todo, SaveDoc..." state)
     SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)
-  --in updateInput x y state'
 
 ---
 

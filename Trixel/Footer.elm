@@ -4,13 +4,13 @@ import Trixel.ColorScheme exposing (ColorScheme)
 import Trixel.Constants exposing (..)
 import Trixel.Types exposing (..)
 
-import Html exposing (Html, Attribute, div, span, a, text)
+import Html exposing (Html, Attribute, div, a, text)
 import Html.Attributes exposing (style, href)
 import Signal exposing (Address)
 
 ---
 
-view : Address TrixelAction -> DimensionContext -> State -> Html
+view : Address TrixelAction -> HtmlDimensionContext -> State -> Html
 view  address ctx state =
   div [ createMainStyle ctx state ] [
     div [ style [("text-align", "right"), ("float", "right")] ] [
@@ -23,7 +23,7 @@ view  address ctx state =
 
 ---
 
-createMainStyle: DimensionContext -> State -> Attribute
+createMainStyle: HtmlDimensionContext -> State -> Attribute
 createMainStyle ctx state  =
   style ((dimensionToHtml ctx) ++ [
     ("color", state.colorScheme.subText.html),

@@ -11,13 +11,13 @@ import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-view: Address TrixelAction -> DimensionContext -> State -> Html
+view: Address TrixelAction -> HtmlDimensionContext -> State -> Html
 view address ctx state =
   div [ createMainStyle ctx state ] [
     viewWorkSpace ctx.w ctx.h state
   ]
 
-createMainStyle: DimensionContext -> State -> Attribute
+createMainStyle: HtmlDimensionContext -> State -> Attribute
 createMainStyle ctx state  =
   style ((dimensionToHtml ctx) ++ [
     ("box-sizing", "inherit")
@@ -60,12 +60,12 @@ getCoordinateFromIndex c ts ws =
 renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
 renderTrixelRow state cx cy size w h trixels =
   if cx == 0 then trixels else
-    let (xs, ys) = getSizePairFromTrixelMode size state.mode
-        (ox, oy) = state.offset
-        x = (getCoordinateFromIndex cx xs w) + (ox * state.scale)
-        y = (getCoordinateFromIndex cy ys h) + (oy * state.scale)
+    let (xs, ys) = getSizePairFromTrixelMode size state.trixelInfo.mode
+        offset = state.trixelInfo.offset
+        x = (getCoordinateFromIndex cx xs w) + (offset.x * state.trixelInfo.scale)
+        y = (getCoordinateFromIndex cy ys h) + (offset.y * state.trixelInfo.scale)
     in
-      (renderTrixel (getTrixelOrientation cx cy state.mode) x y size) :: trixels
+      (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y size) :: trixels
         |> renderTrixelRow state (cx - 1) cy size w h
 
 renderWorkSpace: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
@@ -93,14 +93,17 @@ getCountY y mode =
 viewWorkSpace : Float -> Float -> State -> Html
 viewWorkSpace x y state =
   let (x', y') = ((round x), (round y))
-      (cx, cy) = (toFloat state.cx, toFloat state.cy)
+      count = state.trixelInfo.count
+      (cx, cy) = ((toFloat count.x), (toFloat count.y))
 
-      (sx, sy) = (x * state.scale, y * state.scale)
+      (sx, sy) = (x * state.trixelInfo.scale,
+                  y * state.trixelInfo.scale)
 
-      (cx', cy') = ((getCountX cx state.mode), (getCountY cy state.mode))
+      (cx', cy') = ((getCountX cx state.trixelInfo.mode),
+                    (getCountY cy state.trixelInfo.mode))
       ts = if sx / cx' * cy' > sy then
         (sy / cy') else (sx / cx')
   in
     collage x' y'
-      (renderWorkSpace state state.cx state.cy ts (ts * cx') (ts * cy') [])
+      (renderWorkSpace state count.x count.y ts (ts * cx') (ts * cy') [])
       |> fromElement

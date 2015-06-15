@@ -13,7 +13,7 @@ import String
 
 ---
 
-view : Address TrixelAction -> DimensionContext -> State -> Html
+view : Address TrixelAction -> HtmlDimensionContext -> State -> Html
 view  address ctx state =
   div [ createMainStyle ctx state ] [
     (createButton "New" NewDoc ctx state address),
@@ -22,23 +22,29 @@ view  address ctx state =
     (createButton "SaveAs" SaveDocAs ctx state address),-}
 
     (createInput GridX ctx state address),
-    (createArithmeticButton "-" (SetGridX (max 1 (state.cx - 1))) ctx state address),
-    (createArithmeticButton "+" (SetGridX (state.cx + 1)) ctx state address),
+    (createArithmeticButton "-"
+      (SetGridX (max 1 (state.trixelInfo.count.x - 1))) ctx state address),
+    (createArithmeticButton "+"
+      (SetGridX (state.trixelInfo.count.x + 1)) ctx state address),
 
     (createInput GridY ctx state address),
-    (createArithmeticButton "-" (SetGridY (max 1 (state.cy - 1))) ctx state address),
-    (createArithmeticButton "+" (SetGridY (state.cy + 1)) ctx state address),
+    (createArithmeticButton "-"
+      (SetGridY (max 1 (state.trixelInfo.count.y - 1))) ctx state address),
+    (createArithmeticButton "+"
+      (SetGridY (state.trixelInfo.count.y + 1)) ctx state address),
 
     (createInput Scale ctx state address),
-    (createArithmeticButton "-" (SetScale (max 0.05 (state.scale - 0.05))) ctx state address),
-    (createArithmeticButton "+" (SetScale (state.scale + 0.05)) ctx state address),
+    (createArithmeticButton "-"
+      (SetScale (max 0.05 (state.trixelInfo.scale - 0.05))) ctx state address),
+    (createArithmeticButton "+"
+      (SetScale (state.trixelInfo.scale + 0.05)) ctx state address),
 
     (createModeList ctx state address)
   ]
 
 ---
 
-createMainStyle: DimensionContext -> State -> Attribute
+createMainStyle: HtmlDimensionContext -> State -> Attribute
 createMainStyle ctx state  =
   style ((dimensionToHtml ctx) ++ [
     ("background-color", state.colorScheme.bg.html),
@@ -56,7 +62,7 @@ toInt string =
 
 ---
 
-createButton: String -> TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createButton: String -> TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createButton string action ctx state address =
   let (px, py) = ctx.p
       (w, h) = ((clamp 50 80 (ctx.w * 0.075)), (ctx.h - (py * 2)))
@@ -77,7 +83,7 @@ createButton string action ctx state address =
       buttonStyle
       ] [text string]
 
-createArithmeticButton: String -> TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createArithmeticButton: String -> TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createArithmeticButton string action ctx state address =
   let (px, py) = ctx.p
       (w, h) = ((clamp 25 35 (ctx.w * 0.095)), (ctx.h - (py * 2)))
@@ -100,7 +106,7 @@ createArithmeticButton string action ctx state address =
 
 ---
 
-createInput: TrixelAction -> DimensionContext -> State -> Address TrixelAction -> Html
+createInput: TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createInput action ctx state address =
   let (px, py) = ctx.p
       (w, h) = ((clamp 25 60 (ctx.w * 0.05)), (ctx.h - (py * 2)))
@@ -118,9 +124,12 @@ createInput action ctx state address =
 
       (default, caption, fn) =
         case action of
-          GridX -> (state.cx, "X", (\x -> SetGridX (toInt x)))
-          GridY -> (state.cy, "Y", (\y -> SetGridY (toInt y)))
-          Scale -> (round (state.scale * 100), "Scale (%)", (\s -> SetScale ((toFloat (toInt s)) / 100)))
+          GridX -> (state.trixelInfo.count.x,
+            "X", (\x -> SetGridX (toInt x)))
+          GridY -> (state.trixelInfo.count.y,
+            "Y", (\y -> SetGridY (toInt y)))
+          Scale -> (round (state.trixelInfo.scale * 100),
+            "Scale (%)", (\s -> SetScale ((toFloat (toInt s)) / 100)))
   in
     div [] [
       label [style [
@@ -136,7 +145,7 @@ createInput action ctx state address =
 
 ---
 
-createModeList: DimensionContext -> State -> Address TrixelAction -> Html
+createModeList: HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createModeList ctx state address =
   let (px, py) = ctx.p
       (w, h) = ((clamp 115 130 (ctx.w * 0.08)), (ctx.h - (py * 2)))
@@ -161,9 +170,9 @@ createModeList ctx state address =
         ("color", state.colorScheme.text.html)]] [text "Mode"],
       select [selectStyle, on "change" targetValue (Signal.message 
           (forwardTo address fn))] [
-        option [selected (state.mode == Horizontal), value "hor"]
+        option [selected (state.trixelInfo.mode == Horizontal), value "hor"]
           [text "Horizontal"],
-        option [selected (state.mode == Vertical), value "ver"]
+        option [selected (state.trixelInfo.mode == Vertical), value "ver"]
           [text "Vertical"]
       ]
     ]

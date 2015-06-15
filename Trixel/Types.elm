@@ -1,40 +1,66 @@
 module Trixel.Types where
 
 import Trixel.ColorScheme exposing (ColorScheme)
+import Color exposing (Color)
+
+---
+
+type alias IntVec2D = { x: Int, y: Int }
+type alias FloatVec2D = { x: Float, y: Float }
+type alias Bounds2D = { min: IntVec2D, max: IntVec2D }
+
+---
+
+-- Orientation of a trixel: 2 directions x 2 modes == 4 orientations
+type TrixelOrientation =
+  Up | Down |   -- used in Vertical Mode
+  Left | Right  -- used in Horizontal Mode
+
+-- There are 2 different modes in which we draw trixels
+-- The horizontal one gives a more isometric feeling,
+-- while the vertical better highlights the triangle in all its glory.
+type TrixelMode = Horizontal | Vertical
+
+---
+
+type alias TrixelInfo = {
+  bounds: Bounds2D,     -- bounds of workspace
+  size: Float,          -- base-size of each trixel
+  mode: TrixelMode,     -- mode of trixels, defining the layout
+  count: IntVec2D,      -- amount of trixels in the grid
+  scale: Float,         -- scale of the workspace
+  offset: FloatVec2D    -- offset of the workspace
+                        -- note that this shouldn't be used when `scale <= 1`
+}
 
 ---
 
 type alias State = {
-  cx: Int, cy: Int,
-  scale: Float, offset: (Float, Float),
-  mode: TrixelMode,
+  trixelInfo: TrixelInfo,
+  trixelColor: Color,
   colorScheme: ColorScheme
 }
 
 ---
 
-type alias Point = { x: Int, y: Int }
-
----
-
 type TrixelAction =
-  None | Resize |
+  None | Resize FloatVec2D |
   SetMode TrixelMode |
   NewDoc | OpenDoc | SaveDoc | SaveDocAs |
   Scale | SetScale Float |
   GridX | SetGridX Int |
   GridY | SetGridY Int |
-  MoveMouse Point | MoveOffset Point
+  MoveMouse FloatVec2D | MoveOffset FloatVec2D
 
 ---
 
-type alias DimensionContext = {
+type alias HtmlDimensionContext = {
   w: Float, h: Float,
   m: (Float, Float),
   p: (Float, Float)
 }
 
-dimensionContext: Float -> Float -> (Float, Float) -> (Float, Float) -> DimensionContext
+dimensionContext: Float -> Float -> (Float, Float) -> (Float, Float) -> HtmlDimensionContext
 dimensionContext w h (px, py) (mx, my) =
   { w = w - (2 * mx), h = h - (2 * my), p = (px, py), m = (mx, my) }
 
@@ -42,7 +68,7 @@ toPx: Float -> String
 toPx value =
   (toString value) ++ "px"
 
-dimensionToHtml: DimensionContext -> List (String, String)
+dimensionToHtml: HtmlDimensionContext -> List (String, String)
 dimensionToHtml ctx =
   let (px, py) = ctx.p
       (mx, my) = ctx.m
@@ -52,8 +78,3 @@ dimensionToHtml ctx =
     ("margin", (toPx my) ++ " " ++ (toPx mx)),
     ("padding", (toPx py) ++ " " ++ (toPx px))
   ]
-
----
-
-type TrixelOrientation = Up | Down | Left | Right
-type TrixelMode = Horizontal | Vertical
