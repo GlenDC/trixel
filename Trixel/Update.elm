@@ -26,7 +26,16 @@ updateOffset offset state =
 
 updateMousePosition: FloatVec2D -> State -> State
 updateMousePosition point state =
-  state
+  let bounds = state.trixelInfo.bounds
+      (minX, minY) = (toFloat bounds.min.x, toFloat bounds.min.y)
+      (maxX, maxY) = (toFloat bounds.max.x, toFloat bounds.max.y)
+      (x, y) = (point.x - minX, point.y - minY)
+  in
+    { state |
+      mouseState <- if x >= 0 && y >= 0 && x <= maxX && y <= maxY
+      then MouseHover { x = x, y = y }
+      else MouseNone
+      }
 
 updateScale: Float -> State -> State
 updateScale scale state =

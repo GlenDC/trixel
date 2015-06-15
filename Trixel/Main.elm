@@ -81,7 +81,8 @@ createNewState cx cy =
         workspace = dimensionContextDummy
       }
     },
-    dimensions = { x = 0, y = 0 }
+    dimensions = { x = 0, y = 0 },
+    mouseState = MouseNone
   }
 
 ---

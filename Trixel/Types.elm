@@ -47,12 +47,17 @@ type alias HtmlInfo = { dimensions: HtmlDimensions }
 
 ---
 
+type MouseState = MouseNone | MouseHover FloatVec2D
+
+---
+
 type alias State = {
   trixelInfo: TrixelInfo,
   trixelColor: Color,
   colorScheme: ColorScheme,
   html: HtmlInfo,
-  dimensions: FloatVec2D
+  dimensions: FloatVec2D,
+  mouseState: MouseState
 }
 
 ---

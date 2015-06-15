@@ -41,7 +41,7 @@ updateGrid state =
 
       (minX, minY) = (
         (state.dimensions.x - w) / 2,
-        (state.dimensions.y - w) / 2
+        (state.dimensions.y - h) / 2
         )
   in
     { state | trixelInfo <- {

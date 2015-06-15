@@ -27,6 +27,10 @@ weirdify: Float -> Float -> Float
 weirdify coordinate offset =
   coordinate - (offset / 2)
 
+getCoordinateFromIndex: Int -> Float -> Float -> Float
+getCoordinateFromIndex c ts ws =
+  weirdify (((toFloat c) - 1) * ts) ws
+
 renderTriangle: Float -> Float -> Float -> Float -> Float -> Float -> Shape
 renderTriangle x y x' y' x'' y'' =
   polygon [ (x, y), (x', y'), (x'', y'') ]
@@ -50,10 +54,6 @@ getTrixelOrientation x y mode =
 getSizePairFromTrixelMode: Float -> TrixelMode -> (Float, Float)
 getSizePairFromTrixelMode size mode =
   if mode == Horizontal then (size, (size /2)) else ((size / 2), size)
-
-getCoordinateFromIndex: Int -> Float -> Float -> Float
-getCoordinateFromIndex c ts ws =
-  weirdify (((toFloat c) - 1) * ts) ws
 
 renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
 renderTrixelRow state cx cy size w h trixels =
