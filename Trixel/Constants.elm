@@ -16,3 +16,7 @@ keyUp = 38
 keyDown = 40
 
 moveSpeed = 80
+
+---
+
+sqrt3 = sqrt 3

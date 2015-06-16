@@ -36,13 +36,11 @@ updateGrid state =
       (sx, sy) = (workspace.w * trixelInfo.scale,
                   workspace.h * trixelInfo.scale)
 
-      (cx', cy') = ((getCountX cx trixelInfo.mode),
-                    (getCountY cy trixelInfo.mode))
-      ts = if (sx / cx' * cy') > sy
-        then (sy / cy')
-        else (sx / cx')
+      ts = (if (sx / cx * cy) > sy
+            then (sy / cy)
+            else (sx / cx)) / 2
 
-      (w, h) = (ts * cx', ts * cy')
+      (w, h) = (ts * cx, ts * cy)
 
       (minX, minY) = (
         (state.dimensions.x - w) / 2,
@@ -64,25 +62,32 @@ updateGrid state =
 ---
 
 weirdify: Float -> Float -> Float
-weirdify coordinate offset =
+weirdify offset coordinate =
   coordinate - (offset / 2)
 
 getCoordinateFromIndex: Int -> Float -> Float -> Float
 getCoordinateFromIndex c ts ws =
-  weirdify (((toFloat c) - 1) * ts) ws
+  c |> toFloat |> (*) ts |> weirdify ws
+
+---
 
 renderTriangle: Float -> Float -> Float -> Float -> Float -> Float -> Shape
 renderTriangle x y x' y' x'' y'' =
   polygon [ (x, y), (x', y'), (x'', y'') ]
 
+---
+
 renderTrixel: TrixelOrientation -> Float -> Float -> Float -> (Shape -> Form) -> Form
 renderTrixel orientation x y size styleFunction =
-  let trixel = case orientation of
-    Up -> renderTriangle x y (x + (size / 2)) (y + size) (x + size) y
-    Down -> renderTriangle x (y + size) (x + (size / 2)) y (x + size) (y + size)
-    Left -> renderTriangle x y x (y + size) (x + size) (y + (size / 2))
-    Right -> renderTriangle x (y + (size / 2)) (x + size) (y + size) (x + size) y
+  let hh = (sqrt3 * size) / 2
+      trixel = case orientation of
+    Up -> renderTriangle x (y + hh) (x - size) (y - hh) (x + size) (y - hh)
+    Down -> renderTriangle x (y - hh) (x - size) (y + hh) (x + size) (y + hh)
+    {-Left -> renderTriangle x y x (y + size) (x + size) (y + (size / 2))
+    Right -> renderTriangle x (y + (size / 2)) (x + size) (y + size) (x + size) y-}
   in styleFunction trixel
+
+---
 
 getTrixelOrientation: Int -> Int -> TrixelMode -> TrixelOrientation
 getTrixelOrientation x y mode =
@@ -93,35 +98,29 @@ getTrixelOrientation x y mode =
 
 getSizePairFromTrixelMode: Float -> TrixelMode -> (Float, Float)
 getSizePairFromTrixelMode size mode =
-  if mode == Horizontal then (size, (size /2)) else ((size / 2), size)
-
-renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
-renderTrixelRow state cx cy size w h trixels =
-  if cx == 0 then trixels else
-    let (xs, ys) = getSizePairFromTrixelMode size state.trixelInfo.mode
-        offset = state.trixelInfo.offset
-        x = (getCoordinateFromIndex cx xs w) + (offset.x * state.trixelInfo.scale)
-        y = (getCoordinateFromIndex cy ys h) + (offset.y * state.trixelInfo.scale)
-    in
-      (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y size
-        (\s -> outlined (solid lightGrey) s)) :: trixels
-        |> renderTrixelRow state (cx - 1) cy size w h
+  if mode == Horizontal then (size * sqrt3, size) else (size, size * sqrt3)
 
 ---
 
-renderTrixelOnPosition: State -> FloatVec2D -> Float -> Float -> Form
-renderTrixelOnPosition state pos w h =
-  let (xs, ys) = getSizePairFromTrixelMode state.trixelInfo.size state.trixelInfo.mode
-      hsz = state.trixelInfo.size / 2
-      cx = round ((pos.x + (xs - hsz)) / xs) |> clamp 1 state.trixelInfo.count.x
-      cy = round ((h - pos.y + (ys - hsz)) / ys) |> clamp 1 state.trixelInfo.count.y
-      
-      x = (getCoordinateFromIndex cx xs w) + (state.trixelInfo.offset.x * state.trixelInfo.scale)
-      y = (getCoordinateFromIndex cy ys h) + (state.trixelInfo.offset.y * state.trixelInfo.scale)
-  in
-    renderTrixel
-      (getTrixelOrientation cx cy state.trixelInfo.mode)
-      x y state.trixelInfo.size (\s -> filled red s)
+renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
+renderTrixelRow state cx cy w h size trixels =
+  if cx == 0 then trixels else
+    let (xs, ys) = getSizePairFromTrixelMode size state.trixelInfo.mode
+        --offset = state.trixelInfo.offset
+        x = getCoordinateFromIndex cx xs w--) + (offset.x * state.trixelInfo.scale)
+        y = getCoordinateFromIndex cy ys h--) + (offset.y * state.trixelInfo.scale)
+    in
+      (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y size
+        (\s -> outlined (solid lightGrey) s)) :: trixels
+        |> renderTrixelRow state (cx - 1) cy w h size
+
+renderGrid: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
+renderGrid state cx cy w h size trixels =
+  if cy == 0
+    then trixels
+    else
+      renderTrixelRow state cx cy w h size trixels
+        |> renderGrid state cx (cy - 1) w h size
 
 ---
 
@@ -135,23 +134,28 @@ generateGrid state =
         )
   in
     { state |
-        grid <- renderGrid state count.x count.y state.trixelInfo.size w h []
+        grid <- renderGrid state count.x count.y w h state.trixelInfo.size []
         }
 
 ---
 
-renderGrid: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
-renderGrid state cx cy size w h trixels =
-  if cy == 0
-    then trixels
-    else
-      renderTrixelRow state cx cy size w h trixels
-        |> renderGrid state cx (cy - 1) size w h
-
----
+{-renderTrixelOnPosition: State -> FloatVec2D -> Float -> Float -> Form
+renderTrixelOnPosition state pos w h =
+  let (xs, ys) = getSizePairFromTrixelMode state.trixelInfo.size state.trixelInfo.mode
+      hsz = state.trixelInfo.size / 2
+      cx = round ((pos.x + (xs - hsz)) / xs) |> clamp 1 state.trixelInfo.count.x
+      cy = round ((h - pos.y + (ys - hsz)) / ys) |> clamp 1 state.trixelInfo.count.y
+      
+      x = (getCoordinateFromIndex cx xs w) + (state.trixelInfo.offset.x * state.trixelInfo.scale)
+      y = (getCoordinateFromIndex cy ys h) + (state.trixelInfo.offset.y * state.trixelInfo.scale)
+  in
+    renderTrixel
+      (getTrixelOrientation cx cy state.trixelInfo.mode)
+      x y state.trixelInfo.size (\s -> filled red s)-}
 
 renderMouse: State -> Float -> Float -> List Form -> List Form
 renderMouse state w h trixels =
-  case state.mouseState of
+  trixels
+  {-case state.mouseState of
     MouseNone -> trixels
-    MouseHover pos -> (renderTrixelOnPosition state pos w h) :: trixels
+    MouseHover pos -> (renderTrixelOnPosition state pos w h) :: trixels-}
