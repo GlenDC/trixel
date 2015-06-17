@@ -1,6 +1,6 @@
 module Trixel.Constants where
 
-version = "0.0.3"
+version = "0.0.4"
 githubPage = "https://github.com/GlenDC/trixel"
 email = "contact@glendc.com"
 

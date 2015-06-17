@@ -26,19 +26,36 @@ updateOffset offset state =
 
 updateMousePosition: FloatVec2D -> State -> State
 updateMousePosition point state =
-  let bounds = state.trixelInfo.bounds
+  let dimensions = state.html.dimensions
+      pad = dimensions.workspace.p
+      mar = dimensions.workspace.m
+
+      bounds = state.trixelInfo.bounds
       (minX, minY) = (toFloat bounds.min.x, toFloat bounds.min.y)
       (maxX, maxY) = (toFloat bounds.max.x, toFloat bounds.max.y)
-      (sx, sy, cx, cy) = if state.trixelInfo.mode == Vertical
+
+      width = maxX - minX
+      height = maxY - minY
+
+      offsetX = (dimensions.workspace.w - width) / 2
+      offsetY = (dimensions.workspace.h - height) / 2
+
+      cursorX = point.x - pad.x - mar.x - offsetX
+      cursorY = height - (point.y - pad.y - mar.y - dimensions.menu.h - offsetY)
+
+      pointX = (cursorX / state.trixelInfo.width) - 1 |> ceiling
+      pointY = (cursorY / state.trixelInfo.height) - 1 |> ceiling
+
+      {-(sx, sy, cx, cy) = if state.trixelInfo.mode == Vertical
         then (state.trixelInfo.width, state.trixelInfo.height, state.trixelInfo.count.x, state.trixelInfo.count.y)
-        else (state.trixelInfo.width, state.trixelInfo.height, state.trixelInfo.count.x, state.trixelInfo.count.y)
-      (x, y) = (point.x - minX, maxY - minY - point.y + sy)
-      (px, py) = (round (x / sx), round (y / sy))
+        else (state.trixelInfo.width, state.trixelInfo.height, state.trixelInfo.count.x, state.trixelInfo.count.y)-}
+      (x, y) = (Debug.log "mouse" (toFloat pointX, toFloat pointY))
+      --(px, py) = (round (x / sx), round (y / sy))
   in
     { state |
       mouseState <- if x >= 0 && y >= 0 && x <= maxX - minX
-        && y <= maxY - minY && px > 0 && py > 0 && px <= cx && py <= cy
-      then MouseHover { x = px, y = py}
+        && y <= maxY - minY
+      then MouseHover { x = pointX, y = pointY}
       else MouseNone
       }
 
@@ -54,9 +71,9 @@ updateScale scale state =
 
 updateDimensions: FloatVec2D -> State -> State
 updateDimensions dimensions state =
-  let menu = dimensionContext dimensions.x (clamp 40 80 (dimensions.y * 0.04)) (5, 5) (0, 0)
-      footer = dimensionContext dimensions.x footerSize (0, 0) (5, 8)
-      workspace = dimensionContext dimensions.x (dimensions.y - menu.h - footerSize) (0, 0) (20, 20)
+  let menu = dimensionContext dimensions.x (clamp 40 80 (dimensions.y * 0.04)) 5 5 0 0
+      footer = dimensionContext (dimensions.x - 10) footerSize 5 8 0 0
+      workspace = dimensionContext (dimensions.x - 40) (dimensions.y - menu.h - footerSize - 16 - 40) 20 20 0 0
   in
     { state |
       html <- {
@@ -90,17 +107,21 @@ updateMode mode state =
     { state | trixelInfo <-
       { trixelInfo | mode <- mode } }
 
+updateCondition: Condition -> State -> State
+updateCondition condition state =
+  { state | condition <- condition }
+
 update action state =
   (case action of
     SetGridX x -> updateGridX x state |> updateGrid
     SetGridY y -> updateGridY y state |> updateGrid
     SetScale scale -> updateScale scale state |> updateGrid
     SetMode mode -> updateMode mode state |> updateGrid
+    SetCondition condition -> updateCondition condition state
     Resize dimensions -> updateDimensions dimensions state |> updateGrid
     MoveOffset point -> updateOffset point state |> updateGrid
     MoveMouse point -> updateMousePosition point state
     NewDoc -> resetState state  |> updateGrid  |> updateGrid
     OpenDoc -> (Debug.log "todo, OpenDoc..." state) |> updateGrid
     SaveDoc -> (Debug.log "todo, SaveDoc..." state) |> updateGrid
-    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state) |> updateGrid
     )

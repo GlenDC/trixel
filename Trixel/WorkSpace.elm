@@ -6,33 +6,41 @@ import Trixel.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
 import Html.Attributes exposing (style)
+import Html.Events exposing (onMouseEnter, onMouseLeave, onMouseMove)
 import Signal exposing (Address)
 
 import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-view: State -> Html
-view state =
-  div [ createMainStyle state ] [ viewWorkSpace state ]
+view:  Address TrixelAction -> State -> Html
+view address state =
+  div [ createMainStyle state,
+        onMouseEnter address (SetCondition (CActive MsgEmpty)),
+        onMouseLeave address (SetCondition CIdle)
+    ] [ viewWorkSpace state ]
 
 createMainStyle: State -> Attribute
 createMainStyle state  =
-  style ((dimensionToHtml state.html.dimensions.workspace) ++ [
-    ("box-sizing", "inherit")
-  ])
+  let workspace = state.html.dimensions.workspace
+      {x, y} = calculateDimensionsFromBounds state.trixelInfo.bounds
+      margin = { x = (workspace.w - x) / 2 + workspace.m.x,
+                 y = (workspace.h - y) / 2 + workspace.m.y }
+  in
+    style [
+      ("box-sizing", "inherit"),
+      ("padding", (pxFromVector workspace.p)),
+      ("margin", (pxFromVector margin)),
+      ("width", (pxFromFloat x)),
+      ("width", (pxFromFloat y))
+    ]
 
 ---
 
 viewWorkSpace : State -> Html
 viewWorkSpace state =
-  let dimensions = state.html.dimensions.workspace
-      bounds = state.trixelInfo.bounds
-      (w, h) = (
-        toFloat (bounds.max.x - bounds.min.x),
-        toFloat (bounds.max.y - bounds.min.y)
-        )
+  let {x, y} = calculateDimensionsFromBounds state.trixelInfo.bounds
   in
-    collage (round dimensions.w) (round dimensions.h)
-      (renderMouse state w h state.grid)
+    collage (round x) (round y)
+      (renderMouse state x y state.grid)
       |> fromElement

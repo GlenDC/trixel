@@ -10,7 +10,7 @@ import Trixel.Menu
 
 import Html exposing (Html, Attribute, text, toElement, div, input)
 import Html.Attributes exposing (style)
-import Html.Events exposing (on, targetValue)
+import Html.Events exposing (on, targetValue, onMouseEnter)
 import Signal exposing (..)
 import Color exposing (red)
 import Window
@@ -85,17 +85,19 @@ createNewState cx cy =
     },
     dimensions = { x = 0, y = 0 },
     mouseState = MouseNone,
-    grid = []
+    grid = [],
+    condition = CIdle
   }
 
 ---
 
 view: State -> Html
 view state =
-  div [ createMainStyle state ] [
+  div [ createMainStyle state,
+        onMouseEnter actionQuery.address (SetCondition CIdle) ] [
     (Trixel.Menu.view actionQuery.address state),
-    (Trixel.Footer.view state),
-    (Trixel.WorkSpace.view state)
+    (Trixel.Footer.view actionQuery.address state),
+    (Trixel.WorkSpace.view actionQuery.address state)
   ]
 
 ---

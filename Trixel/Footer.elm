@@ -6,20 +6,20 @@ import Trixel.Types exposing (..)
 
 import Html exposing (Html, Attribute, div, a, text)
 import Html.Attributes exposing (style, href)
+import Html.Events exposing (onMouseEnter)
 import Signal exposing (Address)
 
 ---
 
-view : State -> Html
-view state =
-  div [ createMainStyle state ] [
+view : Address TrixelAction -> State -> Html
+view address state =
+  div [ createMainStyle state,
+        onMouseEnter address (SetCondition CIdle) ] [
     div [ style [("text-align", "right"), ("float", "right")] ] [
-      text ("Trixel v" ++ version)],
+      text ("Trixel v" ++ version) ],
     div [style [("text-align", "left"), ("float", "left")]] [
-      a [ href githubPage ] [text "Contribute and Star At Github"]],
-    div [style [("text-align", "center"), ("float", "center")]] [
-      a [ href ("mailto:" ++ email) ] [text "mail glendc for feedback and/or issues"]]
-  ]
+      createConditionMessage state.condition |> text ]
+    ]
 
 ---
 
@@ -28,7 +28,7 @@ createMainStyle state  =
   style ((dimensionToHtml state.html.dimensions.footer) ++ [
     ("color", state.colorScheme.subText.html),
     ("position", "absolute"),
-    ("font-size", (toPx (footerSize * 1.25))),
-    ("bottom", (toPx footerSize)),
+    ("font-size", (pxFromFloat (footerSize * 1.25))),
+    ("bottom", "0px"),
     ("box-sizing", "border-content")
   ])

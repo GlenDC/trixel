@@ -26,6 +26,8 @@ type TrixelMode = Horizontal | Vertical
 
 ---
 
+-- All info needed to draw the trixel-workspace
+-- is stored within this rcord
 type alias TrixelInfo = {
   bounds: Bounds2D,   -- bounds of workspace
   height: Float,      -- height of a trixel
@@ -40,6 +42,7 @@ type alias TrixelInfo = {
 
 ---
 
+-- The dimensions of the different zones of the editor
 type alias HtmlDimensions = {
   menu: HtmlDimensionContext,
   footer: HtmlDimensionContext,
@@ -52,10 +55,22 @@ type alias HtmlInfo = { dimensions: HtmlDimensions }
 
 ---
 
+-- Current Mouse State defines wether or not we
+-- have to draw a mouse-action-preview within the workspace
 type MouseState = MouseNone | MouseHover IntVec2D
 
 ---
 
+-- Defining the current condition of the workspace
+-- and optionally a message giving a more detailed context.
+type Condition = CIdle | CActive Message
+type Message = MsgEmpty | MsgString String
+
+---
+
+-- The entire editor state
+-- Not sure if it's a good idea to have so much as a state, being passed around
+-- We might want to check if there are options to store some stuff somewhere else
 type alias State = {
   trixelInfo: TrixelInfo,
   trixelColor: Color,
@@ -63,45 +78,81 @@ type alias State = {
   html: HtmlInfo,
   dimensions: FloatVec2D,
   mouseState: MouseState,
-  grid: List Form
+  grid: List Form,
+  condition: Condition
 }
 
----
-
+-- Possible UserActions:
+-- All signals get translated into a TrixelAction,
+-- which then goes to the global update-case to handle it appropriatly
 type TrixelAction =
-  None | Resize FloatVec2D |
-  SetMode TrixelMode |
-  NewDoc | OpenDoc | SaveDoc | SaveDocAs |
-  Scale | SetScale Float |
-  GridX | SetGridX Int |
-  GridY | SetGridY Int |
-  MoveMouse FloatVec2D | MoveOffset FloatVec2D
+    None -- no action
+    -- Resizing the main window
+  | Resize FloatVec2D
+    -- Setting the mode to either Horizontal or Vertical Mode
+  | SetMode TrixelMode
+    -- This will either be an idle state
+    -- or an active state with optionally a context
+  | SetCondition Condition
+    -- Creating, opening, saving or saving the current trixel format
+  | NewDoc
+  | OpenDoc
+  | SaveDoc
+    -- Scaling the workspace
+  | Scale -- used internally within Trixel.Menu
+  | SetScale Float
+    -- Set the x-count for the grid of the workspace
+  | GridX
+  | SetGridX Int -- used internally within Trixel.Menu
+    -- Set the y-count for the grid of the workspace
+  | GridY
+  | SetGridY Int -- used internally within Trixel.Menu
+    -- Moving the cursor
+  | MoveMouse FloatVec2D
+    -- Moving the offset of the workspace (only possible when zoomed-in)
+  | MoveOffset FloatVec2D
 
 ---
 
 type alias HtmlDimensionContext = {
   w: Float, h: Float,
-  m: (Float, Float),
-  p: (Float, Float)
+  m: FloatVec2D,
+  p: FloatVec2D
 }
 
-dimensionContext: Float -> Float -> (Float, Float) -> (Float, Float) -> HtmlDimensionContext
-dimensionContext w h (px, py) (mx, my) =
-  { w = w - (2 * mx), h = h - (2 * my), p = (px, py), m = (mx, my) }
+dimensionContext: Float -> Float -> Float -> Float -> Float -> Float -> HtmlDimensionContext
+dimensionContext w h px py mx my =
+  { w = w, h = h, p = { x = px, y = py }, m = { x = mx, y = my } }
 
-dimensionContextDummy = dimensionContext 0 0 (0, 0) (0, 0)
+dimensionContextDummy = dimensionContext 0 0 0 0 0 0
 
-toPx: Float -> String
-toPx value =
+pxFromFloat: Float -> String
+pxFromFloat value =
   (toString value) ++ "px"
+
+pxFromVector: FloatVec2D -> String
+pxFromVector vec =
+  (pxFromFloat vec.y) ++ " " ++ (pxFromFloat vec.x)
 
 dimensionToHtml: HtmlDimensionContext -> List (String, String)
 dimensionToHtml ctx =
-  let (px, py) = ctx.p
-      (mx, my) = ctx.m
-  in [
-    ("width", (toPx ctx.w)),
-    ("height", (toPx ctx.h)),
-    ("margin", (toPx my) ++ " " ++ (toPx mx)),
-    ("padding", (toPx py) ++ " " ++ (toPx px))
+  [
+    ("width", (pxFromFloat ctx.w)),
+    ("height", (pxFromFloat ctx.h)),
+    ("margin", (pxFromVector ctx.m)),
+    ("padding", (pxFromVector ctx.p))
   ]
+
+createConditionMessage: Condition -> String
+createConditionMessage condition =
+  case condition of
+    CIdle -> "idle"
+    CActive msg ->
+      case msg of
+        MsgEmpty -> "active"
+        MsgString str -> "active: " ++ str
+
+calculateDimensionsFromBounds: Bounds2D -> FloatVec2D
+calculateDimensionsFromBounds bounds =
+  { x = bounds.max.x - bounds.min.x |> toFloat,
+    y = bounds.max.y - bounds.min.y |> toFloat }

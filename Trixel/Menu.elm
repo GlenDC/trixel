@@ -5,7 +5,7 @@ import Trixel.Types exposing (..)
 
 import Html exposing (Html, Attribute, div, input,
   button, text, label, select, option)
-import Html.Events exposing (on, onClick, targetValue)
+import Html.Events exposing (on, onClick, targetValue, onMouseEnter)
 import Html.Attributes exposing (style, value, selected)
 import Signal exposing (Address, forwardTo)
 import Json.Decode
@@ -17,7 +17,8 @@ view : Address TrixelAction -> State -> Html
 view  address state =
   let ctx = state.html.dimensions.menu
   in
-    div [ createMainStyle ctx state ] [
+    div [ createMainStyle ctx state,
+          onMouseEnter address (SetCondition CIdle) ] [
       (createButton "New" NewDoc ctx state address),
       {-(createButton "Open" OpenDoc ctx state address),
       (createButton "Save" SaveDoc ctx state address),
@@ -66,15 +67,14 @@ toInt string =
 
 createButton: String -> TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createButton string action ctx state address =
-  let (px, py) = ctx.p
-      (w, h) = ((clamp 50 80 (ctx.w * 0.075)), (ctx.h - (py * 2)))
+  let (w, h) = ((clamp 50 80 (ctx.w * 0.075)), (ctx.h - (ctx.p.y * 2)))
 
-      dimensions = dimensionContext w h (5, 5) (2, 2)
+      dimensions = dimensionContext w h 5 5 2 2
 
       buttonStyle = style ((dimensionToHtml dimensions) ++ [
         ("background-color", state.colorScheme.selbg.html),
         ("color", state.colorScheme.selfg.html),
-        ("font-size", (toPx (dimensions.h / 1.75))),
+        ("font-size", (pxFromFloat (dimensions.h / 1.75))),
         ("box-sizing", "border-box"),
         ("float", "left"),
         ("border", "1px solid " ++ state.colorScheme.fg.html)
@@ -87,15 +87,14 @@ createButton string action ctx state address =
 
 createArithmeticButton: String -> TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createArithmeticButton string action ctx state address =
-  let (px, py) = ctx.p
-      (w, h) = ((clamp 25 35 (ctx.w * 0.095)), (ctx.h - (py * 2)))
+  let (w, h) = ((clamp 25 35 (ctx.w * 0.095)), (ctx.h - (ctx.p.y * 2)))
 
-      dimensions = dimensionContext w h (5, 5) (2, 2)
+      dimensions = dimensionContext w h 5 5 2 2
 
       buttonStyle = style ((dimensionToHtml dimensions) ++ [
         ("background-color", state.colorScheme.selbg.html),
         ("color", state.colorScheme.selfg.html),
-        ("font-size", (toPx (dimensions.h / 1.75))),
+        ("font-size", (pxFromFloat (dimensions.h / 1.75))),
         ("box-sizing", "border-box"),
         ("float", "left"),
         ("border", "1px solid " ++ state.colorScheme.fg.html)
@@ -110,15 +109,14 @@ createArithmeticButton string action ctx state address =
 
 createInput: TrixelAction -> HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createInput action ctx state address =
-  let (px, py) = ctx.p
-      (w, h) = ((clamp 25 60 (ctx.w * 0.05)), (ctx.h - (py * 2)))
+  let (w, h) = ((clamp 25 60 (ctx.w * 0.05)), (ctx.h - (ctx.p.y * 2)))
 
-      dimensions = dimensionContext w h (5, 5) (2, 2)
+      dimensions = dimensionContext w h 5 5 2 2
 
       inputStyle = style ((dimensionToHtml dimensions) ++ [
         ("background-color", state.colorScheme.selbg.html),
         ("color", state.colorScheme.selfg.html),
-        ("font-size", (toPx (dimensions.h / 1.75))),
+        ("font-size", (pxFromFloat (dimensions.h / 1.75))),
         ("box-sizing", "border-box"),
         ("float", "left"),
         ("border", "1px solid " ++ state.colorScheme.fg.html)
@@ -149,15 +147,14 @@ createInput action ctx state address =
 
 createModeList: HtmlDimensionContext -> State -> Address TrixelAction -> Html
 createModeList ctx state address =
-  let (px, py) = ctx.p
-      (w, h) = ((clamp 115 130 (ctx.w * 0.08)), (ctx.h - (py * 2)))
+  let (w, h) = ((clamp 115 130 (ctx.w * 0.08)), (ctx.h - (ctx.p.y * 2)))
 
-      dimensions = dimensionContext w h (5, 5) (2, 2)
+      dimensions = dimensionContext w h 5 5 2 2
 
       selectStyle = style ((dimensionToHtml dimensions) ++ [
         ("background-color", state.colorScheme.selbg.html),
         ("color", state.colorScheme.selfg.html),
-        ("font-size", (toPx (dimensions.h / 1.85))),
+        ("font-size", (pxFromFloat (dimensions.h / 1.85))),
         ("box-sizing", "border-box"),
         ("float", "left"),
         ("border", "1px solid " ++ state.colorScheme.fg.html)
