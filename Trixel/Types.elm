@@ -27,13 +27,15 @@ type TrixelMode = Horizontal | Vertical
 ---
 
 type alias TrixelInfo = {
-  bounds: Bounds2D,     -- bounds of workspace
-  size: Float,          -- base-size of each trixel
-  mode: TrixelMode,     -- mode of trixels, defining the layout
-  count: IntVec2D,      -- amount of trixels in the grid
-  scale: Float,         -- scale of the workspace
-  offset: FloatVec2D    -- offset of the workspace
-                        -- note that this shouldn't be used when `scale <= 1`
+  bounds: Bounds2D,   -- bounds of workspace
+  height: Float,      -- height of a trixel
+  width: Float,       -- width of a trixel
+  mode: TrixelMode,   -- mode of trixels, defining the layout
+  count: IntVec2D,    -- amount of trixels in the grid
+  scale: Float,       -- scale of the workspace
+  offset: FloatVec2D, -- offset of the workspace
+                      -- note that this shouldn't be used when `scale <= 1`
+  extraOffset: FloatVec2D -- extra offset
 }
 
 ---

@@ -8,9 +8,9 @@ import Graphics.Element exposing (..)
 
 import Color exposing (lightGrey, red)
 
----
+import Debug
 
-getCountX: Float -> TrixelMode -> Float
+{-getCountX: Float -> TrixelMode -> Float
 getCountX x mode =
   if mode == Horizontal then x else
     let a = toFloat ((round x) % 2)
@@ -22,25 +22,33 @@ getCountY y mode =
     let a = toFloat ((round y) % 2)
     in ((y + (1 - a)) / 2) + (a * 0.5)
 
----
+weirdify: Float -> Float -> Float
+weirdify coordinate offset =
+  coordinate - (offset / 2)
+
+getCoordinateFromIndex: Int -> Float -> Float -> Float
+getCoordinateFromIndex c ts ws =
+  weirdify (((toFloat c) - 1) * ts) ws -}
 
 updateGrid: State -> State
 updateGrid state =
-  let trixelInfo = state.trixelInfo
+  let workspace = state.html.dimensions.workspace
+      trixelInfo = state.trixelInfo
 
-      workspace = state.html.dimensions.workspace
+      (cx, cy) = ( toFloat trixelInfo.count.x,
+                   toFloat trixelInfo.count.y )
 
-      count = trixelInfo.count
-      (cx, cy) = ((toFloat count.x), (toFloat count.y))
+      (dx, dy) = (cx + 1, sqrt3 * cy)
 
-      (sx, sy) = (workspace.w * trixelInfo.scale,
-                  workspace.h * trixelInfo.scale)
+      (sw, sh) = ( workspace.w * trixelInfo.scale,
+                   workspace.h * trixelInfo.scale )
 
-      ts = (if (sx / cx * cy) > sy
-            then (sy / cy)
-            else (sx / cx)) / 2
+      scale = min (sw / dx) (sh / dy)
 
-      (w, h) = (ts * cx, ts * cy)
+      (w, h) = (scale * dx, scale * dy)
+      (tw, th) = (w / dx, h / cy)
+
+      (tox, toy) = (w / 2, h / 2)
 
       (minX, minY) = (
         (state.dimensions.x - w) / 2,
@@ -50,7 +58,9 @@ updateGrid state =
     { state |
       trixelInfo <- {
         trixelInfo |
-          size <- ts,
+          width <- tw,
+          height <- th,
+          extraOffset <- { x = tox, y = toy},
           bounds <- {
             min = { x = (round minX), y = (round minY) },
             max = {
@@ -62,12 +72,12 @@ updateGrid state =
 ---
 
 weirdify: Float -> Float -> Float
-weirdify offset coordinate =
-  coordinate - (offset / 2)
+weirdify coordinate size =
+  coordinate - (size / 2)
 
 getCoordinateFromIndex: Int -> Float -> Float -> Float
-getCoordinateFromIndex c ts ws =
-  c |> toFloat |> (*) ts |> weirdify ws
+getCoordinateFromIndex count size offset =
+  count |> toFloat |> (*) size |> weirdify offset
 
 ---
 
@@ -77,14 +87,14 @@ renderTriangle x y x' y' x'' y'' =
 
 ---
 
-renderTrixel: TrixelOrientation -> Float -> Float -> Float -> (Shape -> Form) -> Form
-renderTrixel orientation x y size styleFunction =
-  let hh = (sqrt3 * size) / 2
+renderTrixel: TrixelOrientation -> Float -> Float -> Float -> Float -> (Shape -> Form) -> Form
+renderTrixel orientation x y tw th styleFunction =
+  let dw = tw * 2
       trixel = case orientation of
-    Up -> renderTriangle x (y + hh) (x - size) (y - hh) (x + size) (y - hh)
-    Down -> renderTriangle x (y - hh) (x - size) (y + hh) (x + size) (y + hh)
-    {-Left -> renderTriangle x y x (y + size) (x + size) (y + (size / 2))
-    Right -> renderTriangle x (y + (size / 2)) (x + size) (y + size) (x + size) y-}
+    Up -> renderTriangle x y (x + dw) y (x + tw) (y + th)
+    Down -> renderTriangle x (y + th) (x + dw) (y + th) (x + tw) y
+    Left -> renderTriangle x (y + tw) (x + th) y (x + th) (y + dw)
+    Right -> renderTriangle (x + th) (y + tw) x y x (y + dw)
   in styleFunction trixel
 
 ---
@@ -96,31 +106,28 @@ getTrixelOrientation x y mode =
   else
     if mode == Horizontal then Right else Up
 
-getSizePairFromTrixelMode: Float -> TrixelMode -> (Float, Float)
-getSizePairFromTrixelMode size mode =
-  if mode == Horizontal then (size * sqrt3, size) else (size, size * sqrt3)
-
 ---
 
-renderTrixelRow: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
-renderTrixelRow state cx cy w h size trixels =
+renderTrixelRow: State -> Int -> Int -> Float -> Float -> List Form -> List Form
+renderTrixelRow state cx cy w h trixels =
   if cx == 0 then trixels else
-    let (xs, ys) = getSizePairFromTrixelMode size state.trixelInfo.mode
-        --offset = state.trixelInfo.offset
-        x = getCoordinateFromIndex cx xs w--) + (offset.x * state.trixelInfo.scale)
-        y = getCoordinateFromIndex cy ys h--) + (offset.y * state.trixelInfo.scale)
+    let (sx, sy) = if state.trixelInfo.mode == Vertical
+          then (state.trixelInfo.width, state.trixelInfo.height)
+          else (state.trixelInfo.height, state.trixelInfo.width)
+        x = ((toFloat (cx - 1)) * sx) - state.trixelInfo.extraOffset.x
+        y = ((toFloat (cy - 1)) * sy) - state.trixelInfo.extraOffset.y
     in
-      (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y size
+      (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y state.trixelInfo.width state.trixelInfo.height
         (\s -> outlined (solid lightGrey) s)) :: trixels
-        |> renderTrixelRow state (cx - 1) cy w h size
+        |> renderTrixelRow state (cx - 1) cy w h
 
-renderGrid: State -> Int -> Int -> Float -> Float -> Float -> List Form -> List Form
-renderGrid state cx cy w h size trixels =
+renderGrid: State -> Int -> Int -> Float -> Float -> List Form -> List Form
+renderGrid state cx cy w h trixels =
   if cy == 0
     then trixels
     else
-      renderTrixelRow state cx cy w h size trixels
-        |> renderGrid state cx (cy - 1) w h size
+      renderTrixelRow state cx cy w h trixels
+        |> renderGrid state cx (cy - 1) w h
 
 ---
 
@@ -134,7 +141,7 @@ generateGrid state =
         )
   in
     { state |
-        grid <- renderGrid state count.x count.y w h state.trixelInfo.size []
+        grid <- renderGrid state count.x count.y w h []
         }
 
 ---

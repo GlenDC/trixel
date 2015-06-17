@@ -66,11 +66,13 @@ createNewState cx cy =
         min = { x = 0, y = 0 },
         max = { x = 0, y = 0 }
       },
-      size = 0,
+      height = 0,
+      width = 0,
       mode = Vertical,
       count = { x = cx, y = cy },
       scale = 1,
-      offset = { x = 0, y = 0 }
+      offset = { x = 0, y = 0 },
+      extraOffset = { x = 0, y = 0 }
     },
     trixelColor = red,
     colorScheme = zenburnScheme,

@@ -19,7 +19,8 @@ view state =
 createMainStyle: State -> Attribute
 createMainStyle state  =
   style ((dimensionToHtml state.html.dimensions.workspace) ++ [
-    ("box-sizing", "inherit")
+    ("box-sizing", "inherit"),
+    ("border", "1px solid white")
   ])
 
 ---
