@@ -40,15 +40,18 @@ updateGrid state =
 
       (dx, dy) = (cx + 1, sqrt3 * cy)
 
-      (sw, sh) = ( workspace.w * trixelInfo.scale,
-                   workspace.h * trixelInfo.scale )
+      (sw, sh) = if trixelInfo.mode == Vertical
+                    then ( workspace.w * trixelInfo.scale, workspace.h * trixelInfo.scale )
+                    else ( workspace.h * trixelInfo.scale, workspace.w * trixelInfo.scale )
 
       scale = min (sw / dx) (sh / dy)
 
       (w, h) = (scale * dx, scale * dy)
       (tw, th) = (w / dx, h / cy)
 
-      (tox, toy) = (w / 2, h / 2)
+      (tox, toy) = if trixelInfo.mode == Vertical
+                    then (w / 2, h / 2)
+                    else (h / 2, w / 2)
 
       (minX, minY) = (
         (state.dimensions.x - w) / 2,
@@ -111,11 +114,11 @@ getTrixelOrientation x y mode =
 renderTrixelRow: State -> Int -> Int -> Float -> Float -> List Form -> List Form
 renderTrixelRow state cx cy w h trixels =
   if cx == 0 then trixels else
-    let (sx, sy) = if state.trixelInfo.mode == Vertical
-          then (state.trixelInfo.width, state.trixelInfo.height)
-          else (state.trixelInfo.height, state.trixelInfo.width)
-        x = ((toFloat (cx - 1)) * sx) - state.trixelInfo.extraOffset.x
-        y = ((toFloat (cy - 1)) * sy) - state.trixelInfo.extraOffset.y
+    let (sx, sy, cx', cy') = if state.trixelInfo.mode == Vertical
+          then (state.trixelInfo.width, state.trixelInfo.height, cx, cy)
+          else (state.trixelInfo.height, state.trixelInfo.width, cy, cx)
+        x = ((toFloat (cx' - 1)) * sx) - state.trixelInfo.extraOffset.x
+        y = ((toFloat (cy' - 1)) * sy) - state.trixelInfo.extraOffset.y
     in
       (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y state.trixelInfo.width state.trixelInfo.height
         (\s -> outlined (solid lightGrey) s)) :: trixels
