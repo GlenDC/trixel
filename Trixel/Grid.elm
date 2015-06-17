@@ -8,6 +8,8 @@ import Graphics.Element exposing (..)
 
 import Color exposing (red)
 
+import Debug
+
 updateGrid: State -> State
 updateGrid state =
   let workspace = state.html.dimensions.workspace
@@ -133,23 +135,18 @@ generateGrid state =
 
 ---
 
-{-renderTrixelOnPosition: State -> FloatVec2D -> Float -> Float -> Form
-renderTrixelOnPosition state pos w h =
-  let (xs, ys) = getSizePairFromTrixelMode state.trixelInfo.size state.trixelInfo.mode
-      hsz = state.trixelInfo.size / 2
-      cx = round ((pos.x + (xs - hsz)) / xs) |> clamp 1 state.trixelInfo.count.x
-      cy = round ((h - pos.y + (ys - hsz)) / ys) |> clamp 1 state.trixelInfo.count.y
-      
-      x = (getCoordinateFromIndex cx xs w) + (state.trixelInfo.offset.x * state.trixelInfo.scale)
-      y = (getCoordinateFromIndex cy ys h) + (state.trixelInfo.offset.y * state.trixelInfo.scale)
-  in
-    renderTrixel
-      (getTrixelOrientation cx cy state.trixelInfo.mode)
-      x y state.trixelInfo.size (\s -> filled red s)-}
-
 renderMouse: State -> Float -> Float -> List Form -> List Form
 renderMouse state w h trixels =
-  trixels
-  {-case state.mouseState of
+  case state.mouseState of
     MouseNone -> trixels
-    MouseHover pos -> (renderTrixelOnPosition state pos w h) :: trixels-}
+    MouseHover pos -> 
+      let (sx, sy) = if state.trixelInfo.mode == Vertical
+            then (state.trixelInfo.width, state.trixelInfo.height)
+            else (state.trixelInfo.height, state.trixelInfo.width)
+          x = ((toFloat (pos.x - 1)) * sx) - state.trixelInfo.extraOffset.x
+          y = ((toFloat (pos.y - 1)) * sy) - state.trixelInfo.extraOffset.y
+      in 
+        (renderTrixel
+          (getTrixelOrientation pos.x pos.y state.trixelInfo.mode)
+          x y state.trixelInfo.width state.trixelInfo.height
+          (\s -> filled red s)) :: trixels

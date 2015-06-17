@@ -29,11 +29,16 @@ updateMousePosition point state =
   let bounds = state.trixelInfo.bounds
       (minX, minY) = (toFloat bounds.min.x, toFloat bounds.min.y)
       (maxX, maxY) = (toFloat bounds.max.x, toFloat bounds.max.y)
-      (x, y) = (point.x - minX, point.y - minY)
+      (sx, sy, cx, cy) = if state.trixelInfo.mode == Vertical
+        then (state.trixelInfo.width, state.trixelInfo.height, state.trixelInfo.count.x, state.trixelInfo.count.y)
+        else (state.trixelInfo.width, state.trixelInfo.height, state.trixelInfo.count.x, state.trixelInfo.count.y)
+      (x, y) = (point.x - minX, maxY - minY - point.y + sy)
+      (px, py) = (round (x / sx), round (y / sy))
   in
     { state |
-      mouseState <- if x >= 0 && y >= 0 && x <= maxX - minX && y <= maxY - minY
-      then MouseHover { x = x, y = y }
+      mouseState <- if x >= 0 && y >= 0 && x <= maxX - minX
+        && y <= maxY - minY && px > 0 && py > 0 && px <= cx && py <= cy
+      then MouseHover { x = px, y = py}
       else MouseNone
       }
 
@@ -94,7 +99,8 @@ update action state =
     Resize dimensions -> updateDimensions dimensions state |> updateGrid
     MoveOffset point -> updateOffset point state |> updateGrid
     MoveMouse point -> updateMousePosition point state
-    NewDoc -> resetState state  |> updateGrid
+    NewDoc -> resetState state  |> updateGrid  |> updateGrid
     OpenDoc -> (Debug.log "todo, OpenDoc..." state) |> updateGrid
     SaveDoc -> (Debug.log "todo, SaveDoc..." state) |> updateGrid
-    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state)) |> updateGrid
+    SaveDocAs -> (Debug.log "todo, SaveDocAs..." state) |> updateGrid
+    )

@@ -52,7 +52,7 @@ type alias HtmlInfo = { dimensions: HtmlDimensions }
 
 ---
 
-type MouseState = MouseNone | MouseHover FloatVec2D
+type MouseState = MouseNone | MouseHover IntVec2D
 
 ---
 
