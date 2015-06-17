@@ -48,7 +48,7 @@ updateScale scale state =
   in
     { state | trixelInfo <-
       { trixelInfo |
-        scale <- scale,
+        scale <- max 0.05 scale,
         offset <- if scale <= 1 then { x = 0, y = 0 }
                   else trixelInfo.offset } }
 
@@ -73,7 +73,7 @@ updateGridX x state =
   in
     { state | trixelInfo <-
       { trixelInfo |
-        count <- { x = x, y = trixelInfo.count.y } } }
+        count <- { x = max 1 x |> min maxTrixelRowCount, y = trixelInfo.count.y } } }
 
 updateGridY: Int -> State -> State
 updateGridY y state =
@@ -81,7 +81,7 @@ updateGridY y state =
   in
     { state | trixelInfo <-
       { trixelInfo |
-        count <- { x = trixelInfo.count.x, y = y } } }
+        count <- { x = trixelInfo.count.x, y = max 1 y |> min maxTrixelRowCount } } }
 
 updateMode: TrixelMode -> State -> State
 updateMode mode state =

@@ -20,3 +20,7 @@ moveSpeed = 80
 ---
 
 sqrt3 = sqrt 3
+
+---
+
+maxTrixelRowCount = 150
