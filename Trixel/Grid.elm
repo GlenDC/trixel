@@ -6,21 +6,25 @@ import Trixel.Constants exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-import Color exposing (lightGrey, red)
+import Color exposing (red)
 
 updateGrid: State -> State
 updateGrid state =
   let workspace = state.html.dimensions.workspace
       trixelInfo = state.trixelInfo
 
-      (cx, cy) = ( toFloat trixelInfo.count.x,
-                   toFloat trixelInfo.count.y )
+
+      (sw, sh, cx, cy) = if trixelInfo.mode == Vertical
+                    then ( workspace.w * trixelInfo.scale,
+                           workspace.h * trixelInfo.scale,
+                           toFloat trixelInfo.count.x,
+                           toFloat trixelInfo.count.y )
+                    else ( workspace.h * trixelInfo.scale,
+                           workspace.w * trixelInfo.scale,
+                           toFloat trixelInfo.count.y,
+                           toFloat trixelInfo.count.x )
 
       (dx, dy) = (cx + 1, sqrt3 * cy)
-
-      (sw, sh) = if trixelInfo.mode == Vertical
-                    then ( workspace.w * trixelInfo.scale, workspace.h * trixelInfo.scale )
-                    else ( workspace.h * trixelInfo.scale, workspace.w * trixelInfo.scale )
 
       scale = min (sw / dx) (sh / dy)
 
@@ -99,7 +103,7 @@ renderTrixelRow state cx cy w h trixels =
         y = ((toFloat (cy' - 1)) * sy) - state.trixelInfo.extraOffset.y
     in
       (renderTrixel (getTrixelOrientation cx cy state.trixelInfo.mode) x y state.trixelInfo.width state.trixelInfo.height
-        (\s -> outlined (solid lightGrey) s)) :: trixels
+        (\s -> outlined (solid state.colorScheme.bg.elm) s)) :: trixels
         |> renderTrixelRow state (cx - 1) cy w h
 
 renderGrid: State -> Int -> Int -> Float -> Float -> List Form -> List Form
@@ -120,9 +124,11 @@ generateGrid state =
         toFloat (bounds.max.x - bounds.min.x),
         toFloat (bounds.max.y - bounds.min.y)
         )
+      (cx, cy) = if state.trixelInfo.mode == Vertical
+        then (count.x, count.y) else (count.y, count.x)
   in
     { state |
-        grid <- renderGrid state count.x count.y w h []
+        grid <- renderGrid state cx cy w h []
         }
 
 ---
