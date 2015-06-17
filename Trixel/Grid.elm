@@ -8,28 +8,6 @@ import Graphics.Element exposing (..)
 
 import Color exposing (lightGrey, red)
 
-import Debug
-
-{-getCountX: Float -> TrixelMode -> Float
-getCountX x mode =
-  if mode == Horizontal then x else
-    let a = toFloat ((round x) % 2)
-    in ((x + (1 - a)) / 2) + (a * 0.5)
-
-getCountY: Float -> TrixelMode -> Float
-getCountY y mode =
-  if mode == Vertical then y else
-    let a = toFloat ((round y) % 2)
-    in ((y + (1 - a)) / 2) + (a * 0.5)
-
-weirdify: Float -> Float -> Float
-weirdify coordinate offset =
-  coordinate - (offset / 2)
-
-getCoordinateFromIndex: Int -> Float -> Float -> Float
-getCoordinateFromIndex c ts ws =
-  weirdify (((toFloat c) - 1) * ts) ws -}
-
 updateGrid: State -> State
 updateGrid state =
   let workspace = state.html.dimensions.workspace
@@ -63,7 +41,7 @@ updateGrid state =
         trixelInfo |
           width <- tw,
           height <- th,
-          extraOffset <- { x = tox, y = toy},
+          extraOffset <- { x = tox - trixelInfo.offset.x, y = toy - trixelInfo.offset.y },
           bounds <- {
             min = { x = (round minX), y = (round minY) },
             max = {

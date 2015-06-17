@@ -37,9 +37,9 @@ view  address state =
 
       (createInput Scale ctx state address),
       (createArithmeticButton "-"
-        (SetScale (max 0.05 (state.trixelInfo.scale - 0.05))) ctx state address),
+        (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) ctx state address),
       (createArithmeticButton "+"
-        (SetScale (state.trixelInfo.scale + 0.05)) ctx state address),
+        (SetScale (state.trixelInfo.scale + 0.20)) ctx state address),
 
       (createModeList ctx state address)
     ]
