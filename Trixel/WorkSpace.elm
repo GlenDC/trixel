@@ -32,7 +32,7 @@ createMainStyle state  =
       ("padding", (pxFromVector workspace.p)),
       ("margin", (pxFromVector margin)),
       ("width", (pxFromFloat x)),
-      ("width", (pxFromFloat y))
+      ("height", (pxFromFloat y))
     ]
 
 ---

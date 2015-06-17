@@ -63,8 +63,8 @@ updateGrid state =
           bounds <- {
             min = { x = 0, y = 0 },
             max = {
-              x = round (maxX),
-              y = round (maxY)
+              x = round (min (workspace.w) maxX),
+              y = round (min (workspace.h) maxY)
               } } } }
       |> generateGrid
 
