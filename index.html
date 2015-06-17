@@ -14099,8 +14099,12 @@ Elm.Trixel.Grid.make = function (_elm) {
                                                      ,["bounds"
                                                       ,{_: {}
                                                        ,max: {_: {}
-                                                             ,x: $Basics.round(maxX)
-                                                             ,y: $Basics.round(maxY)}
+                                                             ,x: $Basics.round(A2($Basics.min,
+                                                             workspace.w,
+                                                             maxX))
+                                                             ,y: $Basics.round(A2($Basics.min,
+                                                             workspace.h,
+                                                             maxY))}
                                                        ,min: {_: {}
                                                              ,x: 0
                                                              ,y: 0}}]],
@@ -15245,7 +15249,7 @@ Elm.Trixel.WorkSpace.make = function (_elm) {
                                                      ,_0: "width"
                                                      ,_1: $Trixel$Types.pxFromFloat(x)}
                                                     ,{ctor: "_Tuple2"
-                                                     ,_0: "width"
+                                                     ,_0: "height"
                                                      ,_1: $Trixel$Types.pxFromFloat(y)}]));
       }();
    };
