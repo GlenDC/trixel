@@ -1,12 +1,13 @@
-module Trixel.Types where
+module Trixel.Types.General where
 
-import Trixel.ColorScheme exposing (ColorScheme)
-import Trixel.Math exposing (..)
-import Trixel.Html exposing (..)
+import Trixel.Types.ColorScheme exposing (ColorScheme)
+import Trixel.Types.Math exposing (..)
+import Trixel.Types.Html exposing (..)
 
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Color exposing (Color)
+import Signal exposing (Signal, Address)
 
 
 computeConditionString : Condition -> String
@@ -21,7 +22,7 @@ computeConditionString condition =
           -> "active"
 
         StringMessage string
-          -> "active: " ++ str
+          -> "active: " ++ string
 
 
 -- Orientation of a trixel: 2 directions x 2 modes == 4 orientations
@@ -43,14 +44,14 @@ type TrixelMode
 -- All info needed to draw the trixel-workspace
 -- is stored within this rcord
 type alias TrixelInfo =
-  { bounds : Bounds2D -- bounds of workspace
+  { bounds : Bounds -- bounds of workspace
   , height : Float -- height of a trixel
   , width : Float -- width of a trixel
   , mode : TrixelMode -- mode of trixels, defining the layout
-  , count : IntVec2D -- amount of trixels in the grid
+  , count : Vector -- amount of trixels in the grid
   , scale : Float -- scale of the workspace
-  , offset : FloatVec2D -- offset of the workspace, not used when .scale <= 1
-  , extraOffset : FloatVec2D -- extra offset
+  , offset : Vector -- offset of the workspace, not used when .scale <= 1
+  , extraOffset : Vector -- extra offset
   }
 
 
@@ -66,7 +67,7 @@ type alias EditorBoxModels =
 -- have to draw a mouse-action-preview within the workspace
 type MouseState
   = MouseNone
-  | MouseHover IntVec2D
+  | MouseHover Vector
 
 
 -- Defining the current condition of the workspace
@@ -90,7 +91,7 @@ type alias State =
   , trixelColor : Color
   , colorScheme : ColorScheme
   , boxModels : EditorBoxModels
-  , windowDimensions : FloatVec2D
+  , windowDimensions : Vector
   , mouseState : MouseState
   , grid : List Form
   , condition : Condition
@@ -102,17 +103,23 @@ type alias State =
 -- which then goes to the global update-case to handle it appropriatly
 type TrixelAction
   = None -- no action
-  | Resize FloatVec2D -- Resizing the main window
+  | ResizeWindow Vector -- Resizing the main window
   | SetMode TrixelMode -- Setting the mode to either Horizontal or Vertical Mode
   | SetCondition Condition -- This will either be an idle state or an active state with optionally a context
-  | NewDoc -- Start of the process to create a new document
-  | OpenDoc -- Start of the process to open an existing document
-  | SaveDoc -- Start of the process to save the current document
-  | Scale -- Used to create the scaling input menu
+  | NewDocument -- Start of the process to create a new document
+  | OpenDocument -- Start of the process to open an existing document
+  | SaveDocument -- Start of the process to save the current document
   | SetScale Float -- setting the scale of the workspace
-  | GridX -- Used to create the input that sets the Grid on the x-axis
-  | SetGridX Int -- Set the x-count for the grid of the workspace
+  | SetGridX Float -- Set the x-count for the grid of the workspace
+  | SetGridY Float -- Set the y-count for the grid of the workspace
+  | MoveMouse Vector -- Moving the cursor
+  | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
+
+-- Used to create the correct gui-input for a specific TrixelAction
+type TrixelActionInput
+  = GridX -- Used to create the input that sets the Grid on the x-axis
   | GridY -- Used to create the input that sets the Grid on the y-axis
-  | SetGridY Int -- Set the y-count for the grid of the workspace
-  | MoveMouse FloatVec2D -- Moving the cursor
-  | MoveOffset FloatVec2D -- Moving the offset of the workspace (only possible when zoomed-in)
+  | Scale -- Used to create the scaling input menu
+
+type alias ActionAddress = Address TrixelAction
+type alias ActionSignal = Signal TrixelAction

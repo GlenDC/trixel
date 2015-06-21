@@ -1,26 +1,36 @@
 module Trixel.Constants where
 
-version = "0.0.4"
-githubPage = "https://github.com/GlenDC/trixel"
-email = "contact@glendc.com"
 
----
+version : String
+version =
+  "0.0.4"
 
-footerSize = 10
 
----
+githubPage : String
+githubPage =
+  "https://github.com/GlenDC/trixel"
 
-keyLeft = 37
-keyRight = 39
-keyUp = 38
-keyDown = 40
 
-moveSpeed = 80
+email : String
+email =
+  "contact@glendc.com"
 
----
 
-sqrt3 = sqrt 3
+footerSize : Float
+footerSize =
+  10
 
----
 
-maxTrixelRowCount = 150
+workspaceOffsetMoveSpeed : Float
+workspaceOffsetMoveSpeed =
+  80
+
+
+sqrt3 : Float
+sqrt3 =
+  sqrt 3
+
+
+maxTrixelRowCount : Float
+maxTrixelRowCount =
+  150
