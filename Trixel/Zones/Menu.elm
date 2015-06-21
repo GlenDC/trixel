@@ -8,7 +8,7 @@ import Trixel.Types.General exposing (..)
 import Html exposing (Html, Attribute, div, input,
   button, text, label, select, option)
 import Html.Events exposing (on, onClick, targetValue, onMouseEnter)
-import Html.Attributes exposing (style, value, selected)
+import Html.Attributes exposing (style, value, selected, class)
 
 import Signal exposing (forwardTo)
 import Json.Decode
@@ -22,6 +22,7 @@ view  address state =
   in
     div
       [ constructMainStyle boxModel state
+      , class "noselect"
       , onMouseEnter address (SetCondition IdleCondition)
       ]
       [ (constructButton "New" NewDocument boxModel state address)

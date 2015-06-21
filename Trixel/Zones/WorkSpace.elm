@@ -7,7 +7,7 @@ import Trixel.Types.Html exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (style, class)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
 
 import Color exposing (..)
@@ -19,6 +19,7 @@ view :  ActionAddress -> State -> Html
 view address state =
   div
     [ constructMainStyle state
+    , class "noselect"
     , onMouseEnter address (SetCondition (ActiveCondition EmptyMessage))
     , onMouseLeave address (SetCondition IdleCondition)
     ]

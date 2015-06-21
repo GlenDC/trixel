@@ -6,13 +6,14 @@ import Trixel.Types.Html exposing (..)
 import Trixel.Constants exposing (..)
 
 import Html exposing (Html, Attribute, div, text)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (style, class)
 import Html.Events exposing (onMouseEnter)
 
 view : ActionAddress -> State -> Html
 view address state =
   div
     [ constructMainStyle state
+    , class "noselect"
     , onMouseEnter address (SetCondition IdleCondition)
     ]
     [ div
