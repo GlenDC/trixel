@@ -13626,85 +13626,265 @@ Elm.Transform2D.make = function (_elm) {
    return _elm.Transform2D.values;
 };
 Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.ColorScheme = Elm.Trixel.ColorScheme || {};
-Elm.Trixel.ColorScheme.make = function (_elm) {
+Elm.Trixel.Constants = Elm.Trixel.Constants || {};
+Elm.Trixel.Constants.make = function (_elm) {
    "use strict";
    _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.ColorScheme = _elm.Trixel.ColorScheme || {};
-   if (_elm.Trixel.ColorScheme.values)
-   return _elm.Trixel.ColorScheme.values;
+   _elm.Trixel.Constants = _elm.Trixel.Constants || {};
+   if (_elm.Trixel.Constants.values)
+   return _elm.Trixel.Constants.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Trixel.ColorScheme",
+   $moduleName = "Trixel.Constants",
+   $Basics = Elm.Basics.make(_elm);
+   var maxTrixelRowCount = 150;
+   var sqrt3 = $Basics.sqrt(3);
+   var workspaceOffsetMoveSpeed = 80;
+   var footerSize = 10;
+   var email = "contact@glendc.com";
+   var githubPage = "https://github.com/GlenDC/trixel";
+   var version = "0.0.4";
+   _elm.Trixel.Constants.values = {_op: _op
+                                  ,version: version
+                                  ,githubPage: githubPage
+                                  ,email: email
+                                  ,footerSize: footerSize
+                                  ,workspaceOffsetMoveSpeed: workspaceOffsetMoveSpeed
+                                  ,sqrt3: sqrt3
+                                  ,maxTrixelRowCount: maxTrixelRowCount};
+   return _elm.Trixel.Constants.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Main = Elm.Trixel.Main || {};
+Elm.Trixel.Main.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Main = _elm.Trixel.Main || {};
+   if (_elm.Trixel.Main.values)
+   return _elm.Trixel.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $Mouse = Elm.Mouse.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
+   $Trixel$Update = Elm.Trixel.Update.make(_elm),
+   $Trixel$Zones$Footer = Elm.Trixel.Zones.Footer.make(_elm),
+   $Trixel$Zones$Menu = Elm.Trixel.Zones.Menu.make(_elm),
+   $Trixel$Zones$WorkSpace = Elm.Trixel.Zones.WorkSpace.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var constructMainStyle = function (state) {
+      return $Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                  ,_0: "width"
+                                                  ,_1: "100%"}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "height"
+                                                  ,_1: "100%"}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "padding"
+                                                  ,_1: "0 0"}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "margin"
+                                                  ,_1: "0 0"}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "background-color"
+                                                  ,_1: state.colorScheme.subbg.html}
+                                                 ,{ctor: "_Tuple2"
+                                                  ,_0: "position"
+                                                  ,_1: "absolute"}
+                                                 ,$Trixel$Types$Html.computeBoxSizingCSS($Trixel$Types$Html.BorderBox)]));
+   };
+   var constructNewState = F2(function (countX,
+   countY) {
+      return {_: {}
+             ,boxModels: {_: {}
+                         ,footer: $Trixel$Types$Html.zeroBoxModel
+                         ,menu: $Trixel$Types$Html.zeroBoxModel
+                         ,workspace: $Trixel$Types$Html.zeroBoxModel}
+             ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
+             ,condition: $Trixel$Types$General.IdleCondition
+             ,grid: _L.fromArray([])
+             ,mouseState: $Trixel$Types$General.MouseNone
+             ,trixelColor: $Color.red
+             ,trixelInfo: {_: {}
+                          ,bounds: $Trixel$Types$Math.zeroBounds
+                          ,count: {_: {}
+                                  ,x: countX
+                                  ,y: countY}
+                          ,extraOffset: $Trixel$Types$Math.zeroVector
+                          ,height: 0
+                          ,mode: $Trixel$Types$General.Vertical
+                          ,offset: $Trixel$Types$Math.zeroVector
+                          ,scale: 1
+                          ,width: 0}
+             ,windowDimensions: $Trixel$Types$Math.zeroVector};
+   });
+   var windowDimemensionsSignal = A2($Signal.map,
+   function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return $Trixel$Types$General.ResizeWindow({_: {}
+                                                      ,x: $Basics.toFloat(_v0._0)
+                                                      ,y: $Basics.toFloat(_v0._1)});}
+         _U.badCase($moduleName,
+         "on line 48, column 7 to 50");
+      }();
+   },
+   $Window.dimensions);
+   var moveMouseSignal = A2($Signal.map,
+   function (_v4) {
+      return function () {
+         switch (_v4.ctor)
+         {case "_Tuple2":
+            return $Trixel$Types$General.MoveMouse({_: {}
+                                                   ,x: $Basics.toFloat(_v4._0)
+                                                   ,y: $Basics.toFloat(_v4._1)});}
+         _U.badCase($moduleName,
+         "on line 40, column 7 to 47");
+      }();
+   },
+   $Mouse.position);
+   var moveOffsetSignal = A2($Signal.map,
+   function (_v8) {
+      return function () {
+         return $Trixel$Types$General.MoveOffset({_: {}
+                                                 ,x: $Basics.toFloat(_v8.x)
+                                                 ,y: $Basics.toFloat(_v8.y)});
+      }();
+   },
+   $Keyboard.arrows);
+   var actionQuery = $Signal.mailbox($Trixel$Types$General.None);
+   var view = function (state) {
+      return A2($Html.div,
+      _L.fromArray([constructMainStyle(state)
+                   ,A2($Html$Events.onMouseEnter,
+                   actionQuery.address,
+                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+      _L.fromArray([A2($Trixel$Zones$Menu.view,
+                   actionQuery.address,
+                   state)
+                   ,A2($Trixel$Zones$Footer.view,
+                   actionQuery.address,
+                   state)
+                   ,A2($Trixel$Zones$WorkSpace.view,
+                   actionQuery.address,
+                   state)]));
+   };
+   var main = $Signal.map(view)(A2($Signal.foldp,
+   $Trixel$Update.update,
+   A2(constructNewState,
+   10,
+   10))($Signal.mergeMany(_L.fromArray([actionQuery.signal
+                                       ,windowDimemensionsSignal
+                                       ,moveOffsetSignal
+                                       ,moveMouseSignal]))));
+   _elm.Trixel.Main.values = {_op: _op
+                             ,actionQuery: actionQuery
+                             ,moveOffsetSignal: moveOffsetSignal
+                             ,moveMouseSignal: moveMouseSignal
+                             ,windowDimemensionsSignal: windowDimemensionsSignal
+                             ,main: main
+                             ,constructNewState: constructNewState
+                             ,view: view
+                             ,constructMainStyle: constructMainStyle};
+   return _elm.Trixel.Main.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.ColorScheme = Elm.Trixel.Types.ColorScheme || {};
+Elm.Trixel.Types.ColorScheme.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.ColorScheme = _elm.Trixel.Types.ColorScheme || {};
+   if (_elm.Trixel.Types.ColorScheme.values)
+   return _elm.Trixel.Types.ColorScheme.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.ColorScheme",
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm);
-   var createColorInfo = F4(function (r,
-   g,
-   b,
-   a) {
+   var constructColorInfo = F4(function (red,
+   green,
+   blue,
+   alpha) {
       return {_: {}
              ,elm: A4($Color.rgba,
-             r,
-             g,
-             b,
-             $Basics.toFloat(a) / 255)
+             red,
+             green,
+             blue,
+             $Basics.toFloat(alpha) / 255)
              ,html: A2($Basics._op["++"],
              "rgba(",
              A2($Basics._op["++"],
-             $Basics.toString(r),
+             $Basics.toString(red),
              A2($Basics._op["++"],
              ",",
              A2($Basics._op["++"],
-             $Basics.toString(g),
+             $Basics.toString(green),
              A2($Basics._op["++"],
              ",",
              A2($Basics._op["++"],
-             $Basics.toString(b),
+             $Basics.toString(blue),
              A2($Basics._op["++"],
              ",",
              A2($Basics._op["++"],
-             $Basics.toString(a),
+             $Basics.toString(alpha),
              ")"))))))))};
    });
    var zenburnScheme = {_: {}
-                       ,bg: A4(createColorInfo,
+                       ,bg: A4(constructColorInfo,
                        64,
                        64,
                        64,
                        255)
-                       ,fg: A4(createColorInfo,
+                       ,fg: A4(constructColorInfo,
                        246,
                        243,
                        232,
                        255)
-                       ,selbg: A4(createColorInfo,
+                       ,selbg: A4(constructColorInfo,
                        137,
                        137,
                        65,
                        255)
-                       ,selfg: A4(createColorInfo,
+                       ,selfg: A4(constructColorInfo,
                        0,
                        0,
                        0,
                        255)
-                       ,subText: A4(createColorInfo,
+                       ,subText: A4(constructColorInfo,
                        172,
                        193,
                        172,
                        255)
-                       ,subbg: A4(createColorInfo,
+                       ,subbg: A4(constructColorInfo,
                        40,
                        40,
                        40,
                        255)
-                       ,subfg: A4(createColorInfo,
+                       ,subfg: A4(constructColorInfo,
                        225,
                        230,
                        210,
                        255)
-                       ,text: A4(createColorInfo,
+                       ,text: A4(constructColorInfo,
                        204,
                        147,
                        147,
@@ -13733,1112 +13913,38 @@ Elm.Trixel.ColorScheme.make = function (_elm) {
              ,elm: a
              ,html: b};
    });
-   _elm.Trixel.ColorScheme.values = {_op: _op
-                                    ,ColorInfo: ColorInfo
-                                    ,ColorScheme: ColorScheme
-                                    ,createColorInfo: createColorInfo
-                                    ,zenburnScheme: zenburnScheme};
-   return _elm.Trixel.ColorScheme.values;
-};
-Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.Constants = Elm.Trixel.Constants || {};
-Elm.Trixel.Constants.make = function (_elm) {
-   "use strict";
-   _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.Constants = _elm.Trixel.Constants || {};
-   if (_elm.Trixel.Constants.values)
-   return _elm.Trixel.Constants.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Constants",
-   $Basics = Elm.Basics.make(_elm);
-   var maxTrixelRowCount = 150;
-   var sqrt3 = $Basics.sqrt(3);
-   var moveSpeed = 80;
-   var keyDown = 40;
-   var keyUp = 38;
-   var keyRight = 39;
-   var keyLeft = 37;
-   var footerSize = 10;
-   var email = "contact@glendc.com";
-   var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.4";
-   _elm.Trixel.Constants.values = {_op: _op
-                                  ,version: version
-                                  ,githubPage: githubPage
-                                  ,email: email
-                                  ,footerSize: footerSize
-                                  ,keyLeft: keyLeft
-                                  ,keyRight: keyRight
-                                  ,keyUp: keyUp
-                                  ,keyDown: keyDown
-                                  ,moveSpeed: moveSpeed
-                                  ,sqrt3: sqrt3
-                                  ,maxTrixelRowCount: maxTrixelRowCount};
-   return _elm.Trixel.Constants.values;
-};
-Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.Footer = Elm.Trixel.Footer || {};
-Elm.Trixel.Footer.make = function (_elm) {
-   "use strict";
-   _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.Footer = _elm.Trixel.Footer || {};
-   if (_elm.Trixel.Footer.values)
-   return _elm.Trixel.Footer.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Footer",
-   $Basics = Elm.Basics.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm);
-   var createMainStyle = function (state) {
-      return $Html$Attributes.style(A2($Basics._op["++"],
-      $Trixel$Types.dimensionToHtml(state.html.dimensions.footer),
-      _L.fromArray([{ctor: "_Tuple2"
-                    ,_0: "color"
-                    ,_1: state.colorScheme.subText.html}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "position"
-                    ,_1: "absolute"}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "font-size"
-                    ,_1: $Trixel$Types.pxFromFloat($Trixel$Constants.footerSize * 1.25)}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "bottom"
-                    ,_1: "0px"}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "box-sizing"
-                    ,_1: "border-content"}])));
-   };
-   var view = F2(function (address,
-   state) {
-      return A2($Html.div,
-      _L.fromArray([createMainStyle(state)
-                   ,A2($Html$Events.onMouseEnter,
-                   address,
-                   $Trixel$Types.SetCondition($Trixel$Types.CIdle))]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "text-align"
-                                                                      ,_1: "right"}
-                                                                     ,{ctor: "_Tuple2"
-                                                                      ,_0: "float"
-                                                                      ,_1: "right"}]))]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   "Trixel v",
-                   $Trixel$Constants.version))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                      ,_0: "text-align"
-                                                                      ,_1: "left"}
-                                                                     ,{ctor: "_Tuple2"
-                                                                      ,_0: "float"
-                                                                      ,_1: "left"}]))]),
-                   _L.fromArray([$Html.text($Trixel$Types.createConditionMessage(state.condition))]))]));
-   });
-   _elm.Trixel.Footer.values = {_op: _op
-                               ,view: view};
-   return _elm.Trixel.Footer.values;
-};
-Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.Grid = Elm.Trixel.Grid || {};
-Elm.Trixel.Grid.make = function (_elm) {
-   "use strict";
-   _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.Grid = _elm.Trixel.Grid || {};
-   if (_elm.Trixel.Grid.values)
-   return _elm.Trixel.Grid.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Grid",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm);
-   var getTrixelOrientation = F3(function (x,
-   y,
-   mode) {
-      return _U.eq(A2($Basics._op["%"],
-      x + y,
-      2),
-      0) ? _U.eq(mode,
-      $Trixel$Types.Horizontal) ? $Trixel$Types.Left : $Trixel$Types.Down : _U.eq(mode,
-      $Trixel$Types.Horizontal) ? $Trixel$Types.Right : $Trixel$Types.Up;
-   });
-   var renderTriangle = F6(function (x,
-   y,
-   x$,
-   y$,
-   x$$,
-   y$$) {
-      return $Graphics$Collage.polygon(_L.fromArray([{ctor: "_Tuple2"
-                                                     ,_0: x
-                                                     ,_1: y}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: x$
-                                                     ,_1: y$}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: x$$
-                                                     ,_1: y$$}]));
-   });
-   var renderTrixel = F6(function (orientation,
-   x,
-   y,
-   tw,
-   th,
-   styleFunction) {
-      return function () {
-         var dw = tw * 2;
-         var trixel = function () {
-            switch (orientation.ctor)
-            {case "Down":
-               return A6(renderTriangle,
-                 x,
-                 y + th,
-                 x + dw,
-                 y + th,
-                 x + tw,
-                 y);
-               case "Left":
-               return A6(renderTriangle,
-                 x,
-                 y + tw,
-                 x + th,
-                 y,
-                 x + th,
-                 y + dw);
-               case "Right":
-               return A6(renderTriangle,
-                 x + th,
-                 y + tw,
-                 x,
-                 y,
-                 x,
-                 y + dw);
-               case "Up":
-               return A6(renderTriangle,
-                 x,
-                 y,
-                 x + dw,
-                 y,
-                 x + tw,
-                 y + th);}
-            _U.badCase($moduleName,
-            "between lines 92 and 97");
-         }();
-         return styleFunction(trixel);
-      }();
-   });
-   var renderTrixelRow = F6(function (state,
-   cx,
-   cy,
-   w,
-   h,
-   trixels) {
-      return _U.eq(cx,
-      0) ? trixels : function () {
-         var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types.Vertical) ? {ctor: "_Tuple4"
-                                   ,_0: state.trixelInfo.width
-                                   ,_1: state.trixelInfo.height
-                                   ,_2: cx
-                                   ,_3: cy} : {ctor: "_Tuple4"
-                                              ,_0: state.trixelInfo.height
-                                              ,_1: state.trixelInfo.width
-                                              ,_2: cy
-                                              ,_3: cx},
-         sx = $._0,
-         sy = $._1,
-         cx$ = $._2,
-         cy$ = $._3;
-         var x = $Basics.toFloat(cx$ - 1) * sx - state.trixelInfo.extraOffset.x;
-         var y = $Basics.toFloat(cy$ - 1) * sy - state.trixelInfo.extraOffset.y;
-         return A5(renderTrixelRow,
-         state,
-         cx - 1,
-         cy,
-         w,
-         h)(A2($List._op["::"],
-         A6(renderTrixel,
-         A3(getTrixelOrientation,
-         cx,
-         cy,
-         state.trixelInfo.mode),
-         x,
-         y,
-         state.trixelInfo.width,
-         state.trixelInfo.height,
-         function (s) {
-            return A2($Graphics$Collage.outlined,
-            $Graphics$Collage.solid(state.colorScheme.bg.elm),
-            s);
-         }),
-         trixels));
-      }();
-   });
-   var renderGrid = F6(function (state,
-   cx,
-   cy,
-   w,
-   h,
-   trixels) {
-      return _U.eq(cy,
-      0) ? trixels : A5(renderGrid,
-      state,
-      cx,
-      cy - 1,
-      w,
-      h)(A6(renderTrixelRow,
-      state,
-      cx,
-      cy,
-      w,
-      h,
-      trixels));
-   });
-   var generateGrid = function (state) {
-      return function () {
-         var $ = $Trixel$Types.calculateDimensionsFromBounds(state.trixelInfo.bounds),
-         x = $.x,
-         y = $.y;
-         var count = state.trixelInfo.count;
-         var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types.Vertical) ? {ctor: "_Tuple2"
-                                   ,_0: count.x
-                                   ,_1: count.y} : {ctor: "_Tuple2"
-                                                   ,_0: count.y
-                                                   ,_1: count.x},
-         cx = $._0,
-         cy = $._1;
-         return _U.replace([["grid"
-                            ,A6(renderGrid,
-                            state,
-                            cx,
-                            cy,
-                            x,
-                            y,
-                            _L.fromArray([]))]],
-         state);
-      }();
-   };
-   var renderMouse = F4(function (state,
-   w,
-   h,
-   trixels) {
-      return function () {
-         var _v1 = state.mouseState;
-         switch (_v1.ctor)
-         {case "MouseHover":
-            return function () {
-                 var $ = _U.eq(state.trixelInfo.mode,
-                 $Trixel$Types.Vertical) ? {ctor: "_Tuple2"
-                                           ,_0: state.trixelInfo.width
-                                           ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
-                                                                           ,_0: state.trixelInfo.height
-                                                                           ,_1: state.trixelInfo.width},
-                 sx = $._0,
-                 sy = $._1;
-                 var x = $Basics.toFloat(_v1._0.x) * sx - state.trixelInfo.extraOffset.x;
-                 var y = $Basics.toFloat(_v1._0.y) * sy - state.trixelInfo.extraOffset.y;
-                 return A2($List._op["::"],
-                 A6(renderTrixel,
-                 A3(getTrixelOrientation,
-                 _v1._0.x,
-                 _v1._0.y,
-                 state.trixelInfo.mode),
-                 x,
-                 y,
-                 state.trixelInfo.width,
-                 state.trixelInfo.height,
-                 function (s) {
-                    return A2($Graphics$Collage.filled,
-                    $Color.red,
-                    s);
-                 }),
-                 trixels);
-              }();
-            case "MouseNone":
-            return trixels;}
-         _U.badCase($moduleName,
-         "between lines 148 and 160");
-      }();
-   });
-   var weirdify = F2(function (coordinate,
-   size) {
-      return coordinate - size / 2;
-   });
-   var getCoordinateFromIndex = F3(function (count,
-   size,
-   offset) {
-      return weirdify(offset)(F2(function (x,
-      y) {
-         return x * y;
-      })(size)($Basics.toFloat(count)));
-   });
-   var updateGrid = function (state) {
-      return function () {
-         var trixelInfo = state.trixelInfo;
-         var workspace = state.html.dimensions.workspace;
-         var $ = _U.eq(trixelInfo.mode,
-         $Trixel$Types.Vertical) ? {ctor: "_Tuple4"
-                                   ,_0: workspace.w * trixelInfo.scale
-                                   ,_1: workspace.h * trixelInfo.scale
-                                   ,_2: $Basics.toFloat(trixelInfo.count.x)
-                                   ,_3: $Basics.toFloat(trixelInfo.count.y)} : {ctor: "_Tuple4"
-                                                                               ,_0: workspace.h * trixelInfo.scale
-                                                                               ,_1: workspace.w * trixelInfo.scale
-                                                                               ,_2: $Basics.toFloat(trixelInfo.count.y)
-                                                                               ,_3: $Basics.toFloat(trixelInfo.count.x)},
-         sw = $._0,
-         sh = $._1,
-         cx = $._2,
-         cy = $._3;
-         var $ = {ctor: "_Tuple2"
-                 ,_0: cx + 1
-                 ,_1: $Trixel$Constants.sqrt3 * cy},
-         dx = $._0,
-         dy = $._1;
-         var scale = A2($Basics.min,
-         sw / dx,
-         sh / dy);
-         var $ = {ctor: "_Tuple2"
-                 ,_0: scale * dx
-                 ,_1: scale * dy},
-         w = $._0,
-         h = $._1;
-         var $ = _U.eq(trixelInfo.mode,
-         $Trixel$Types.Vertical) ? {ctor: "_Tuple4"
-                                   ,_0: w / 2
-                                   ,_1: h / 2
-                                   ,_2: w
-                                   ,_3: h} : {ctor: "_Tuple4"
-                                             ,_0: h / 2
-                                             ,_1: w / 2
-                                             ,_2: h
-                                             ,_3: w},
-         tox = $._0,
-         toy = $._1,
-         maxX = $._2,
-         maxY = $._3;
-         var $ = {ctor: "_Tuple2"
-                 ,_0: w / dx
-                 ,_1: h / cy},
-         tw = $._0,
-         th = $._1;
-         return generateGrid(_U.replace([["trixelInfo"
-                                         ,_U.replace([["width",tw]
-                                                     ,["height",th]
-                                                     ,["extraOffset"
-                                                      ,{_: {}
-                                                       ,x: tox - trixelInfo.offset.x
-                                                       ,y: toy - trixelInfo.offset.y}]
-                                                     ,["bounds"
-                                                      ,{_: {}
-                                                       ,max: {_: {}
-                                                             ,x: $Basics.round(A2($Basics.min,
-                                                             workspace.w,
-                                                             maxX))
-                                                             ,y: $Basics.round(A2($Basics.min,
-                                                             workspace.h,
-                                                             maxY))}
-                                                       ,min: {_: {}
-                                                             ,x: 0
-                                                             ,y: 0}}]],
-                                         trixelInfo)]],
-         state));
-      }();
-   };
-   var pointInTriangle = F4(function (p,
-   p0,
-   p1,
-   p2) {
-      return function () {
-         var t = p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y;
-         var s = p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y;
-         return !_U.eq(_U.cmp(s,0) < 0,
-         _U.cmp(t,
-         0) < 0) ? false : function () {
-            var a = (0 - p1.y) * p2.x + p0.y * (p2.x - p1.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y;
-            return _U.cmp(a,
-            0) < 0 ? _U.cmp(0 - s,
-            0) > 0 && (_U.cmp(0 - t,
-            0) > 0 && _U.cmp(0 - s - t,
-            0 - a) < 0) : _U.cmp(s,
-            0) > 0 && (_U.cmp(t,
-            0) > 0 && _U.cmp(s + t,a) < 0);
-         }();
-      }();
-   });
-   _elm.Trixel.Grid.values = {_op: _op
-                             ,updateGrid: updateGrid
-                             ,renderMouse: renderMouse};
-   return _elm.Trixel.Grid.values;
-};
-Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.Main = Elm.Trixel.Main || {};
-Elm.Trixel.Main.make = function (_elm) {
-   "use strict";
-   _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.Main = _elm.Trixel.Main || {};
-   if (_elm.Trixel.Main.values)
-   return _elm.Trixel.Main.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Main",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
-   $Mouse = Elm.Mouse.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Trixel$ColorScheme = Elm.Trixel.ColorScheme.make(_elm),
-   $Trixel$Footer = Elm.Trixel.Footer.make(_elm),
-   $Trixel$Menu = Elm.Trixel.Menu.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm),
-   $Trixel$Update = Elm.Trixel.Update.make(_elm),
-   $Trixel$WorkSpace = Elm.Trixel.WorkSpace.make(_elm),
-   $Window = Elm.Window.make(_elm);
-   var createMainStyle = function (state) {
-      return $Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                  ,_0: "width"
-                                                  ,_1: "100%"}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "height"
-                                                  ,_1: "100%"}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "padding"
-                                                  ,_1: "0 0"}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "margin"
-                                                  ,_1: "0 0"}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "background-color"
-                                                  ,_1: state.colorScheme.subbg.html}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "position"
-                                                  ,_1: "absolute"}
-                                                 ,{ctor: "_Tuple2"
-                                                  ,_0: "box-sizing"
-                                                  ,_1: "border-box"}]));
-   };
-   var createNewState = F2(function (cx,
-   cy) {
-      return {_: {}
-             ,colorScheme: $Trixel$ColorScheme.zenburnScheme
-             ,condition: $Trixel$Types.CIdle
-             ,dimensions: {_: {},x: 0,y: 0}
-             ,grid: _L.fromArray([])
-             ,html: {_: {}
-                    ,dimensions: {_: {}
-                                 ,footer: $Trixel$Types.dimensionContextDummy
-                                 ,menu: $Trixel$Types.dimensionContextDummy
-                                 ,workspace: $Trixel$Types.dimensionContextDummy}}
-             ,mouseState: $Trixel$Types.MouseNone
-             ,trixelColor: $Color.red
-             ,trixelInfo: {_: {}
-                          ,bounds: {_: {}
-                                   ,max: {_: {},x: 0,y: 0}
-                                   ,min: {_: {},x: 0,y: 0}}
-                          ,count: {_: {},x: cx,y: cy}
-                          ,extraOffset: {_: {},x: 0,y: 0}
-                          ,height: 0
-                          ,mode: $Trixel$Types.Vertical
-                          ,offset: {_: {},x: 0,y: 0}
-                          ,scale: 1
-                          ,width: 0}};
-   });
-   var windowDimemensionsSignal = A2($Signal.map,
-   function (_v0) {
-      return function () {
-         switch (_v0.ctor)
-         {case "_Tuple2":
-            return $Trixel$Types.Resize({_: {}
-                                        ,x: $Basics.toFloat(_v0._0)
-                                        ,y: $Basics.toFloat(_v0._1)});}
-         _U.badCase($moduleName,
-         "between lines 41 and 43");
-      }();
-   },
-   $Window.dimensions);
-   var moveMouseSignal = A2($Signal.map,
-   function (_v4) {
-      return function () {
-         switch (_v4.ctor)
-         {case "_Tuple2":
-            return $Trixel$Types.MoveMouse({_: {}
-                                           ,x: $Basics.toFloat(_v4._0)
-                                           ,y: $Basics.toFloat(_v4._1)});}
-         _U.badCase($moduleName,
-         "between lines 35 and 37");
-      }();
-   },
-   $Mouse.position);
-   var moveOffsetSignal = A2($Signal.map,
-   function (_v8) {
-      return function () {
-         return $Trixel$Types.MoveOffset({_: {}
-                                         ,x: $Basics.toFloat(_v8.x)
-                                         ,y: $Basics.toFloat(_v8.y)});
-      }();
-   },
-   $Keyboard.arrows);
-   var actionQuery = $Signal.mailbox($Trixel$Types.None);
-   var view = function (state) {
-      return A2($Html.div,
-      _L.fromArray([createMainStyle(state)
-                   ,A2($Html$Events.onMouseEnter,
-                   actionQuery.address,
-                   $Trixel$Types.SetCondition($Trixel$Types.CIdle))]),
-      _L.fromArray([A2($Trixel$Menu.view,
-                   actionQuery.address,
-                   state)
-                   ,A2($Trixel$Footer.view,
-                   actionQuery.address,
-                   state)
-                   ,A2($Trixel$WorkSpace.view,
-                   actionQuery.address,
-                   state)]));
-   };
-   var main = A2($Signal.map,
-   view,
-   A3($Signal.foldp,
-   $Trixel$Update.update,
-   A2(createNewState,10,10),
-   $Signal.mergeMany(_L.fromArray([actionQuery.signal
-                                  ,windowDimemensionsSignal
-                                  ,moveOffsetSignal
-                                  ,moveMouseSignal]))));
-   _elm.Trixel.Main.values = {_op: _op
-                             ,actionQuery: actionQuery
-                             ,moveOffsetSignal: moveOffsetSignal
-                             ,moveMouseSignal: moveMouseSignal
-                             ,windowDimemensionsSignal: windowDimemensionsSignal
-                             ,main: main
-                             ,createNewState: createNewState
-                             ,view: view
-                             ,createMainStyle: createMainStyle};
-   return _elm.Trixel.Main.values;
-};
-Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.Menu = Elm.Trixel.Menu || {};
-Elm.Trixel.Menu.make = function (_elm) {
-   "use strict";
-   _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.Menu = _elm.Trixel.Menu || {};
-   if (_elm.Trixel.Menu.values)
-   return _elm.Trixel.Menu.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Menu",
-   $Basics = Elm.Basics.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm);
-   var createModeList = F3(function (ctx,
-   state,
-   address) {
-      return function () {
-         var fn = function (txt) {
-            return $Trixel$Types.SetMode(_U.eq(txt,
-            "hor") ? $Trixel$Types.Horizontal : $Trixel$Types.Vertical);
-         };
-         var $ = {ctor: "_Tuple2"
-                 ,_0: A3($Basics.clamp,
-                 115,
-                 130,
-                 ctx.w * 8.0e-2)
-                 ,_1: ctx.h - ctx.p.y * 2},
-         w = $._0,
-         h = $._1;
-         var dimensions = A6($Trixel$Types.dimensionContext,
-         w,
-         h,
-         5,
-         5,
-         2,
-         2);
-         var selectStyle = $Html$Attributes.style(A2($Basics._op["++"],
-         $Trixel$Types.dimensionToHtml(dimensions),
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "background-color"
-                       ,_1: state.colorScheme.selbg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: state.colorScheme.selfg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font-size"
-                       ,_1: $Trixel$Types.pxFromFloat(dimensions.h / 1.85)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "box-sizing"
-                       ,_1: "border-box"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "float"
-                       ,_1: "left"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: A2($Basics._op["++"],
-                       "1px solid ",
-                       state.colorScheme.fg.html)}])));
-         return A2($Html.div,
-         _L.fromArray([]),
-         _L.fromArray([A2($Html.label,
-                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                         ,_0: "float"
-                                                                         ,_1: "left"}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "padding"
-                                                                         ,_1: "6px 10px"}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "color"
-                                                                         ,_1: state.colorScheme.text.html}]))]),
-                      _L.fromArray([$Html.text("Mode")]))
-                      ,A2($Html.select,
-                      _L.fromArray([selectStyle
-                                   ,A3($Html$Events.on,
-                                   "change",
-                                   $Html$Events.targetValue,
-                                   $Signal.message(A2($Signal.forwardTo,
-                                   address,
-                                   fn)))]),
-                      _L.fromArray([A2($Html.option,
-                                   _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
-                                                $Trixel$Types.Horizontal))
-                                                ,$Html$Attributes.value("hor")]),
-                                   _L.fromArray([$Html.text("Horizontal")]))
-                                   ,A2($Html.option,
-                                   _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
-                                                $Trixel$Types.Vertical))
-                                                ,$Html$Attributes.value("ver")]),
-                                   _L.fromArray([$Html.text("Vertical")]))]))]));
-      }();
-   });
-   var createArithmeticButton = F5(function (string,
-   action,
-   ctx,
-   state,
-   address) {
-      return function () {
-         var $ = {ctor: "_Tuple2"
-                 ,_0: A3($Basics.clamp,
-                 25,
-                 35,
-                 ctx.w * 9.5e-2)
-                 ,_1: ctx.h - ctx.p.y * 2},
-         w = $._0,
-         h = $._1;
-         var dimensions = A6($Trixel$Types.dimensionContext,
-         w,
-         h,
-         5,
-         5,
-         2,
-         2);
-         var buttonStyle = $Html$Attributes.style(A2($Basics._op["++"],
-         $Trixel$Types.dimensionToHtml(dimensions),
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "background-color"
-                       ,_1: state.colorScheme.selbg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: state.colorScheme.selfg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font-size"
-                       ,_1: $Trixel$Types.pxFromFloat(dimensions.h / 1.75)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "box-sizing"
-                       ,_1: "border-box"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "float"
-                       ,_1: "left"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: A2($Basics._op["++"],
-                       "1px solid ",
-                       state.colorScheme.fg.html)}])));
-         return A2($Html.button,
-         _L.fromArray([A2($Html$Events.onClick,
-                      address,
-                      action)
-                      ,buttonStyle]),
-         _L.fromArray([$Html.text(string)]));
-      }();
-   });
-   var createButton = F5(function (string,
-   action,
-   ctx,
-   state,
-   address) {
-      return function () {
-         var $ = {ctor: "_Tuple2"
-                 ,_0: A3($Basics.clamp,
-                 50,
-                 80,
-                 ctx.w * 7.5e-2)
-                 ,_1: ctx.h - ctx.p.y * 2},
-         w = $._0,
-         h = $._1;
-         var dimensions = A6($Trixel$Types.dimensionContext,
-         w,
-         h,
-         5,
-         5,
-         2,
-         2);
-         var buttonStyle = $Html$Attributes.style(A2($Basics._op["++"],
-         $Trixel$Types.dimensionToHtml(dimensions),
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "background-color"
-                       ,_1: state.colorScheme.selbg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: state.colorScheme.selfg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font-size"
-                       ,_1: $Trixel$Types.pxFromFloat(dimensions.h / 1.75)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "box-sizing"
-                       ,_1: "border-box"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "float"
-                       ,_1: "left"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: A2($Basics._op["++"],
-                       "1px solid ",
-                       state.colorScheme.fg.html)}])));
-         return A2($Html.button,
-         _L.fromArray([A2($Html$Events.onClick,
-                      address,
-                      action)
-                      ,buttonStyle]),
-         _L.fromArray([$Html.text(string)]));
-      }();
-   });
-   var toInt = function (string) {
-      return function () {
-         var _v0 = $String.toInt(string);
-         switch (_v0.ctor)
-         {case "Err": return 0;
-            case "Ok": return _v0._0;}
-         _U.badCase($moduleName,
-         "between lines 62 and 64");
-      }();
-   };
-   var createInput = F4(function (action,
-   ctx,
-   state,
-   address) {
-      return function () {
-         var $ = function () {
-            switch (action.ctor)
-            {case "GridX":
-               return {ctor: "_Tuple3"
-                      ,_0: state.trixelInfo.count.x
-                      ,_1: "X"
-                      ,_2: function (x) {
-                         return $Trixel$Types.SetGridX(toInt(x));
-                      }};
-               case "GridY":
-               return {ctor: "_Tuple3"
-                      ,_0: state.trixelInfo.count.y
-                      ,_1: "Y"
-                      ,_2: function (y) {
-                         return $Trixel$Types.SetGridY(toInt(y));
-                      }};
-               case "Scale":
-               return {ctor: "_Tuple3"
-                      ,_0: $Basics.round(state.trixelInfo.scale * 100)
-                      ,_1: "Scale (%)"
-                      ,_2: function (s) {
-                         return $Trixel$Types.SetScale($Basics.toFloat(toInt(s)) / 100);
-                      }};}
-            _U.badCase($moduleName,
-            "between lines 126 and 133");
-         }(),
-         $default = $._0,
-         caption = $._1,
-         fn = $._2;
-         var $ = {ctor: "_Tuple2"
-                 ,_0: A3($Basics.clamp,
-                 25,
-                 60,
-                 ctx.w * 5.0e-2)
-                 ,_1: ctx.h - ctx.p.y * 2},
-         w = $._0,
-         h = $._1;
-         var dimensions = A6($Trixel$Types.dimensionContext,
-         w,
-         h,
-         5,
-         5,
-         2,
-         2);
-         var inputStyle = $Html$Attributes.style(A2($Basics._op["++"],
-         $Trixel$Types.dimensionToHtml(dimensions),
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: "background-color"
-                       ,_1: state.colorScheme.selbg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: state.colorScheme.selfg.html}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font-size"
-                       ,_1: $Trixel$Types.pxFromFloat(dimensions.h / 1.75)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "box-sizing"
-                       ,_1: "border-box"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "float"
-                       ,_1: "left"}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "border"
-                       ,_1: A2($Basics._op["++"],
-                       "1px solid ",
-                       state.colorScheme.fg.html)}])));
-         return A2($Html.div,
-         _L.fromArray([]),
-         _L.fromArray([A2($Html.label,
-                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                         ,_0: "float"
-                                                                         ,_1: "left"}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "padding"
-                                                                         ,_1: "6px 10px"}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "color"
-                                                                         ,_1: state.colorScheme.text.html}]))]),
-                      _L.fromArray([$Html.text(caption)]))
-                      ,A2($Html.input,
-                      _L.fromArray([$Html$Attributes.value($Basics.toString($default))
-                                   ,A3($Html$Events.on,
-                                   "blur",
-                                   $Html$Events.targetValue,
-                                   $Signal.message(A2($Signal.forwardTo,
-                                   address,
-                                   fn)))
-                                   ,inputStyle]),
-                      _L.fromArray([]))]));
-      }();
-   });
-   var createMainStyle = F2(function (ctx,
-   state) {
-      return $Html$Attributes.style(A2($Basics._op["++"],
-      $Trixel$Types.dimensionToHtml(ctx),
-      _L.fromArray([{ctor: "_Tuple2"
-                    ,_0: "background-color"
-                    ,_1: state.colorScheme.bg.html}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "box-sizing"
-                    ,_1: "inherit"}
-                   ,{ctor: "_Tuple2"
-                    ,_0: "border-bottom"
-                    ,_1: A2($Basics._op["++"],
-                    "1px solid ",
-                    state.colorScheme.fg.html)}])));
-   });
-   var view = F2(function (address,
-   state) {
-      return function () {
-         var ctx = state.html.dimensions.menu;
-         return A2($Html.div,
-         _L.fromArray([A2(createMainStyle,
-                      ctx,
-                      state)
-                      ,A2($Html$Events.onMouseEnter,
-                      address,
-                      $Trixel$Types.SetCondition($Trixel$Types.CIdle))]),
-         _L.fromArray([A5(createButton,
-                      "New",
-                      $Trixel$Types.NewDoc,
-                      ctx,
-                      state,
-                      address)
-                      ,A4(createInput,
-                      $Trixel$Types.GridX,
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "-",
-                      $Trixel$Types.SetGridX(A2($Basics.max,
-                      1,
-                      state.trixelInfo.count.x - 1)),
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "+",
-                      $Trixel$Types.SetGridX(state.trixelInfo.count.x + 1),
-                      ctx,
-                      state,
-                      address)
-                      ,A4(createInput,
-                      $Trixel$Types.GridY,
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "-",
-                      $Trixel$Types.SetGridY(A2($Basics.max,
-                      1,
-                      state.trixelInfo.count.y - 1)),
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "+",
-                      $Trixel$Types.SetGridY(state.trixelInfo.count.y + 1),
-                      ctx,
-                      state,
-                      address)
-                      ,A4(createInput,
-                      $Trixel$Types.Scale,
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "-",
-                      $Trixel$Types.SetScale(A2($Basics.max,
-                      0.2,
-                      state.trixelInfo.scale - 0.2)),
-                      ctx,
-                      state,
-                      address)
-                      ,A5(createArithmeticButton,
-                      "+",
-                      $Trixel$Types.SetScale(state.trixelInfo.scale + 0.2),
-                      ctx,
-                      state,
-                      address)
-                      ,A3(createModeList,
-                      ctx,
-                      state,
-                      address)]));
-      }();
-   });
-   _elm.Trixel.Menu.values = {_op: _op
-                             ,view: view};
-   return _elm.Trixel.Menu.values;
+   _elm.Trixel.Types.ColorScheme.values = {_op: _op
+                                          ,ColorInfo: ColorInfo
+                                          ,ColorScheme: ColorScheme
+                                          ,constructColorInfo: constructColorInfo
+                                          ,zenburnScheme: zenburnScheme};
+   return _elm.Trixel.Types.ColorScheme.values;
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Types = Elm.Trixel.Types || {};
-Elm.Trixel.Types.make = function (_elm) {
+Elm.Trixel.Types.General = Elm.Trixel.Types.General || {};
+Elm.Trixel.Types.General.make = function (_elm) {
    "use strict";
    _elm.Trixel = _elm.Trixel || {};
    _elm.Trixel.Types = _elm.Trixel.Types || {};
-   if (_elm.Trixel.Types.values)
-   return _elm.Trixel.Types.values;
+   _elm.Trixel.Types.General = _elm.Trixel.Types.General || {};
+   if (_elm.Trixel.Types.General.values)
+   return _elm.Trixel.Types.General.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Trixel.Types",
+   $moduleName = "Trixel.Types.General",
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Trixel$ColorScheme = Elm.Trixel.ColorScheme.make(_elm);
-   var calculateDimensionsFromBounds = function (bounds) {
-      return {_: {}
-             ,x: $Basics.toFloat(bounds.max.x - bounds.min.x)
-             ,y: $Basics.toFloat(bounds.max.y - bounds.min.y)};
-   };
-   var createConditionMessage = function (condition) {
-      return function () {
-         switch (condition.ctor)
-         {case "CActive":
-            return function () {
-                 switch (condition._0.ctor)
-                 {case "MsgEmpty":
-                    return "active";
-                    case "MsgString":
-                    return A2($Basics._op["++"],
-                      "active: ",
-                      condition._0._0);}
-                 _U.badCase($moduleName,
-                 "between lines 151 and 153");
-              }();
-            case "CIdle": return "idle";}
-         _U.badCase($moduleName,
-         "between lines 148 and 153");
-      }();
-   };
-   var pxFromFloat = function (value) {
-      return A2($Basics._op["++"],
-      $Basics.toString(value),
-      "px");
-   };
-   var pxFromVector = function (vec) {
-      return A2($Basics._op["++"],
-      pxFromFloat(vec.y),
-      A2($Basics._op["++"],
-      " ",
-      pxFromFloat(vec.x)));
-   };
-   var dimensionToHtml = function (ctx) {
-      return _L.fromArray([{ctor: "_Tuple2"
-                           ,_0: "width"
-                           ,_1: pxFromFloat(ctx.w)}
-                          ,{ctor: "_Tuple2"
-                           ,_0: "height"
-                           ,_1: pxFromFloat(ctx.h)}
-                          ,{ctor: "_Tuple2"
-                           ,_0: "margin"
-                           ,_1: pxFromVector(ctx.m)}
-                          ,{ctor: "_Tuple2"
-                           ,_0: "padding"
-                           ,_1: pxFromVector(ctx.p)}]);
-   };
-   var dimensionContext = F6(function (w,
-   h,
-   px,
-   py,
-   mx,
-   my) {
-      return {_: {}
-             ,h: h
-             ,m: {_: {},x: mx,y: my}
-             ,p: {_: {},x: px,y: py}
-             ,w: w};
-   });
-   var dimensionContextDummy = A6(dimensionContext,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0);
-   var HtmlDimensionContext = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,h: b
-             ,m: c
-             ,p: d
-             ,w: a};
-   });
+   $Signal = Elm.Signal.make(_elm),
+   $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var Scale = {ctor: "Scale"};
+   var GridY = {ctor: "GridY"};
+   var GridX = {ctor: "GridX"};
    var MoveOffset = function (a) {
       return {ctor: "MoveOffset"
              ,_0: a};
@@ -14851,20 +13957,17 @@ Elm.Trixel.Types.make = function (_elm) {
       return {ctor: "SetGridY"
              ,_0: a};
    };
-   var GridY = {ctor: "GridY"};
    var SetGridX = function (a) {
       return {ctor: "SetGridX"
              ,_0: a};
    };
-   var GridX = {ctor: "GridX"};
    var SetScale = function (a) {
       return {ctor: "SetScale"
              ,_0: a};
    };
-   var Scale = {ctor: "Scale"};
-   var SaveDoc = {ctor: "SaveDoc"};
-   var OpenDoc = {ctor: "OpenDoc"};
-   var NewDoc = {ctor: "NewDoc"};
+   var SaveDocument = {ctor: "SaveDocument"};
+   var OpenDocument = {ctor: "OpenDocument"};
+   var NewDocument = {ctor: "NewDocument"};
    var SetCondition = function (a) {
       return {ctor: "SetCondition"
              ,_0: a};
@@ -14873,8 +13976,8 @@ Elm.Trixel.Types.make = function (_elm) {
       return {ctor: "SetMode"
              ,_0: a};
    };
-   var Resize = function (a) {
-      return {ctor: "Resize"
+   var ResizeWindow = function (a) {
+      return {ctor: "ResizeWindow"
              ,_0: a};
    };
    var None = {ctor: "None"};
@@ -14887,34 +13990,31 @@ Elm.Trixel.Types.make = function (_elm) {
    g,
    h) {
       return {_: {}
+             ,boxModels: d
              ,colorScheme: c
              ,condition: h
-             ,dimensions: e
              ,grid: g
-             ,html: d
              ,mouseState: f
              ,trixelColor: b
-             ,trixelInfo: a};
+             ,trixelInfo: a
+             ,windowDimensions: e};
    });
-   var MsgString = function (a) {
-      return {ctor: "MsgString"
+   var StringMessage = function (a) {
+      return {ctor: "StringMessage"
              ,_0: a};
    };
-   var MsgEmpty = {ctor: "MsgEmpty"};
-   var CActive = function (a) {
-      return {ctor: "CActive"
+   var EmptyMessage = {ctor: "EmptyMessage"};
+   var ActiveCondition = function (a) {
+      return {ctor: "ActiveCondition"
              ,_0: a};
    };
-   var CIdle = {ctor: "CIdle"};
+   var IdleCondition = {ctor: "IdleCondition"};
    var MouseHover = function (a) {
       return {ctor: "MouseHover"
              ,_0: a};
    };
    var MouseNone = {ctor: "MouseNone"};
-   var HtmlInfo = function (a) {
-      return {_: {},dimensions: a};
-   };
-   var HtmlDimensions = F3(function (a,
+   var EditorBoxModels = F3(function (a,
    b,
    c) {
       return {_: {}
@@ -14946,62 +14046,372 @@ Elm.Trixel.Types.make = function (_elm) {
    var Left = {ctor: "Left"};
    var Down = {ctor: "Down"};
    var Up = {ctor: "Up"};
-   var Bounds2D = F2(function (a,
-   b) {
+   var computeConditionString = function (condition) {
+      return function () {
+         switch (condition.ctor)
+         {case "ActiveCondition":
+            return function () {
+                 switch (condition._0.ctor)
+                 {case "EmptyMessage":
+                    return "active";
+                    case "StringMessage":
+                    return A2($Basics._op["++"],
+                      "active: ",
+                      condition._0._0);}
+                 _U.badCase($moduleName,
+                 "between lines 20 and 25");
+              }();
+            case "IdleCondition":
+            return "idle";}
+         _U.badCase($moduleName,
+         "between lines 15 and 25");
+      }();
+   };
+   _elm.Trixel.Types.General.values = {_op: _op
+                                      ,computeConditionString: computeConditionString
+                                      ,Up: Up
+                                      ,Down: Down
+                                      ,Left: Left
+                                      ,Right: Right
+                                      ,Horizontal: Horizontal
+                                      ,Vertical: Vertical
+                                      ,TrixelInfo: TrixelInfo
+                                      ,EditorBoxModels: EditorBoxModels
+                                      ,MouseNone: MouseNone
+                                      ,MouseHover: MouseHover
+                                      ,IdleCondition: IdleCondition
+                                      ,ActiveCondition: ActiveCondition
+                                      ,EmptyMessage: EmptyMessage
+                                      ,StringMessage: StringMessage
+                                      ,State: State
+                                      ,None: None
+                                      ,ResizeWindow: ResizeWindow
+                                      ,SetMode: SetMode
+                                      ,SetCondition: SetCondition
+                                      ,NewDocument: NewDocument
+                                      ,OpenDocument: OpenDocument
+                                      ,SaveDocument: SaveDocument
+                                      ,SetScale: SetScale
+                                      ,SetGridX: SetGridX
+                                      ,SetGridY: SetGridY
+                                      ,MoveMouse: MoveMouse
+                                      ,MoveOffset: MoveOffset
+                                      ,GridX: GridX
+                                      ,GridY: GridY
+                                      ,Scale: Scale};
+   return _elm.Trixel.Types.General.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.Html = Elm.Trixel.Types.Html || {};
+Elm.Trixel.Types.Html.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.Html = _elm.Trixel.Types.Html || {};
+   if (_elm.Trixel.Types.Html.values)
+   return _elm.Trixel.Types.Html.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.Html",
+   $Basics = Elm.Basics.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var DottedBorder = {ctor: "DottedBorder"};
+   var DashedBorder = {ctor: "DashedBorder"};
+   var SolidBorder = {ctor: "SolidBorder"};
+   var BorderLeft = {ctor: "BorderLeft"};
+   var BorderRight = {ctor: "BorderRight"};
+   var BorderBottom = {ctor: "BorderBottom"};
+   var BorderTop = {ctor: "BorderTop"};
+   var BorderAll = {ctor: "BorderAll"};
+   var InheritBox = {ctor: "InheritBox"};
+   var InitialBox = {ctor: "InitialBox"};
+   var BorderBox = {ctor: "BorderBox"};
+   var ContentBox = {ctor: "ContentBox"};
+   var computeBorderPositionCSSValue = function (borderPosition) {
+      return function () {
+         switch (borderPosition.ctor)
+         {case "BorderAll":
+            return "border";
+            case "BorderBottom":
+            return "border-bottom";
+            case "BorderLeft":
+            return "border-left";
+            case "BorderRight":
+            return "border-right";
+            case "BorderTop":
+            return "border-top";}
+         _U.badCase($moduleName,
+         "between lines 108 and 122");
+      }();
+   };
+   var computeBorderStyleCSSValue = function (borderStyle) {
+      return function () {
+         switch (borderStyle.ctor)
+         {case "DashedBorder":
+            return "dashed";
+            case "DottedBorder":
+            return "dotted";
+            case "SolidBorder":
+            return "solid";}
+         _U.badCase($moduleName,
+         "between lines 95 and 103");
+      }();
+   };
+   var computeBoxSizingCSS = function (boxSizing) {
+      return {ctor: "_Tuple2"
+             ,_0: "box-sizing"
+             ,_1: function () {
+                switch (boxSizing.ctor)
+                {case "BorderBox":
+                   return "border-box";
+                   case "ContentBox":
+                   return "content-box";
+                   case "InheritBox":
+                   return "inherit";
+                   case "InitialBox":
+                   return "initial";}
+                _U.badCase($moduleName,
+                "between lines 62 and 74");
+             }()};
+   };
+   var BoxModel = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,height: b
+             ,margin: c
+             ,padding: d
+             ,sizing: e
+             ,width: a};
+   });
+   var toPixels = function (value) {
+      return A2($Basics._op["++"],
+      $Basics.toString(value),
+      "px");
+   };
+   var vectorToPixels = function (vector) {
+      return A2($Basics._op["++"],
+      toPixels(vector.y),
+      A2($Basics._op["++"],
+      " ",
+      toPixels(vector.x)));
+   };
+   var computeBoxModelCSS = function (boxModel) {
+      return _L.fromArray([{ctor: "_Tuple2"
+                           ,_0: "width"
+                           ,_1: toPixels(boxModel.width)}
+                          ,{ctor: "_Tuple2"
+                           ,_0: "height"
+                           ,_1: toPixels(boxModel.height)}
+                          ,{ctor: "_Tuple2"
+                           ,_0: "margin"
+                           ,_1: vectorToPixels(boxModel.margin)}
+                          ,{ctor: "_Tuple2"
+                           ,_0: "padding"
+                           ,_1: vectorToPixels(boxModel.padding)}
+                          ,computeBoxSizingCSS(boxModel.sizing)]);
+   };
+   var computeBorderCSS = F4(function (size,
+   borderPosition,
+   borderStyle,
+   color) {
+      return {ctor: "_Tuple2"
+             ,_0: computeBorderPositionCSSValue(borderPosition)
+             ,_1: A2($Basics._op["++"],
+             toPixels(size),
+             A2($Basics._op["++"],
+             " ",
+             A2($Basics._op["++"],
+             computeBorderStyleCSSValue(borderStyle),
+             A2($Basics._op["++"],
+             " ",
+             color))))};
+   });
+   var computeDefaultBorderCSS = function (color) {
+      return A4(computeBorderCSS,
+      1,
+      BorderAll,
+      SolidBorder,
+      color);
+   };
+   var constructBoxModel = F7(function (width,
+   height,
+   paddingX,
+   paddingY,
+   marginX,
+   marginY,
+   sizing) {
+      return {_: {}
+             ,height: height
+             ,margin: {_: {}
+                      ,x: marginX
+                      ,y: marginY}
+             ,padding: {_: {}
+                       ,x: paddingX
+                       ,y: paddingY}
+             ,sizing: sizing
+             ,width: width};
+   });
+   var zeroBoxModel = A7(constructBoxModel,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   ContentBox);
+   _elm.Trixel.Types.Html.values = {_op: _op
+                                   ,zeroBoxModel: zeroBoxModel
+                                   ,constructBoxModel: constructBoxModel
+                                   ,toPixels: toPixels
+                                   ,vectorToPixels: vectorToPixels
+                                   ,computeBoxModelCSS: computeBoxModelCSS
+                                   ,BoxModel: BoxModel
+                                   ,computeBoxSizingCSS: computeBoxSizingCSS
+                                   ,computeDefaultBorderCSS: computeDefaultBorderCSS
+                                   ,computeBorderCSS: computeBorderCSS
+                                   ,computeBorderStyleCSSValue: computeBorderStyleCSSValue
+                                   ,computeBorderPositionCSSValue: computeBorderPositionCSSValue
+                                   ,ContentBox: ContentBox
+                                   ,BorderBox: BorderBox
+                                   ,InitialBox: InitialBox
+                                   ,InheritBox: InheritBox
+                                   ,BorderAll: BorderAll
+                                   ,BorderTop: BorderTop
+                                   ,BorderBottom: BorderBottom
+                                   ,BorderRight: BorderRight
+                                   ,BorderLeft: BorderLeft
+                                   ,SolidBorder: SolidBorder
+                                   ,DashedBorder: DashedBorder
+                                   ,DottedBorder: DottedBorder};
+   return _elm.Trixel.Types.Html.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.Math = Elm.Trixel.Types.Math || {};
+Elm.Trixel.Types.Math.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.Math = _elm.Trixel.Types.Math || {};
+   if (_elm.Trixel.Types.Math.values)
+   return _elm.Trixel.Types.Math.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.Math",
+   $Basics = Elm.Basics.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $String = Elm.String.make(_elm);
+   var stringToFloat = function (string) {
+      return function () {
+         var _v0 = $String.toFloat(string);
+         switch (_v0.ctor)
+         {case "Err": return 0;
+            case "Ok": return _v0._0;}
+         _U.badCase($moduleName,
+         "between lines 86 and 88");
+      }();
+   };
+   var stringToInt = function (string) {
+      return function () {
+         var _v3 = $String.toInt(string);
+         switch (_v3.ctor)
+         {case "Err": return 0;
+            case "Ok": return _v3._0;}
+         _U.badCase($moduleName,
+         "between lines 79 and 81");
+      }();
+   };
+   var computeDimensionsFromBounds = function (bounds) {
+      return {_: {}
+             ,x: bounds.max.x - bounds.min.x
+             ,y: bounds.max.y - bounds.min.y};
+   };
+   var Bounds = F2(function (a,b) {
       return {_: {},max: b,min: a};
    });
-   var FloatVec2D = F2(function (a,
-   b) {
+   var Vector = F2(function (a,b) {
       return {_: {},x: a,y: b};
    });
-   var IntVec2D = F2(function (a,
-   b) {
-      return {_: {},x: a,y: b};
+   var constructVector = F2(function (x,
+   y) {
+      return {_: {},x: x,y: y};
    });
-   _elm.Trixel.Types.values = {_op: _op
-                              ,IntVec2D: IntVec2D
-                              ,FloatVec2D: FloatVec2D
-                              ,Bounds2D: Bounds2D
-                              ,Up: Up
-                              ,Down: Down
-                              ,Left: Left
-                              ,Right: Right
-                              ,Horizontal: Horizontal
-                              ,Vertical: Vertical
-                              ,TrixelInfo: TrixelInfo
-                              ,HtmlDimensions: HtmlDimensions
-                              ,HtmlInfo: HtmlInfo
-                              ,MouseNone: MouseNone
-                              ,MouseHover: MouseHover
-                              ,CIdle: CIdle
-                              ,CActive: CActive
-                              ,MsgEmpty: MsgEmpty
-                              ,MsgString: MsgString
-                              ,State: State
-                              ,None: None
-                              ,Resize: Resize
-                              ,SetMode: SetMode
-                              ,SetCondition: SetCondition
-                              ,NewDoc: NewDoc
-                              ,OpenDoc: OpenDoc
-                              ,SaveDoc: SaveDoc
-                              ,Scale: Scale
-                              ,SetScale: SetScale
-                              ,GridX: GridX
-                              ,SetGridX: SetGridX
-                              ,GridY: GridY
-                              ,SetGridY: SetGridY
-                              ,MoveMouse: MoveMouse
-                              ,MoveOffset: MoveOffset
-                              ,HtmlDimensionContext: HtmlDimensionContext
-                              ,dimensionContext: dimensionContext
-                              ,dimensionContextDummy: dimensionContextDummy
-                              ,pxFromFloat: pxFromFloat
-                              ,pxFromVector: pxFromVector
-                              ,dimensionToHtml: dimensionToHtml
-                              ,createConditionMessage: createConditionMessage
-                              ,calculateDimensionsFromBounds: calculateDimensionsFromBounds};
-   return _elm.Trixel.Types.values;
+   var constructBounds = F4(function (minX,
+   minY,
+   maxX,
+   maxY) {
+      return {_: {}
+             ,max: A2(constructVector,
+             maxX,
+             maxY)
+             ,min: A2(constructVector,
+             minX,
+             minY)};
+   });
+   var computeVectorLength = function (vector) {
+      return $Basics.sqrt(Math.pow(vector.x,
+      2) + Math.pow(vector.y,2));
+   };
+   var computeVectorOperation = F3(function (operation,
+   a,
+   b) {
+      return {_: {}
+             ,x: A2(operation,a.x,b.x)
+             ,y: A2(operation,a.y,b.y)};
+   });
+   var substractVectors = F2(function (a,
+   b) {
+      return A3(computeVectorOperation,
+      F2(function (x,y) {
+         return x - y;
+      }),
+      a,
+      b);
+   });
+   var addVectors = F2(function (a,
+   b) {
+      return A3(computeVectorOperation,
+      F2(function (x,y) {
+         return x + y;
+      }),
+      a,
+      b);
+   });
+   var zeroBounds = A4(constructBounds,
+   0,
+   0,
+   0,
+   0);
+   var unitVector = A2(constructVector,
+   1,
+   1);
+   var zeroVector = A2(constructVector,
+   0,
+   0);
+   _elm.Trixel.Types.Math.values = {_op: _op
+                                   ,zeroVector: zeroVector
+                                   ,unitVector: unitVector
+                                   ,zeroBounds: zeroBounds
+                                   ,addVectors: addVectors
+                                   ,substractVectors: substractVectors
+                                   ,computeVectorOperation: computeVectorOperation
+                                   ,computeVectorLength: computeVectorLength
+                                   ,constructVector: constructVector
+                                   ,constructBounds: constructBounds
+                                   ,Vector: Vector
+                                   ,Bounds: Bounds
+                                   ,computeDimensionsFromBounds: computeDimensionsFromBounds
+                                   ,stringToInt: stringToInt
+                                   ,stringToFloat: stringToFloat};
+   return _elm.Trixel.Types.Math.values;
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Update = Elm.Trixel.Update || {};
@@ -15019,8 +14429,10 @@ Elm.Trixel.Update.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
-   $Trixel$Grid = Elm.Trixel.Grid.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm);
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
+   $Trixel$Zones$WorkSpace$Grid = Elm.Trixel.Zones.WorkSpace.Grid.make(_elm);
    var updateCondition = F2(function (condition,
    state) {
       return _U.replace([["condition"
@@ -15067,17 +14479,18 @@ Elm.Trixel.Update.make = function (_elm) {
          state);
       }();
    });
-   var updateDimensions = F2(function (dimensions,
+   var updateWindowDimensions = F2(function (dimensions,
    state) {
       return function () {
-         var footer = A6($Trixel$Types.dimensionContext,
+         var footer = A7($Trixel$Types$Html.constructBoxModel,
          dimensions.x - 10,
          $Trixel$Constants.footerSize,
          5,
          8,
          0,
-         0);
-         var menu = A6($Trixel$Types.dimensionContext,
+         0,
+         $Trixel$Types$Html.ContentBox);
+         var menu = A7($Trixel$Types$Html.constructBoxModel,
          dimensions.x,
          A3($Basics.clamp,
          40,
@@ -15086,21 +14499,23 @@ Elm.Trixel.Update.make = function (_elm) {
          5,
          5,
          0,
-         0);
-         var workspace = A6($Trixel$Types.dimensionContext,
+         0,
+         $Trixel$Types$Html.BorderBox);
+         var workspace = A7($Trixel$Types$Html.constructBoxModel,
          dimensions.x - 40,
-         dimensions.y - menu.h - $Trixel$Constants.footerSize - 16 - 40,
+         dimensions.y - menu.height - $Trixel$Constants.footerSize - 16 - 40,
          20,
          20,
          0,
-         0);
-         return _U.replace([["html"
+         0,
+         $Trixel$Types$Html.ContentBox);
+         return _U.replace([["boxModels"
                             ,{_: {}
-                             ,dimensions: {_: {}
-                                          ,footer: footer
-                                          ,menu: menu
-                                          ,workspace: workspace}}]
-                           ,["dimensions",dimensions]],
+                             ,footer: footer
+                             ,menu: menu
+                             ,workspace: workspace}]
+                           ,["windowDimensions"
+                            ,dimensions]],
          state);
       }();
    });
@@ -15112,9 +14527,8 @@ Elm.Trixel.Update.make = function (_elm) {
                             ,_U.replace([["scale"
                                          ,A2($Basics.max,5.0e-2,scale)]
                                         ,["offset"
-                                         ,_U.cmp(scale,1) < 1 ? {_: {}
-                                                                ,x: 0
-                                                                ,y: 0} : trixelInfo.offset]],
+                                         ,_U.cmp(scale,
+                                         1) < 1 ? $Trixel$Types$Math.zeroVector : trixelInfo.offset]],
                             trixelInfo)]],
          state);
       }();
@@ -15123,41 +14537,24 @@ Elm.Trixel.Update.make = function (_elm) {
    state) {
       return function () {
          var bounds = state.trixelInfo.bounds;
-         var $ = {ctor: "_Tuple2"
-                 ,_0: $Basics.toFloat(bounds.min.x)
-                 ,_1: $Basics.toFloat(bounds.min.y)},
-         minX = $._0,
-         minY = $._1;
-         var $ = {ctor: "_Tuple2"
-                 ,_0: $Basics.toFloat(bounds.max.x)
-                 ,_1: $Basics.toFloat(bounds.max.y)},
-         maxX = $._0,
-         maxY = $._1;
-         var width = maxX - minX;
-         var height = maxY - minY;
-         var dimensions = state.html.dimensions;
-         var pad = dimensions.workspace.p;
-         var mar = dimensions.workspace.m;
-         var offsetX = (dimensions.workspace.w - width) / 2;
-         var cursorX = point.x - pad.x - mar.x - offsetX;
-         var pointX = $Basics.ceiling(cursorX / state.trixelInfo.width - 1);
-         var offsetY = (dimensions.workspace.h - height) / 2;
-         var cursorY = height - (point.y - pad.y - mar.y - dimensions.menu.h - offsetY);
-         var pointY = $Basics.ceiling(cursorY / state.trixelInfo.height - 1);
-         var $ = A2($Debug.log,
-         "mouse",
-         {ctor: "_Tuple2"
-         ,_0: $Basics.toFloat(pointX)
-         ,_1: $Basics.toFloat(pointY)}),
-         x = $._0,
-         y = $._1;
+         var width = bounds.max.x - bounds.min.x;
+         var offsetX = (state.boxModels.workspace.width - width) / 2;
+         var height = bounds.max.y - bounds.min.y;
+         var offsetY = (state.boxModels.workspace.height - height) / 2;
+         var margin = state.boxModels.workspace.margin;
+         var padding = state.boxModels.workspace.padding;
+         var cursorX = point.x - padding.x - margin.x - offsetX;
+         var pointX = cursorX / state.trixelInfo.width - 1;
+         var cursorY = height - (point.y - padding.y - margin.y - state.boxModels.menu.height - offsetY);
+         var pointY = cursorY / state.trixelInfo.height - 1;
          return _U.replace([["mouseState"
-                            ,_U.cmp(x,0) > -1 && (_U.cmp(y,
-                            0) > -1 && (_U.cmp(x,
-                            maxX - minX) < 1 && _U.cmp(y,
-                            maxY - minY) < 1)) ? $Trixel$Types.MouseHover({_: {}
-                                                                          ,x: pointX
-                                                                          ,y: pointY}) : $Trixel$Types.MouseNone]],
+                            ,_U.cmp(pointX,
+                            0) > -1 && (_U.cmp(pointY,
+                            0) > -1 && (_U.cmp(pointX,
+                            width) < 1 && _U.cmp(pointY,
+                            height) < 1)) ? $Trixel$Types$General.MouseHover({_: {}
+                                                                             ,x: pointX
+                                                                             ,y: pointY}) : $Trixel$Types$General.MouseNone]],
          state);
       }();
    });
@@ -15169,11 +14566,13 @@ Elm.Trixel.Update.make = function (_elm) {
          var $ = trixelInfo.offset,
          x = $.x,
          y = $.y;
-         var nox = x + offset.x * $Trixel$Constants.moveSpeed;
-         var noy = y + offset.y * $Trixel$Constants.moveSpeed;
+         var newOffsetX = x + offset.x * $Trixel$Constants.workspaceOffsetMoveSpeed;
+         var newOffsetY = y + offset.y * $Trixel$Constants.workspaceOffsetMoveSpeed;
          return _U.replace([["trixelInfo"
                             ,_U.replace([["offset"
-                                         ,{_: {},x: nox,y: noy}]],
+                                         ,{_: {}
+                                          ,x: newOffsetX
+                                          ,y: newOffsetY}]],
                             trixelInfo)]],
          state);
       }();
@@ -15185,7 +14584,7 @@ Elm.Trixel.Update.make = function (_elm) {
                             ,_U.replace([["count"
                                          ,{_: {},x: 1,y: 1}]
                                         ,["mode"
-                                         ,$Trixel$Types.Vertical]],
+                                         ,$Trixel$Types$General.Vertical]],
                             trixelInfo)]],
          state);
       }();
@@ -15199,21 +14598,21 @@ Elm.Trixel.Update.make = function (_elm) {
               action._0,
               state);
             case "MoveOffset":
-            return $Trixel$Grid.updateGrid(A2(updateOffset,
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateOffset,
               action._0,
               state));
-            case "NewDoc":
-            return $Trixel$Grid.updateGrid($Trixel$Grid.updateGrid(resetState(state)));
-            case "OpenDoc":
-            return $Trixel$Grid.updateGrid(A2($Debug.log,
+            case "NewDocument":
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(resetState(state));
+            case "OpenDocument":
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2($Debug.log,
               "todo, OpenDoc...",
               state));
-            case "Resize":
-            return $Trixel$Grid.updateGrid(A2(updateDimensions,
+            case "ResizeWindow":
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateWindowDimensions,
               action._0,
               state));
-            case "SaveDoc":
-            return $Trixel$Grid.updateGrid(A2($Debug.log,
+            case "SaveDocument":
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2($Debug.log,
               "todo, SaveDoc...",
               state));
             case "SetCondition":
@@ -15221,23 +14620,23 @@ Elm.Trixel.Update.make = function (_elm) {
               action._0,
               state);
             case "SetGridX":
-            return $Trixel$Grid.updateGrid(A2(updateGridX,
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateGridX,
               action._0,
               state));
             case "SetGridY":
-            return $Trixel$Grid.updateGrid(A2(updateGridY,
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateGridY,
               action._0,
               state));
             case "SetMode":
-            return $Trixel$Grid.updateGrid(A2(updateMode,
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateMode,
               action._0,
               state));
             case "SetScale":
-            return $Trixel$Grid.updateGrid(A2(updateScale,
+            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateScale,
               action._0,
               state));}
          _U.badCase($moduleName,
-         "between lines 115 and 127");
+         "between lines 12 and 53");
       }();
    });
    _elm.Trixel.Update.values = {_op: _op
@@ -15245,82 +14644,856 @@ Elm.Trixel.Update.make = function (_elm) {
    return _elm.Trixel.Update.values;
 };
 Elm.Trixel = Elm.Trixel || {};
-Elm.Trixel.WorkSpace = Elm.Trixel.WorkSpace || {};
-Elm.Trixel.WorkSpace.make = function (_elm) {
+Elm.Trixel.Zones = Elm.Trixel.Zones || {};
+Elm.Trixel.Zones.Footer = Elm.Trixel.Zones.Footer || {};
+Elm.Trixel.Zones.Footer.make = function (_elm) {
    "use strict";
    _elm.Trixel = _elm.Trixel || {};
-   _elm.Trixel.WorkSpace = _elm.Trixel.WorkSpace || {};
-   if (_elm.Trixel.WorkSpace.values)
-   return _elm.Trixel.WorkSpace.values;
+   _elm.Trixel.Zones = _elm.Trixel.Zones || {};
+   _elm.Trixel.Zones.Footer = _elm.Trixel.Zones.Footer || {};
+   if (_elm.Trixel.Zones.Footer.values)
+   return _elm.Trixel.Zones.Footer.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Trixel.WorkSpace",
+   $moduleName = "Trixel.Zones.Footer",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm);
+   var constructMainStyle = function (state) {
+      return $Html$Attributes.style(A2($Basics._op["++"],
+      $Trixel$Types$Html.computeBoxModelCSS(state.boxModels.footer),
+      _L.fromArray([{ctor: "_Tuple2"
+                    ,_0: "color"
+                    ,_1: state.colorScheme.subText.html}
+                   ,{ctor: "_Tuple2"
+                    ,_0: "position"
+                    ,_1: "absolute"}
+                   ,{ctor: "_Tuple2"
+                    ,_0: "font-size"
+                    ,_1: $Trixel$Types$Html.toPixels($Trixel$Constants.footerSize * 1.25)}
+                   ,{ctor: "_Tuple2"
+                    ,_0: "bottom"
+                    ,_1: "0px"}])));
+   };
+   var view = F2(function (address,
+   state) {
+      return A2($Html.div,
+      _L.fromArray([constructMainStyle(state)
+                   ,$Html$Attributes.$class("noselect")
+                   ,A2($Html$Events.onMouseEnter,
+                   address,
+                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                      ,_0: "text-align"
+                                                                      ,_1: "right"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "float"
+                                                                      ,_1: "right"}]))]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   "Trixel v",
+                   $Trixel$Constants.version))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                      ,_0: "text-align"
+                                                                      ,_1: "left"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "float"
+                                                                      ,_1: "left"}]))]),
+                   _L.fromArray([$Html.text($Trixel$Types$General.computeConditionString(state.condition))]))]));
+   });
+   _elm.Trixel.Zones.Footer.values = {_op: _op
+                                     ,view: view};
+   return _elm.Trixel.Zones.Footer.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Zones = Elm.Trixel.Zones || {};
+Elm.Trixel.Zones.Menu = Elm.Trixel.Zones.Menu || {};
+Elm.Trixel.Zones.Menu.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Zones = _elm.Trixel.Zones || {};
+   _elm.Trixel.Zones.Menu = _elm.Trixel.Zones.Menu || {};
+   if (_elm.Trixel.Zones.Menu.values)
+   return _elm.Trixel.Zones.Menu.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Zones.Menu",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var constructModeList = F3(function (menuBoxModel,
+   state,
+   address) {
+      return function () {
+         var selectFunction = function (value) {
+            return $Trixel$Types$General.SetMode(_U.eq($Trixel$Types$Math.stringToInt(value),
+            0) ? $Trixel$Types$General.Horizontal : $Trixel$Types$General.Vertical);
+         };
+         var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
+         var width = A3($Basics.clamp,
+         115,
+         130,
+         menuBoxModel.width * 8.0e-2);
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         width,
+         height,
+         5,
+         5,
+         2,
+         2,
+         $Trixel$Types$Html.BorderBox);
+         var selectStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "background-color"
+                       ,_1: state.colorScheme.selbg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: state.colorScheme.selfg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 1.85)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}
+                      ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.label,
+                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                         ,_0: "float"
+                                                                         ,_1: "left"}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "padding"
+                                                                         ,_1: $Trixel$Types$Html.vectorToPixels({_: {}
+                                                                                                                ,x: 10
+                                                                                                                ,y: 6})}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "color"
+                                                                         ,_1: state.colorScheme.text.html}]))]),
+                      _L.fromArray([$Html.text("Mode")]))
+                      ,A2($Html.select,
+                      _L.fromArray([selectStyle
+                                   ,A3($Html$Events.on,
+                                   "change",
+                                   $Html$Events.targetValue,
+                                   $Signal.message(A2($Signal.forwardTo,
+                                   address,
+                                   selectFunction)))]),
+                      _L.fromArray([A2($Html.option,
+                                   _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
+                                                $Trixel$Types$General.Horizontal))
+                                                ,$Html$Attributes.value("0")]),
+                                   _L.fromArray([$Html.text("Horizontal")]))
+                                   ,A2($Html.option,
+                                   _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
+                                                $Trixel$Types$General.Vertical))
+                                                ,$Html$Attributes.value("1")]),
+                                   _L.fromArray([$Html.text("Vertical")]))]))]));
+      }();
+   });
+   var constructTextInput = F4(function (action,
+   menuBoxModel,
+   state,
+   address) {
+      return function () {
+         var $ = function () {
+            switch (action.ctor)
+            {case "GridX":
+               return {ctor: "_Tuple3"
+                      ,_0: $Basics.round(state.trixelInfo.count.x)
+                      ,_1: "X"
+                      ,_2: function (x) {
+                         return $Trixel$Types$General.SetGridX($Trixel$Types$Math.stringToFloat(x));
+                      }};
+               case "GridY":
+               return {ctor: "_Tuple3"
+                      ,_0: $Basics.round(state.trixelInfo.count.y)
+                      ,_1: "Y"
+                      ,_2: function (y) {
+                         return $Trixel$Types$General.SetGridY($Trixel$Types$Math.stringToFloat(y));
+                      }};
+               case "Scale":
+               return {ctor: "_Tuple3"
+                      ,_0: $Basics.round(state.trixelInfo.scale * 100)
+                      ,_1: "Scale (%)"
+                      ,_2: function (s) {
+                         return $Trixel$Types$General.SetScale($Trixel$Types$Math.stringToFloat(s) / 100);
+                      }};}
+            _U.badCase($moduleName,
+            "between lines 129 and 141");
+         }(),
+         $default = $._0,
+         caption = $._1,
+         fn = $._2;
+         var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
+         var width = A3($Basics.clamp,
+         25,
+         60,
+         menuBoxModel.width * 5.0e-2);
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         width,
+         height,
+         5,
+         5,
+         2,
+         2,
+         $Trixel$Types$Html.BorderBox);
+         var inputStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "background-color"
+                       ,_1: state.colorScheme.selbg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: state.colorScheme.selfg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 1.75)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}
+                      ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.label,
+                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                         ,_0: "float"
+                                                                         ,_1: "left"}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "padding"
+                                                                         ,_1: $Trixel$Types$Html.vectorToPixels({_: {}
+                                                                                                                ,x: 10
+                                                                                                                ,y: 6})}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "color"
+                                                                         ,_1: state.colorScheme.text.html}]))]),
+                      _L.fromArray([$Html.text(caption)]))
+                      ,A2($Html.input,
+                      _L.fromArray([$Html$Attributes.value($Basics.toString($default))
+                                   ,A3($Html$Events.on,
+                                   "blur",
+                                   $Html$Events.targetValue,
+                                   $Signal.message(A2($Signal.forwardTo,
+                                   address,
+                                   fn)))
+                                   ,inputStyle]),
+                      _L.fromArray([]))]));
+      }();
+   });
+   var constructArithmeticButton = F5(function (string,
+   action,
+   menuBoxModel,
+   state,
+   address) {
+      return function () {
+         var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
+         var width = A3($Basics.clamp,
+         25,
+         35,
+         menuBoxModel.width * 9.5e-2);
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         width,
+         height,
+         5,
+         5,
+         2,
+         2,
+         $Trixel$Types$Html.BorderBox);
+         var buttonStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "background-color"
+                       ,_1: state.colorScheme.selbg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: state.colorScheme.selfg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 1.75)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}
+                      ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+         return A2($Html.button,
+         _L.fromArray([A2($Html$Events.onClick,
+                      address,
+                      action)
+                      ,buttonStyle]),
+         _L.fromArray([$Html.text(string)]));
+      }();
+   });
+   var constructButton = F5(function (string,
+   action,
+   menuBoxModel,
+   state,
+   address) {
+      return function () {
+         var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
+         var width = A3($Basics.clamp,
+         50,
+         80,
+         menuBoxModel.width * 7.5e-2);
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         width,
+         height,
+         5,
+         5,
+         2,
+         2,
+         $Trixel$Types$Html.BorderBox);
+         var buttonStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "background-color"
+                       ,_1: state.colorScheme.selbg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: state.colorScheme.selfg.html}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 1.75)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}
+                      ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+         return A2($Html.button,
+         _L.fromArray([A2($Html$Events.onClick,
+                      address,
+                      action)
+                      ,buttonStyle]),
+         _L.fromArray([$Html.text(string)]));
+      }();
+   });
+   var constructMainStyle = F2(function (boxModel,
+   state) {
+      return $Html$Attributes.style(A2($Basics._op["++"],
+      $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+      _L.fromArray([{ctor: "_Tuple2"
+                    ,_0: "background-color"
+                    ,_1: state.colorScheme.bg.html}
+                   ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+   });
+   var view = F2(function (address,
+   state) {
+      return function () {
+         var boxModel = state.boxModels.menu;
+         return A2($Html.div,
+         _L.fromArray([A2(constructMainStyle,
+                      boxModel,
+                      state)
+                      ,$Html$Attributes.$class("noselect")
+                      ,A2($Html$Events.onMouseEnter,
+                      address,
+                      $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+         _L.fromArray([A5(constructButton,
+                      "New",
+                      $Trixel$Types$General.NewDocument,
+                      boxModel,
+                      state,
+                      address)
+                      ,A4(constructTextInput,
+                      $Trixel$Types$General.GridX,
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "-",
+                      $Trixel$Types$General.SetGridX(A2($Basics.max,
+                      1,
+                      state.trixelInfo.count.x - 1)),
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "+",
+                      $Trixel$Types$General.SetGridX(state.trixelInfo.count.x + 1),
+                      boxModel,
+                      state,
+                      address)
+                      ,A4(constructTextInput,
+                      $Trixel$Types$General.GridY,
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "-",
+                      $Trixel$Types$General.SetGridY(A2($Basics.max,
+                      1,
+                      state.trixelInfo.count.y - 1)),
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "+",
+                      $Trixel$Types$General.SetGridY(state.trixelInfo.count.y + 1),
+                      boxModel,
+                      state,
+                      address)
+                      ,A4(constructTextInput,
+                      $Trixel$Types$General.Scale,
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "-",
+                      $Trixel$Types$General.SetScale(A2($Basics.max,
+                      0.2,
+                      state.trixelInfo.scale - 0.2)),
+                      boxModel,
+                      state,
+                      address)
+                      ,A5(constructArithmeticButton,
+                      "+",
+                      $Trixel$Types$General.SetScale(state.trixelInfo.scale + 0.2),
+                      boxModel,
+                      state,
+                      address)
+                      ,A3(constructModeList,
+                      boxModel,
+                      state,
+                      address)]));
+      }();
+   });
+   _elm.Trixel.Zones.Menu.values = {_op: _op
+                                   ,view: view};
+   return _elm.Trixel.Zones.Menu.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Zones = Elm.Trixel.Zones || {};
+Elm.Trixel.Zones.WorkSpace = Elm.Trixel.Zones.WorkSpace || {};
+Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Zones = _elm.Trixel.Zones || {};
+   _elm.Trixel.Zones.WorkSpace = _elm.Trixel.Zones.WorkSpace || {};
+   if (_elm.Trixel.Zones.WorkSpace.values)
+   return _elm.Trixel.Zones.WorkSpace.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Zones.WorkSpace",
    $Basics = Elm.Basics.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Trixel$Grid = Elm.Trixel.Grid.make(_elm),
-   $Trixel$Types = Elm.Trixel.Types.make(_elm);
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
+   $Trixel$Zones$WorkSpace$Grid = Elm.Trixel.Zones.WorkSpace.Grid.make(_elm);
    var viewWorkSpace = function (state) {
       return function () {
-         var $ = $Trixel$Types.calculateDimensionsFromBounds(state.trixelInfo.bounds),
+         var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
          x = $.x,
          y = $.y;
          return $Html.fromElement(A3($Graphics$Collage.collage,
          $Basics.round(x),
          $Basics.round(y),
-         A4($Trixel$Grid.renderMouse,
+         A4($Trixel$Zones$WorkSpace$Grid.renderMouse,
          state,
          x,
          y,
          state.grid)));
       }();
    };
-   var createMainStyle = function (state) {
+   var constructMainStyle = function (state) {
       return function () {
-         var $ = $Trixel$Types.calculateDimensionsFromBounds(state.trixelInfo.bounds),
+         var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
          x = $.x,
          y = $.y;
-         var workspace = state.html.dimensions.workspace;
+         var workspace = state.boxModels.workspace;
          var margin = {_: {}
-                      ,x: (workspace.w - x) / 2 + workspace.m.x
-                      ,y: (workspace.h - y) / 2 + workspace.m.y};
-         return $Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                     ,_0: "box-sizing"
-                                                     ,_1: "inherit"}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: "padding"
-                                                     ,_1: $Trixel$Types.pxFromVector(workspace.p)}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: "margin"
-                                                     ,_1: $Trixel$Types.pxFromVector(margin)}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: "width"
-                                                     ,_1: $Trixel$Types.pxFromFloat(x)}
-                                                    ,{ctor: "_Tuple2"
-                                                     ,_0: "height"
-                                                     ,_1: $Trixel$Types.pxFromFloat(y)}]));
+                      ,x: F2(function (x,y) {
+                         return x + y;
+                      })(workspace.margin.x)((workspace.width - x) / 2)
+                      ,y: F2(function (x,y) {
+                         return x + y;
+                      })(workspace.margin.y)((workspace.height - y) / 2)};
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         x,
+         y,
+         workspace.padding.x,
+         workspace.padding.y,
+         margin.x,
+         margin.y,
+         workspace.sizing);
+         return $Html$Attributes.style($Trixel$Types$Html.computeBoxModelCSS(boxModel));
       }();
    };
    var view = F2(function (address,
    state) {
       return A2($Html.div,
-      _L.fromArray([createMainStyle(state)
+      _L.fromArray([constructMainStyle(state)
+                   ,$Html$Attributes.$class("noselect")
                    ,A2($Html$Events.onMouseEnter,
                    address,
-                   $Trixel$Types.SetCondition($Trixel$Types.CActive($Trixel$Types.MsgEmpty)))
+                   $Trixel$Types$General.SetCondition($Trixel$Types$General.ActiveCondition($Trixel$Types$General.EmptyMessage)))
                    ,A2($Html$Events.onMouseLeave,
                    address,
-                   $Trixel$Types.SetCondition($Trixel$Types.CIdle))]),
+                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
       _L.fromArray([viewWorkSpace(state)]));
    });
-   _elm.Trixel.WorkSpace.values = {_op: _op
-                                  ,view: view};
-   return _elm.Trixel.WorkSpace.values;
+   _elm.Trixel.Zones.WorkSpace.values = {_op: _op
+                                        ,view: view};
+   return _elm.Trixel.Zones.WorkSpace.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Zones = Elm.Trixel.Zones || {};
+Elm.Trixel.Zones.WorkSpace = Elm.Trixel.Zones.WorkSpace || {};
+Elm.Trixel.Zones.WorkSpace.Grid = Elm.Trixel.Zones.WorkSpace.Grid || {};
+Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Zones = _elm.Trixel.Zones || {};
+   _elm.Trixel.Zones.WorkSpace = _elm.Trixel.Zones.WorkSpace || {};
+   _elm.Trixel.Zones.WorkSpace.Grid = _elm.Trixel.Zones.WorkSpace.Grid || {};
+   if (_elm.Trixel.Zones.WorkSpace.Grid.values)
+   return _elm.Trixel.Zones.WorkSpace.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Zones.WorkSpace.Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var getTrixelOrientation = F3(function (x,
+   y,
+   mode) {
+      return _U.eq(A2($Basics._op["%"],
+      $Basics.round(x + y),
+      2),
+      0) ? _U.eq(mode,
+      $Trixel$Types$General.Horizontal) ? $Trixel$Types$General.Left : $Trixel$Types$General.Down : _U.eq(mode,
+      $Trixel$Types$General.Horizontal) ? $Trixel$Types$General.Right : $Trixel$Types$General.Up;
+   });
+   var renderTriangle = F6(function (x,
+   y,
+   x$,
+   y$,
+   x$$,
+   y$$) {
+      return $Graphics$Collage.polygon(_L.fromArray([{ctor: "_Tuple2"
+                                                     ,_0: x
+                                                     ,_1: y}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: x$
+                                                     ,_1: y$}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: x$$
+                                                     ,_1: y$$}]));
+   });
+   var renderTrixel = F6(function (orientation,
+   x,
+   y,
+   triangleWidth,
+   triangleHeight,
+   styleFunction) {
+      return function () {
+         var doubleWidth = triangleWidth * 2;
+         var triangle = function () {
+            switch (orientation.ctor)
+            {case "Down":
+               return A6(renderTriangle,
+                 x,
+                 y + triangleHeight,
+                 x + doubleWidth,
+                 y + triangleHeight,
+                 x + triangleWidth,
+                 y);
+               case "Left":
+               return A6(renderTriangle,
+                 x,
+                 y + triangleWidth,
+                 x + triangleHeight,
+                 y,
+                 x + triangleHeight,
+                 y + doubleWidth);
+               case "Right":
+               return A6(renderTriangle,
+                 x + triangleHeight,
+                 y + triangleWidth,
+                 x,
+                 y,
+                 x,
+                 y + doubleWidth);
+               case "Up":
+               return A6(renderTriangle,
+                 x,
+                 y,
+                 x + doubleWidth,
+                 y,
+                 x + triangleWidth,
+                 y + triangleHeight);}
+            _U.badCase($moduleName,
+            "between lines 114 and 138");
+         }();
+         return styleFunction(triangle);
+      }();
+   });
+   var renderTrixelRow = F6(function (state,
+   countX,
+   countY,
+   width,
+   height,
+   trixels) {
+      return _U.eq(countX,
+      0) ? trixels : function () {
+         var $ = _U.eq(state.trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
+                                           ,_0: state.trixelInfo.width
+                                           ,_1: state.trixelInfo.height
+                                           ,_2: countX
+                                           ,_3: countY} : {ctor: "_Tuple4"
+                                                          ,_0: state.trixelInfo.height
+                                                          ,_1: state.trixelInfo.width
+                                                          ,_2: countY
+                                                          ,_3: countX},
+         scaleX = $._0,
+         scaleY = $._1,
+         countX$ = $._2,
+         countY$ = $._3;
+         var x = (countX$ - 1) * scaleX - state.trixelInfo.extraOffset.x;
+         var y = (countY$ - 1) * scaleY - state.trixelInfo.extraOffset.y;
+         return A5(renderTrixelRow,
+         state,
+         countX - 1,
+         countY,
+         width,
+         height)(A2($List._op["::"],
+         A6(renderTrixel,
+         A3(getTrixelOrientation,
+         countX,
+         countY,
+         state.trixelInfo.mode),
+         x,
+         y,
+         state.trixelInfo.width,
+         state.trixelInfo.height,
+         function (triangle) {
+            return A2($Graphics$Collage.outlined,
+            $Graphics$Collage.solid(state.colorScheme.bg.elm),
+            triangle);
+         }),
+         trixels));
+      }();
+   });
+   var renderGrid = F6(function (state,
+   countX,
+   countY,
+   width,
+   height,
+   trixels) {
+      return _U.eq(countY,
+      0) ? trixels : A5(renderGrid,
+      state,
+      countX,
+      countY - 1,
+      width,
+      height)(A6(renderTrixelRow,
+      state,
+      countX,
+      countY,
+      width,
+      height,
+      trixels));
+   });
+   var generateGrid = function (state) {
+      return function () {
+         var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
+         x = $.x,
+         y = $.y;
+         var count = state.trixelInfo.count;
+         var $ = _U.eq(state.trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
+                                           ,_0: count.x
+                                           ,_1: count.y} : {ctor: "_Tuple2"
+                                                           ,_0: count.y
+                                                           ,_1: count.x},
+         countX = $._0,
+         countY = $._1;
+         return _U.replace([["grid"
+                            ,A6(renderGrid,
+                            state,
+                            countX,
+                            countY,
+                            x,
+                            y,
+                            _L.fromArray([]))]],
+         state);
+      }();
+   };
+   var renderMouse = F4(function (state,
+   width,
+   height,
+   trixels) {
+      return function () {
+         var _v1 = state.mouseState;
+         switch (_v1.ctor)
+         {case "MouseHover":
+            return function () {
+                 var $ = _U.eq(state.trixelInfo.mode,
+                 $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
+                                                   ,_0: state.trixelInfo.width
+                                                   ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                                   ,_0: state.trixelInfo.height
+                                                                                   ,_1: state.trixelInfo.width},
+                 triangleWidth = $._0,
+                 triangleHeight = $._1;
+                 var x = _v1._0.x * triangleWidth - state.trixelInfo.extraOffset.x;
+                 var y = _v1._0.y * triangleHeight - state.trixelInfo.extraOffset.y;
+                 return A2($List._op["::"],
+                 A6(renderTrixel,
+                 A3(getTrixelOrientation,
+                 _v1._0.x,
+                 _v1._0.y,
+                 state.trixelInfo.mode),
+                 x,
+                 y,
+                 state.trixelInfo.width,
+                 state.trixelInfo.height,
+                 function (s) {
+                    return A2($Graphics$Collage.filled,
+                    $Color.red,
+                    s);
+                 }),
+                 trixels);
+              }();
+            case "MouseNone":
+            return trixels;}
+         _U.badCase($moduleName,
+         "between lines 206 and 226");
+      }();
+   });
+   var normalizeCoordinates = F2(function (coordinate,
+   size) {
+      return coordinate - size / 2;
+   });
+   var getCoordinateFromIndex = F3(function (count,
+   size,
+   offset) {
+      return normalizeCoordinates(offset)(F2(function (x,
+      y) {
+         return x * y;
+      })(size)(count));
+   });
+   var updateGrid = function (state) {
+      return function () {
+         var trixelInfo = state.trixelInfo;
+         var workspace = state.boxModels.workspace;
+         var $ = _U.eq(trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
+                                           ,_0: workspace.width * trixelInfo.scale
+                                           ,_1: workspace.height * trixelInfo.scale
+                                           ,_2: trixelInfo.count.x
+                                           ,_3: trixelInfo.count.y} : {ctor: "_Tuple4"
+                                                                      ,_0: workspace.height * trixelInfo.scale
+                                                                      ,_1: workspace.width * trixelInfo.scale
+                                                                      ,_2: trixelInfo.count.y
+                                                                      ,_3: trixelInfo.count.x},
+         scaledWidth = $._0,
+         scaledHeight = $._1,
+         countX = $._2,
+         countY = $._3;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: countX + 1
+                 ,_1: $Trixel$Constants.sqrt3 * countY},
+         deltaX = $._0,
+         deltaY = $._1;
+         var scale = A2($Basics.min,
+         scaledWidth / deltaX,
+         scaledHeight / deltaY);
+         var $ = {ctor: "_Tuple2"
+                 ,_0: scale * deltaX
+                 ,_1: scale * deltaY},
+         width = $._0,
+         height = $._1;
+         var $ = _U.eq(trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
+                                           ,_0: width / 2
+                                           ,_1: height / 2
+                                           ,_2: width
+                                           ,_3: height} : {ctor: "_Tuple4"
+                                                          ,_0: height / 2
+                                                          ,_1: width / 2
+                                                          ,_2: height
+                                                          ,_3: width},
+         triangleOffsetX = $._0,
+         triangleOffsetY = $._1,
+         maxBoundsX = $._2,
+         maxBoundsY = $._3;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: width / deltaX
+                 ,_1: height / countY},
+         triangleWidth = $._0,
+         triangleHeight = $._1;
+         return generateGrid(_U.replace([["trixelInfo"
+                                         ,_U.replace([["width"
+                                                      ,triangleWidth]
+                                                     ,["height",triangleHeight]
+                                                     ,["extraOffset"
+                                                      ,{_: {}
+                                                       ,x: triangleOffsetX - trixelInfo.offset.x
+                                                       ,y: triangleOffsetY - trixelInfo.offset.y}]
+                                                     ,["bounds"
+                                                      ,{_: {}
+                                                       ,max: {_: {}
+                                                             ,x: A2($Basics.min,
+                                                             workspace.width,
+                                                             maxBoundsX)
+                                                             ,y: A2($Basics.min,
+                                                             workspace.height,
+                                                             maxBoundsY)}
+                                                       ,min: $Trixel$Types$Math.zeroVector}]],
+                                         trixelInfo)]],
+         state));
+      }();
+   };
+   var isPointInTriangle = F4(function (p,
+   p0,
+   p1,
+   p2) {
+      return function () {
+         var t = p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y;
+         var s = p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y;
+         return !_U.eq(_U.cmp(s,0) < 0,
+         _U.cmp(t,
+         0) < 0) ? false : function () {
+            var a = (0 - p1.y) * p2.x + p0.y * (p2.x - p1.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y;
+            return _U.cmp(a,
+            0) < 0 ? _U.cmp(0 - s,
+            0) > 0 && (_U.cmp(0 - t,
+            0) > 0 && _U.cmp(0 - s - t,
+            0 - a) < 0) : _U.cmp(s,
+            0) > 0 && (_U.cmp(t,
+            0) > 0 && _U.cmp(s + t,a) < 0);
+         }();
+      }();
+   });
+   _elm.Trixel.Zones.WorkSpace.Grid.values = {_op: _op
+                                             ,updateGrid: updateGrid
+                                             ,renderMouse: renderMouse};
+   return _elm.Trixel.Zones.WorkSpace.Grid.values;
 };
 Elm.VirtualDom = Elm.VirtualDom || {};
 Elm.VirtualDom.make = function (_elm) {
