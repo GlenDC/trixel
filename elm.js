@@ -13645,7 +13645,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.4";
+   var version = "0.0.5";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -14695,7 +14695,10 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                                                                       ,_1: "right"}
                                                                      ,{ctor: "_Tuple2"
                                                                       ,_0: "float"
-                                                                      ,_1: "right"}]))]),
+                                                                      ,_1: "right"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "cursor"
+                                                                      ,_1: "default"}]))]),
                    _L.fromArray([$Html.text(A2($Basics._op["++"],
                    "Trixel v",
                    $Trixel$Constants.version))]))
@@ -14705,7 +14708,10 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                                                                       ,_1: "left"}
                                                                      ,{ctor: "_Tuple2"
                                                                       ,_0: "float"
-                                                                      ,_1: "left"}]))]),
+                                                                      ,_1: "left"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "cursor"
+                                                                      ,_1: "default"}]))]),
                    _L.fromArray([$Html.text($Trixel$Types$General.computeConditionString(state.condition))]))]));
    });
    _elm.Trixel.Zones.Footer.values = {_op: _op
@@ -15093,6 +15099,7 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
@@ -15133,7 +15140,11 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
          margin.x,
          margin.y,
          workspace.sizing);
-         return $Html$Attributes.style($Trixel$Types$Html.computeBoxModelCSS(boxModel));
+         return $Html$Attributes.style(A2($List._op["::"],
+         {ctor: "_Tuple2"
+         ,_0: "cursor"
+         ,_1: "none"},
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel)));
       }();
    };
    var view = F2(function (address,
