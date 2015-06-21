@@ -13645,7 +13645,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.5";
+   var version = "0.0.6";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -13674,9 +13674,8 @@ Elm.Trixel.Main.make = function (_elm) {
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
-   $Mouse = Elm.Mouse.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Trixel$PostOffice = Elm.Trixel.PostOffice.make(_elm),
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
@@ -13706,6 +13705,16 @@ Elm.Trixel.Main.make = function (_elm) {
                                                   ,_0: "position"
                                                   ,_1: "absolute"}
                                                  ,$Trixel$Types$Html.computeBoxSizingCSS($Trixel$Types$Html.BorderBox)]));
+   };
+   var view = function (state) {
+      return A2($Html.div,
+      _L.fromArray([constructMainStyle(state)
+                   ,A2($Html$Events.onMouseEnter,
+                   $Trixel$Types$General.actionQuery.address,
+                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+      _L.fromArray([$Trixel$Zones$Menu.view(state)
+                   ,$Trixel$Zones$Footer.view(state)
+                   ,$Trixel$Zones$WorkSpace.view(state)]));
    };
    var constructNewState = F2(function (countX,
    countY) {
@@ -13741,67 +13750,145 @@ Elm.Trixel.Main.make = function (_elm) {
                                                       ,x: $Basics.toFloat(_v0._0)
                                                       ,y: $Basics.toFloat(_v0._1)});}
          _U.badCase($moduleName,
-         "on line 48, column 7 to 50");
+         "on line 27, column 7 to 50");
       }();
    },
    $Window.dimensions);
-   var moveMouseSignal = A2($Signal.map,
-   function (_v4) {
-      return function () {
-         switch (_v4.ctor)
-         {case "_Tuple2":
-            return $Trixel$Types$General.MoveMouse({_: {}
-                                                   ,x: $Basics.toFloat(_v4._0)
-                                                   ,y: $Basics.toFloat(_v4._1)});}
-         _U.badCase($moduleName,
-         "on line 40, column 7 to 47");
-      }();
-   },
-   $Mouse.position);
-   var moveOffsetSignal = A2($Signal.map,
-   function (_v8) {
-      return function () {
-         return $Trixel$Types$General.MoveOffset({_: {}
-                                                 ,x: $Basics.toFloat(_v8.x)
-                                                 ,y: $Basics.toFloat(_v8.y)});
-      }();
-   },
-   $Keyboard.arrows);
-   var actionQuery = $Signal.mailbox($Trixel$Types$General.None);
-   var view = function (state) {
-      return A2($Html.div,
-      _L.fromArray([constructMainStyle(state)
-                   ,A2($Html$Events.onMouseEnter,
-                   actionQuery.address,
-                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
-      _L.fromArray([A2($Trixel$Zones$Menu.view,
-                   actionQuery.address,
-                   state)
-                   ,A2($Trixel$Zones$Footer.view,
-                   actionQuery.address,
-                   state)
-                   ,A2($Trixel$Zones$WorkSpace.view,
-                   actionQuery.address,
-                   state)]));
-   };
    var main = $Signal.map(view)(A2($Signal.foldp,
    $Trixel$Update.update,
    A2(constructNewState,
    10,
-   10))($Signal.mergeMany(_L.fromArray([actionQuery.signal
-                                       ,windowDimemensionsSignal
-                                       ,moveOffsetSignal
-                                       ,moveMouseSignal]))));
+   10))($Signal.mergeMany(_L.fromArray([$Trixel$Types$General.actionQuery.signal
+                                       ,$Trixel$PostOffice.postOfficeSignal
+                                       ,windowDimemensionsSignal]))));
    _elm.Trixel.Main.values = {_op: _op
-                             ,actionQuery: actionQuery
-                             ,moveOffsetSignal: moveOffsetSignal
-                             ,moveMouseSignal: moveMouseSignal
                              ,windowDimemensionsSignal: windowDimemensionsSignal
                              ,main: main
                              ,constructNewState: constructNewState
                              ,view: view
                              ,constructMainStyle: constructMainStyle};
    return _elm.Trixel.Main.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.PostOffice = Elm.Trixel.PostOffice || {};
+Elm.Trixel.PostOffice.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.PostOffice = _elm.Trixel.PostOffice || {};
+   if (_elm.Trixel.PostOffice.values)
+   return _elm.Trixel.PostOffice.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.PostOffice",
+   $Basics = Elm.Basics.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $Mouse = Elm.Mouse.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm);
+   var PostCondition = function (a) {
+      return {ctor: "PostCondition"
+             ,_0: a};
+   };
+   var PostAction = function (a) {
+      return {ctor: "PostAction"
+             ,_0: a};
+   };
+   var PostNoAction = {ctor: "PostNoAction"};
+   var filterPostOfficeSignal = function (trixelAction) {
+      return function () {
+         switch (trixelAction.ctor)
+         {case "SwitchAction":
+            return function () {
+                 var _v2 = trixelAction._0.action;
+                 switch (_v2.ctor)
+                 {case "SetCondition":
+                    return true;}
+                 return trixelAction._0.active;
+              }();}
+         return true;
+      }();
+   };
+   var handlePostedAction = F2(function (action,
+   state) {
+      return function () {
+         switch (action.ctor)
+         {case "PostAction":
+            return $Trixel$Types$General.SwitchAction({_: {}
+                                                      ,action: action._0
+                                                      ,active: state.active});
+            case "PostCondition":
+            return $Trixel$Types$General.SwitchAction({_: {}
+                                                      ,action: $Trixel$Types$General.SetCondition(action._0)
+                                                      ,active: !_U.eq(action._0,
+                                                      $Trixel$Types$General.IdleCondition)});
+            case "PostNoAction":
+            return $Trixel$Types$General.SwitchAction(state);}
+         _U.badCase($moduleName,
+         "between lines 38 and 52");
+      }();
+   });
+   var workspacePostOffice = F2(function (action,
+   cachedAction) {
+      return function () {
+         switch (cachedAction.ctor)
+         {case "SwitchAction":
+            return A2(handlePostedAction,
+              action,
+              cachedAction._0);}
+         return cachedAction;
+      }();
+   });
+   var postOfficeQuery = $Signal.mailbox(PostNoAction);
+   var postOfficeTrashQuery = $Signal.mailbox($Trixel$Types$General.None);
+   var moveMouseSignal = A2($Signal.map,
+   function (_v9) {
+      return function () {
+         switch (_v9.ctor)
+         {case "_Tuple2":
+            return PostAction($Trixel$Types$General.MoveMouse({_: {}
+                                                              ,x: $Basics.toFloat(_v9._0)
+                                                              ,y: $Basics.toFloat(_v9._1)}));}
+         _U.badCase($moduleName,
+         "on line 24, column 7 to 59");
+      }();
+   },
+   $Mouse.position);
+   var moveOffsetSignal = A2($Signal.map,
+   function (_v13) {
+      return function () {
+         return PostAction($Trixel$Types$General.MoveOffset({_: {}
+                                                            ,x: $Basics.toFloat(_v13.x)
+                                                            ,y: $Basics.toFloat(_v13.y)}));
+      }();
+   },
+   $Keyboard.arrows);
+   var workspaceSignals = A2($Signal.foldp,
+   workspacePostOffice,
+   $Trixel$Types$General.SwitchAction({_: {}
+                                      ,action: $Trixel$Types$General.None
+                                      ,active: false}))($Signal.mergeMany(_L.fromArray([postOfficeQuery.signal
+                                                                                       ,moveOffsetSignal
+                                                                                       ,moveMouseSignal])));
+   var postOfficeSignal = A3($Signal.filter,
+   filterPostOfficeSignal,
+   $Trixel$Types$General.None,
+   workspaceSignals);
+   _elm.Trixel.PostOffice.values = {_op: _op
+                                   ,moveOffsetSignal: moveOffsetSignal
+                                   ,moveMouseSignal: moveMouseSignal
+                                   ,postOfficeTrashQuery: postOfficeTrashQuery
+                                   ,postOfficeQuery: postOfficeQuery
+                                   ,handlePostedAction: handlePostedAction
+                                   ,workspacePostOffice: workspacePostOffice
+                                   ,workspaceSignals: workspaceSignals
+                                   ,filterPostOfficeSignal: filterPostOfficeSignal
+                                   ,postOfficeSignal: postOfficeSignal
+                                   ,PostNoAction: PostNoAction
+                                   ,PostAction: PostAction
+                                   ,PostCondition: PostCondition};
+   return _elm.Trixel.PostOffice.values;
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Types = Elm.Trixel.Types || {};
@@ -13945,6 +14032,10 @@ Elm.Trixel.Types.General.make = function (_elm) {
    var Scale = {ctor: "Scale"};
    var GridY = {ctor: "GridY"};
    var GridX = {ctor: "GridX"};
+   var SwitchAction = function (a) {
+      return {ctor: "SwitchAction"
+             ,_0: a};
+   };
    var MoveOffset = function (a) {
       return {ctor: "MoveOffset"
              ,_0: a};
@@ -13981,6 +14072,12 @@ Elm.Trixel.Types.General.make = function (_elm) {
              ,_0: a};
    };
    var None = {ctor: "None"};
+   var PostOfficeState = F2(function (a,
+   b) {
+      return {_: {}
+             ,action: b
+             ,active: a};
+   });
    var State = F8(function (a,
    b,
    c,
@@ -14059,15 +14156,17 @@ Elm.Trixel.Types.General.make = function (_elm) {
                       "active: ",
                       condition._0._0);}
                  _U.badCase($moduleName,
-                 "between lines 20 and 25");
+                 "between lines 24 and 29");
               }();
             case "IdleCondition":
             return "idle";}
          _U.badCase($moduleName,
-         "between lines 15 and 25");
+         "between lines 19 and 29");
       }();
    };
+   var actionQuery = $Signal.mailbox(None);
    _elm.Trixel.Types.General.values = {_op: _op
+                                      ,actionQuery: actionQuery
                                       ,computeConditionString: computeConditionString
                                       ,Up: Up
                                       ,Down: Down
@@ -14084,6 +14183,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,EmptyMessage: EmptyMessage
                                       ,StringMessage: StringMessage
                                       ,State: State
+                                      ,PostOfficeState: PostOfficeState
                                       ,None: None
                                       ,ResizeWindow: ResizeWindow
                                       ,SetMode: SetMode
@@ -14096,6 +14196,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,SetGridY: SetGridY
                                       ,MoveMouse: MoveMouse
                                       ,MoveOffset: MoveOffset
+                                      ,SwitchAction: SwitchAction
                                       ,GridX: GridX
                                       ,GridY: GridY
                                       ,Scale: Scale};
@@ -14603,6 +14704,7 @@ Elm.Trixel.Update.make = function (_elm) {
               state));
             case "NewDocument":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid(resetState(state));
+            case "None": return state;
             case "OpenDocument":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2($Debug.log,
               "todo, OpenDoc...",
@@ -14634,9 +14736,13 @@ Elm.Trixel.Update.make = function (_elm) {
             case "SetScale":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateScale,
               action._0,
-              state));}
+              state));
+            case "SwitchAction":
+            return A2(update,
+              action._0.action,
+              state);}
          _U.badCase($moduleName,
-         "between lines 12 and 53");
+         "between lines 12 and 59");
       }();
    });
    _elm.Trixel.Update.values = {_op: _op
@@ -14663,6 +14769,7 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
    $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
+   $Trixel$PostOffice = Elm.Trixel.PostOffice.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm);
    var constructMainStyle = function (state) {
@@ -14681,14 +14788,13 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                     ,_0: "bottom"
                     ,_1: "0px"}])));
    };
-   var view = F2(function (address,
-   state) {
+   var view = function (state) {
       return A2($Html.div,
       _L.fromArray([constructMainStyle(state)
                    ,$Html$Attributes.$class("noselect")
                    ,A2($Html$Events.onMouseEnter,
-                   address,
-                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+                   $Trixel$PostOffice.postOfficeQuery.address,
+                   $Trixel$PostOffice.PostCondition($Trixel$Types$General.IdleCondition))]),
       _L.fromArray([A2($Html.div,
                    _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
                                                                       ,_0: "text-align"
@@ -14713,7 +14819,7 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                                                                       ,_0: "cursor"
                                                                       ,_1: "default"}]))]),
                    _L.fromArray([$Html.text($Trixel$Types$General.computeConditionString(state.condition))]))]));
-   });
+   };
    _elm.Trixel.Zones.Footer.values = {_op: _op
                                      ,view: view};
    return _elm.Trixel.Zones.Footer.values;
@@ -14738,12 +14844,12 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Trixel$PostOffice = Elm.Trixel.PostOffice.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
-   var constructModeList = F3(function (menuBoxModel,
-   state,
-   address) {
+   var constructModeList = F2(function (menuBoxModel,
+   state) {
       return function () {
          var selectFunction = function (value) {
             return $Trixel$Types$General.SetMode(_U.eq($Trixel$Types$Math.stringToInt(value),
@@ -14798,7 +14904,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                    "change",
                                    $Html$Events.targetValue,
                                    $Signal.message(A2($Signal.forwardTo,
-                                   address,
+                                   $Trixel$Types$General.actionQuery.address,
                                    selectFunction)))]),
                       _L.fromArray([A2($Html.option,
                                    _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
@@ -14812,10 +14918,9 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                    _L.fromArray([$Html.text("Vertical")]))]))]));
       }();
    });
-   var constructTextInput = F4(function (action,
+   var constructTextInput = F3(function (action,
    menuBoxModel,
-   state,
-   address) {
+   state) {
       return function () {
          var $ = function () {
             switch (action.ctor)
@@ -14841,7 +14946,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                          return $Trixel$Types$General.SetScale($Trixel$Types$Math.stringToFloat(s) / 100);
                       }};}
             _U.badCase($moduleName,
-            "between lines 129 and 141");
+            "between lines 130 and 142");
          }(),
          $default = $._0,
          caption = $._1,
@@ -14895,17 +15000,19 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                    "blur",
                                    $Html$Events.targetValue,
                                    $Signal.message(A2($Signal.forwardTo,
-                                   address,
+                                   $Trixel$Types$General.actionQuery.address,
                                    fn)))
+                                   ,A2($Html$Events.onFocus,
+                                   $Trixel$PostOffice.postOfficeQuery.address,
+                                   $Trixel$PostOffice.PostCondition($Trixel$Types$General.IdleCondition))
                                    ,inputStyle]),
                       _L.fromArray([]))]));
       }();
    });
-   var constructArithmeticButton = F5(function (string,
+   var constructArithmeticButton = F4(function (string,
    action,
    menuBoxModel,
-   state,
-   address) {
+   state) {
       return function () {
          var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
          var width = A3($Basics.clamp,
@@ -14937,17 +15044,16 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
          return A2($Html.button,
          _L.fromArray([A2($Html$Events.onClick,
-                      address,
+                      $Trixel$Types$General.actionQuery.address,
                       action)
                       ,buttonStyle]),
          _L.fromArray([$Html.text(string)]));
       }();
    });
-   var constructButton = F5(function (string,
+   var constructButton = F4(function (string,
    action,
    menuBoxModel,
-   state,
-   address) {
+   state) {
       return function () {
          var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
          var width = A3($Basics.clamp,
@@ -14979,7 +15085,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
          return A2($Html.button,
          _L.fromArray([A2($Html$Events.onClick,
-                      address,
+                      $Trixel$Types$General.actionQuery.address,
                       action)
                       ,buttonStyle]),
          _L.fromArray([$Html.text(string)]));
@@ -14994,8 +15100,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                     ,_1: state.colorScheme.bg.html}
                    ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
    });
-   var view = F2(function (address,
-   state) {
+   var view = function (state) {
       return function () {
          var boxModel = state.boxModels.menu;
          return A2($Html.div,
@@ -15004,77 +15109,66 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       state)
                       ,$Html$Attributes.$class("noselect")
                       ,A2($Html$Events.onMouseEnter,
-                      address,
-                      $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
-         _L.fromArray([A5(constructButton,
+                      $Trixel$PostOffice.postOfficeQuery.address,
+                      $Trixel$PostOffice.PostCondition($Trixel$Types$General.IdleCondition))]),
+         _L.fromArray([A4(constructButton,
                       "New",
                       $Trixel$Types$General.NewDocument,
                       boxModel,
-                      state,
-                      address)
-                      ,A4(constructTextInput,
+                      state)
+                      ,A3(constructTextInput,
                       $Trixel$Types$General.GridX,
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "-",
                       $Trixel$Types$General.SetGridX(A2($Basics.max,
                       1,
                       state.trixelInfo.count.x - 1)),
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "+",
                       $Trixel$Types$General.SetGridX(state.trixelInfo.count.x + 1),
                       boxModel,
-                      state,
-                      address)
-                      ,A4(constructTextInput,
+                      state)
+                      ,A3(constructTextInput,
                       $Trixel$Types$General.GridY,
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "-",
                       $Trixel$Types$General.SetGridY(A2($Basics.max,
                       1,
                       state.trixelInfo.count.y - 1)),
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "+",
                       $Trixel$Types$General.SetGridY(state.trixelInfo.count.y + 1),
                       boxModel,
-                      state,
-                      address)
-                      ,A4(constructTextInput,
+                      state)
+                      ,A3(constructTextInput,
                       $Trixel$Types$General.Scale,
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "-",
                       $Trixel$Types$General.SetScale(A2($Basics.max,
                       0.2,
                       state.trixelInfo.scale - 0.2)),
                       boxModel,
-                      state,
-                      address)
-                      ,A5(constructArithmeticButton,
+                      state)
+                      ,A4(constructArithmeticButton,
                       "+",
                       $Trixel$Types$General.SetScale(state.trixelInfo.scale + 0.2),
                       boxModel,
-                      state,
-                      address)
-                      ,A3(constructModeList,
+                      state)
+                      ,A2(constructModeList,
                       boxModel,
-                      state,
-                      address)]));
+                      state)]));
       }();
-   });
+   };
    _elm.Trixel.Zones.Menu.values = {_op: _op
                                    ,view: view};
    return _elm.Trixel.Zones.Menu.values;
@@ -15100,6 +15194,7 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
+   $Trixel$PostOffice = Elm.Trixel.PostOffice.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
@@ -15147,19 +15242,18 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
          $Trixel$Types$Html.computeBoxModelCSS(boxModel)));
       }();
    };
-   var view = F2(function (address,
-   state) {
+   var view = function (state) {
       return A2($Html.div,
       _L.fromArray([constructMainStyle(state)
                    ,$Html$Attributes.$class("noselect")
                    ,A2($Html$Events.onMouseEnter,
-                   address,
-                   $Trixel$Types$General.SetCondition($Trixel$Types$General.ActiveCondition($Trixel$Types$General.EmptyMessage)))
+                   $Trixel$PostOffice.postOfficeQuery.address,
+                   $Trixel$PostOffice.PostCondition($Trixel$Types$General.ActiveCondition($Trixel$Types$General.EmptyMessage)))
                    ,A2($Html$Events.onMouseLeave,
-                   address,
-                   $Trixel$Types$General.SetCondition($Trixel$Types$General.IdleCondition))]),
+                   $Trixel$PostOffice.postOfficeQuery.address,
+                   $Trixel$PostOffice.PostCondition($Trixel$Types$General.IdleCondition))]),
       _L.fromArray([viewWorkSpace(state)]));
-   });
+   };
    _elm.Trixel.Zones.WorkSpace.values = {_op: _op
                                         ,view: view};
    return _elm.Trixel.Zones.WorkSpace.values;
@@ -15362,7 +15456,8 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
          var _v1 = state.mouseState;
          switch (_v1.ctor)
          {case "MouseHover":
-            return function () {
+            return _U.eq(state.condition,
+              $Trixel$Types$General.IdleCondition) ? trixels : function () {
                  var $ = _U.eq(state.trixelInfo.mode,
                  $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
                                                    ,_0: state.trixelInfo.width
@@ -15393,7 +15488,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
             case "MouseNone":
             return trixels;}
          _U.badCase($moduleName,
-         "between lines 206 and 226");
+         "between lines 206 and 229");
       }();
    });
    var normalizeCoordinates = F2(function (coordinate,
