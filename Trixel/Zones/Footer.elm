@@ -20,6 +20,7 @@ view address state =
         [ style
             [ ("text-align", "right")
             , ("float", "right")
+            , ("cursor", "default")
             ]
         ]
         [ text ("Trixel v" ++ version) ]
@@ -27,6 +28,7 @@ view address state =
         [ style
             [ ("text-align", "left")
             , ("float", "left")
+            , ("cursor", "default")
             ]
         ]
         [ computeConditionString state.condition |> text ]

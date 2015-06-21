@@ -45,7 +45,7 @@ constructMainStyle state =
           margin.x margin.y
           workspace.sizing
   in
-    computeBoxModelCSS boxModel
+    ("cursor", "none") :: (computeBoxModelCSS boxModel)
     |> style
 
 ---
