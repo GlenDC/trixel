@@ -208,19 +208,22 @@ renderMouse state width height trixels =
       trixels
 
     MouseHover position -> 
-      let (triangleWidth, triangleHeight) =
-              if state.trixelInfo.mode == Vertical
-                then (state.trixelInfo.width, state.trixelInfo.height)
-                else (state.trixelInfo.height, state.trixelInfo.width)
-          x =
-            (position.x * triangleWidth) - state.trixelInfo.extraOffset.x
-          y =
-            (position.y * triangleHeight) - state.trixelInfo.extraOffset.y
-      in 
-        (renderTrixel
-          (getTrixelOrientation position.x position.y state.trixelInfo.mode)
-          x y
-          state.trixelInfo.width
-          state.trixelInfo.height
-          (\s -> filled red s)
-        ) :: trixels
+      if state.condition == IdleCondition
+        then trixels
+        else
+          let (triangleWidth, triangleHeight) =
+                  if state.trixelInfo.mode == Vertical
+                    then (state.trixelInfo.width, state.trixelInfo.height)
+                    else (state.trixelInfo.height, state.trixelInfo.width)
+              x =
+                (position.x * triangleWidth) - state.trixelInfo.extraOffset.x
+              y =
+                (position.y * triangleHeight) - state.trixelInfo.extraOffset.y
+          in 
+            (renderTrixel
+              (getTrixelOrientation position.x position.y state.trixelInfo.mode)
+              x y
+              state.trixelInfo.width
+              state.trixelInfo.height
+              (\s -> filled red s)
+            ) :: trixels

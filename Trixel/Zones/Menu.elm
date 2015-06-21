@@ -4,10 +4,11 @@ import Trixel.Types.ColorScheme exposing (ColorScheme)
 import Trixel.Types.Html exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.General exposing (..)
+import Trixel.PostOffice exposing (..)
 
 import Html exposing (Html, Attribute, div, input,
   button, text, label, select, option)
-import Html.Events exposing (on, onClick, targetValue, onMouseEnter)
+import Html.Events exposing (on, onClick, targetValue, onMouseEnter, onFocus)
 import Html.Attributes exposing (style, value, selected, class)
 
 import Signal exposing (forwardTo)
@@ -15,37 +16,37 @@ import Json.Decode
 import String
 
 
-view : ActionAddress -> State -> Html
-view  address state =
+view : State -> Html
+view  state =
   let boxModel =
         state.boxModels.menu
   in
     div
       [ constructMainStyle boxModel state
       , class "noselect"
-      , onMouseEnter address (SetCondition IdleCondition)
+      , onMouseEnter postOfficeQuery.address (PostCondition IdleCondition)
       ]
-      [ (constructButton "New" NewDocument boxModel state address)
+      [ (constructButton "New" NewDocument boxModel state)
 
-      , (constructTextInput GridX boxModel state address)
+      , (constructTextInput GridX boxModel state)
       , (constructArithmeticButton "-"
-          (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state address)
+          (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state)
       , (constructArithmeticButton "+"
-          (SetGridX (state.trixelInfo.count.x + 1)) boxModel state address)
+          (SetGridX (state.trixelInfo.count.x + 1)) boxModel state)
 
-      , (constructTextInput GridY boxModel state address)
+      , (constructTextInput GridY boxModel state)
       , (constructArithmeticButton "-"
-          (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state address)
+          (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state)
       , (constructArithmeticButton "+"
-          (SetGridY (state.trixelInfo.count.y + 1)) boxModel state address)
+          (SetGridY (state.trixelInfo.count.y + 1)) boxModel state)
 
-      , (constructTextInput Scale boxModel state address)
+      , (constructTextInput Scale boxModel state)
       , (constructArithmeticButton "-"
-          (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state address)
+          (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state)
       , (constructArithmeticButton "+"
-          (SetScale (state.trixelInfo.scale + 0.20)) boxModel state address)
+          (SetScale (state.trixelInfo.scale + 0.20)) boxModel state)
 
-      , (constructModeList boxModel state address)
+      , (constructModeList boxModel state)
       ]
 
 
@@ -58,8 +59,8 @@ constructMainStyle boxModel state  =
     ])
 
 
-constructButton : String -> TrixelAction -> BoxModel -> State -> ActionAddress -> Html
-constructButton string action menuBoxModel state address =
+constructButton : String -> TrixelAction -> BoxModel -> State -> Html
+constructButton string action menuBoxModel state =
   let width =
         clamp 50 80 (menuBoxModel.width * 0.075)
       height =
@@ -78,12 +79,12 @@ constructButton string action menuBoxModel state address =
           ])
   in
     button
-      [ onClick address action, buttonStyle ]
+      [ onClick actionQuery.address action, buttonStyle ]
       [ text string ]
 
 
-constructArithmeticButton : String -> TrixelAction -> BoxModel -> State -> ActionAddress -> Html
-constructArithmeticButton string action menuBoxModel state address =
+constructArithmeticButton : String -> TrixelAction -> BoxModel -> State -> Html
+constructArithmeticButton string action menuBoxModel state =
   let width =
         clamp 25 35 (menuBoxModel.width * 0.095)
       height =
@@ -102,12 +103,12 @@ constructArithmeticButton string action menuBoxModel state address =
           ])
   in
     button
-      [ onClick address action, buttonStyle ]
+      [ onClick actionQuery.address action, buttonStyle ]
       [ text string ]
 
 
-constructTextInput : TrixelActionInput -> BoxModel -> State -> ActionAddress -> Html
-constructTextInput action menuBoxModel state address =
+constructTextInput : TrixelActionInput -> BoxModel -> State -> Html
+constructTextInput action menuBoxModel state =
   let width =
         clamp 25 60 (menuBoxModel.width * 0.05)
       height =
@@ -150,15 +151,16 @@ constructTextInput action menuBoxModel state address =
           [text caption]
       , input
           [ value (toString default)
-          , on "blur" targetValue (Signal.message (forwardTo address fn))
+          , on "blur" targetValue (Signal.message (forwardTo actionQuery.address fn))
+          , onFocus postOfficeQuery.address (PostCondition IdleCondition)
           , inputStyle
           ]
           []
       ]
 
 
-constructModeList : BoxModel -> State -> ActionAddress -> Html
-constructModeList menuBoxModel state address =
+constructModeList : BoxModel -> State -> Html
+constructModeList menuBoxModel state =
   let width =
         clamp 115 130 (menuBoxModel.width * 0.08)
       height =
@@ -190,7 +192,7 @@ constructModeList menuBoxModel state address =
           [ text "Mode" ]
       , select
           [ selectStyle
-          , on "change" targetValue (Signal.message (forwardTo address selectFunction))
+          , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
           ]
           [ option
               [ selected (state.trixelInfo.mode == Horizontal)

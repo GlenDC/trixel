@@ -6,6 +6,7 @@ import Trixel.Types.General exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.Constants exposing (..)
+import Trixel.PostOffice exposing (..)
 import Trixel.Zones.WorkSpace
 import Trixel.Zones.Footer
 import Trixel.Zones.Menu
@@ -17,28 +18,6 @@ import Signal exposing (..)
 import Color exposing (red)
 
 import Window
-import Keyboard
-import Mouse
-
-
-actionQuery : Mailbox TrixelAction
-actionQuery = mailbox None
-
-
-moveOffsetSignal : ActionSignal
-moveOffsetSignal =
-  Signal.map
-    (\{x, y} ->
-      MoveOffset { x = toFloat x, y = toFloat y })
-    Keyboard.arrows
-
-
-moveMouseSignal : ActionSignal
-moveMouseSignal =
-  Signal.map
-    (\(x, y) ->
-      MoveMouse { x = toFloat x, y = toFloat y })
-    Mouse.position
 
 
 windowDimemensionsSignal : ActionSignal
@@ -53,9 +32,8 @@ main : Signal Html
 main =
   mergeMany
     [ actionQuery.signal
+    , postOfficeSignal
     , windowDimemensionsSignal
-    , moveOffsetSignal
-    , moveMouseSignal
     ]
   |> Signal.foldp update (constructNewState 10 10)
   |> Signal.map view
@@ -93,9 +71,9 @@ view state =
     [ constructMainStyle state
     , onMouseEnter actionQuery.address (SetCondition IdleCondition)
     ]
-    [ (Trixel.Zones.Menu.view actionQuery.address state)
-    , (Trixel.Zones.Footer.view actionQuery.address state)
-    , (Trixel.Zones.WorkSpace.view actionQuery.address state)
+    [ (Trixel.Zones.Menu.view state)
+    , (Trixel.Zones.Footer.view state)
+    , (Trixel.Zones.WorkSpace.view state)
     ]
 
 

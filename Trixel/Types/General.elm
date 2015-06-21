@@ -7,7 +7,11 @@ import Trixel.Types.Html exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Color exposing (Color)
-import Signal exposing (Signal, Address)
+import Signal exposing (Signal, Address, Mailbox, mailbox)
+
+
+actionQuery : Mailbox TrixelAction
+actionQuery = mailbox None
 
 
 computeConditionString : Condition -> String
@@ -98,6 +102,12 @@ type alias State =
   }
 
 
+type alias PostOfficeState =
+  { active : Bool
+  , action : TrixelAction
+  }
+
+
 -- All Possible UserActions.
 -- The used signals get translated into a TrixelAction,
 -- which then goes to the global update-case to handle it appropriatly
@@ -114,12 +124,15 @@ type TrixelAction
   | SetGridY Float -- Set the y-count for the grid of the workspace
   | MoveMouse Vector -- Moving the cursor
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
+  | SwitchAction PostOfficeState -- used for a filtered post-office action
+
 
 -- Used to create the correct gui-input for a specific TrixelAction
 type TrixelActionInput
   = GridX -- Used to create the input that sets the Grid on the x-axis
   | GridY -- Used to create the input that sets the Grid on the y-axis
   | Scale -- Used to create the scaling input menu
+
 
 type alias ActionAddress = Address TrixelAction
 type alias ActionSignal = Signal TrixelAction

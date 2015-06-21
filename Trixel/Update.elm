@@ -52,6 +52,12 @@ update action state =
       (Debug.log "todo, SaveDoc..." state)
       |> updateGrid
 
+    SwitchAction actionState ->
+      update actionState.action state
+
+    None ->
+      state
+
 
 resetState : State -> State
 resetState state =

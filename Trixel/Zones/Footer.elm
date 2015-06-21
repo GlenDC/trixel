@@ -4,17 +4,18 @@ import Trixel.Types.ColorScheme exposing (ColorScheme)
 import Trixel.Types.General exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.Constants exposing (..)
+import Trixel.PostOffice exposing (..)
 
 import Html exposing (Html, Attribute, div, text)
 import Html.Attributes exposing (style, class)
 import Html.Events exposing (onMouseEnter)
 
-view : ActionAddress -> State -> Html
-view address state =
+view : State -> Html
+view state =
   div
     [ constructMainStyle state
     , class "noselect"
-    , onMouseEnter address (SetCondition IdleCondition)
+    , onMouseEnter postOfficeQuery.address (PostCondition IdleCondition)
     ]
     [ div
         [ style

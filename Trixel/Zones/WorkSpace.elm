@@ -4,6 +4,7 @@ import Trixel.Types.ColorScheme exposing (ColorScheme)
 import Trixel.Types.General exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
+import Trixel.PostOffice exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
@@ -15,15 +16,16 @@ import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
 
-view :  ActionAddress -> State -> Html
-view address state =
+view : State -> Html
+view state =
   div
     [ constructMainStyle state
     , class "noselect"
-    , onMouseEnter address (SetCondition (ActiveCondition EmptyMessage))
-    , onMouseLeave address (SetCondition IdleCondition)
+    , onMouseEnter postOfficeQuery.address (PostCondition (ActiveCondition EmptyMessage))
+    , onMouseLeave postOfficeQuery.address (PostCondition IdleCondition)
     ]
     [ viewWorkSpace state ]
+
 
 constructMainStyle : State -> Attribute
 constructMainStyle state =
@@ -48,7 +50,6 @@ constructMainStyle state =
     ("cursor", "none") :: (computeBoxModelCSS boxModel)
     |> style
 
----
 
 viewWorkSpace : State -> Html
 viewWorkSpace state =
