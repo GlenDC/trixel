@@ -6,8 +6,7 @@ import Trixel.Types.Math exposing (..)
 import Trixel.Types.General exposing (..)
 import Trixel.PostOffice exposing (..)
 
-import Html exposing (Html, Attribute, div, input,
-  button, text, label, select, option)
+import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
 import Html.Events exposing (on, onClick, targetValue, onMouseEnter, onFocus)
 import Html.Attributes exposing (style, value, selected, class)
 

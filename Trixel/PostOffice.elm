@@ -38,15 +38,18 @@ handlePostedAction action state =
   case action of
     PostAction trixelAction ->
       SwitchAction
-        { active = state.active
-        , action = trixelAction
+        { state
+            | action <- trixelAction
         }
 
     PostCondition condition ->
-      SwitchAction
-        { active = condition /= IdleCondition
-        , action = SetCondition condition
-        }
+      if state.active == False && condition == IdleCondition
+        then SwitchAction state
+        else
+          SwitchAction
+            { active = condition /= IdleCondition
+            , action = SetCondition condition
+            }
 
     PostNoAction ->
       SwitchAction state
