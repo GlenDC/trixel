@@ -49,7 +49,7 @@ constructMainStyle state =
   in
     (if state.mouseState == MouseNone
       then ("cursor", "default")
-      else ("cursor", "none")) :: (computeBoxModelCSS boxModel)
+      else ("cursor", "pointer")) :: (computeBoxModelCSS boxModel)
     |> style
 
 
