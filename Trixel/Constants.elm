@@ -3,7 +3,7 @@ module Trixel.Constants where
 
 version : String
 version =
-  "0.0.6"
+  "0.0.7"
 
 
 githubPage : String
