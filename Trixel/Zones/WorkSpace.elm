@@ -47,7 +47,9 @@ constructMainStyle state =
           margin.x margin.y
           workspace.sizing
   in
-    ("cursor", "none") :: (computeBoxModelCSS boxModel)
+    (if state.mouseState == MouseNone
+      then ("cursor", "default")
+      else ("cursor", "none")) :: (computeBoxModelCSS boxModel)
     |> style
 
 
