@@ -47,6 +47,20 @@ computeBoxModelCSS boxModel =
   ]
 
 
+computeDimensionsFromBoxModel : BoxModel -> (Float, Float)
+computeDimensionsFromBoxModel boxModel =
+  case boxModel.sizing of
+    BorderBox ->
+      ( boxModel.width + boxModel.padding.x + boxModel.margin.x
+      , boxModel.height + boxModel.padding.y + boxModel.margin.y
+      )
+
+    _ ->
+      ( boxModel.width
+      , boxModel.height
+      )
+
+
 type alias BoxModel =
   { width : Float
   , height : Float

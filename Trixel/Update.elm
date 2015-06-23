@@ -120,20 +120,40 @@ updateMousePosition point state =
       offsetY =
         (state.boxModels.workspace.height - height) / 2
 
+      (menuOffsetX, menuOffsetY) =
+        computeDimensionsFromBoxModel state.boxModels.menu
+
       cursorX =
         point.x - padding.x - margin.x - offsetX
       cursorY =
-        height - (point.y - padding.y - margin.y
-          - state.boxModels.menu.height - offsetY)
+        height - (point.y - padding.y - margin.y - menuOffsetY - offsetY)
+
+      (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
+        if state.trixelInfo.mode == Vertical
+          then
+            ( state.trixelInfo.width
+            , state.trixelInfo.height
+            , state.trixelInfo.width
+            , state.trixelInfo.height / 2
+            )
+          else
+            ( state.trixelInfo.height
+            , state.trixelInfo.width
+            , state.trixelInfo.height / 2
+            , state.trixelInfo.width
+            )
 
       pointX =
-        (cursorX / state.trixelInfo.width) - 1
+        (cursorX - cursorOffsetX) / triangleWidth
+        |> round |> toFloat
       pointY =
-        (cursorY / state.trixelInfo.height) - 1
+        (cursorY - cursorOffsetY) / triangleHeight
+        |> round |> toFloat
   in
     { state |
         mouseState <-
-          if pointX >= 0 && pointY >= 0 && pointX <= width && pointY <= height
+          if pointX >= 0 && pointX < state.trixelInfo.count.x
+            && pointY >= 0 && pointY < state.trixelInfo.count.y
             then MouseHover { x = pointX, y = pointY}
             else MouseNone
     }
