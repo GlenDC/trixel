@@ -13645,7 +13645,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.6";
+   var version = "0.0.7";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -13719,6 +13719,9 @@ Elm.Trixel.Main.make = function (_elm) {
    var constructNewState = F2(function (countX,
    countY) {
       return {_: {}
+             ,actions: {_: {}
+                       ,isBrushActive: false
+                       ,isErasing: false}
              ,boxModels: {_: {}
                          ,footer: $Trixel$Types$Html.zeroBoxModel
                          ,menu: $Trixel$Types$Html.zeroBoxModel
@@ -13726,6 +13729,7 @@ Elm.Trixel.Main.make = function (_elm) {
              ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
              ,condition: $Trixel$Types$General.IdleCondition
              ,grid: _L.fromArray([])
+             ,lastMousePosition: $Trixel$Types$Math.zeroVector
              ,mouseState: $Trixel$Types$General.MouseNone
              ,trixelColor: $Color.red
              ,trixelInfo: {_: {}
@@ -13733,6 +13737,7 @@ Elm.Trixel.Main.make = function (_elm) {
                           ,count: {_: {}
                                   ,x: countX
                                   ,y: countY}
+                          ,dimensions: $Trixel$Types$Math.zeroVector
                           ,extraOffset: $Trixel$Types$Math.zeroVector
                           ,height: 0
                           ,mode: $Trixel$Types$General.Vertical
@@ -13815,18 +13820,20 @@ Elm.Trixel.PostOffice.make = function (_elm) {
       return function () {
          switch (action.ctor)
          {case "PostAction":
-            return $Trixel$Types$General.SwitchAction({_: {}
-                                                      ,action: action._0
-                                                      ,active: state.active});
+            return $Trixel$Types$General.SwitchAction(_U.replace([["action"
+                                                                  ,action._0]],
+              state));
             case "PostCondition":
-            return $Trixel$Types$General.SwitchAction({_: {}
-                                                      ,action: $Trixel$Types$General.SetCondition(action._0)
-                                                      ,active: !_U.eq(action._0,
-                                                      $Trixel$Types$General.IdleCondition)});
+            return _U.eq(state.active,
+              false) && _U.eq(action._0,
+              $Trixel$Types$General.IdleCondition) ? $Trixel$Types$General.SwitchAction(state) : $Trixel$Types$General.SwitchAction({_: {}
+                                                                                                                                    ,action: $Trixel$Types$General.SetCondition(action._0)
+                                                                                                                                    ,active: !_U.eq(action._0,
+                                                                                                                                    $Trixel$Types$General.IdleCondition)});
             case "PostNoAction":
             return $Trixel$Types$General.SwitchAction(state);}
          _U.badCase($moduleName,
-         "between lines 38 and 52");
+         "between lines 54 and 71");
       }();
    });
    var workspacePostOffice = F2(function (action,
@@ -13842,6 +13849,16 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    });
    var postOfficeQuery = $Signal.mailbox(PostNoAction);
    var postOfficeTrashQuery = $Signal.mailbox($Trixel$Types$General.None);
+   var ctrlKeyboardSignal = A2($Signal.map,
+   function (isDown) {
+      return PostAction($Trixel$Types$General.ErasingSwitch(isDown));
+   },
+   $Keyboard.ctrl);
+   var leftMouseSignal = A2($Signal.map,
+   function (isDown) {
+      return PostAction($Trixel$Types$General.BrushSwitch(isDown));
+   },
+   $Mouse.isDown);
    var moveMouseSignal = A2($Signal.map,
    function (_v9) {
       return function () {
@@ -13870,7 +13887,9 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                                       ,action: $Trixel$Types$General.None
                                       ,active: false}))($Signal.mergeMany(_L.fromArray([postOfficeQuery.signal
                                                                                        ,moveOffsetSignal
-                                                                                       ,moveMouseSignal])));
+                                                                                       ,moveMouseSignal
+                                                                                       ,leftMouseSignal
+                                                                                       ,ctrlKeyboardSignal])));
    var postOfficeSignal = A3($Signal.filter,
    filterPostOfficeSignal,
    $Trixel$Types$General.None,
@@ -13878,6 +13897,8 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    _elm.Trixel.PostOffice.values = {_op: _op
                                    ,moveOffsetSignal: moveOffsetSignal
                                    ,moveMouseSignal: moveMouseSignal
+                                   ,leftMouseSignal: leftMouseSignal
+                                   ,ctrlKeyboardSignal: ctrlKeyboardSignal
                                    ,postOfficeTrashQuery: postOfficeTrashQuery
                                    ,postOfficeQuery: postOfficeQuery
                                    ,handlePostedAction: handlePostedAction
@@ -14032,6 +14053,14 @@ Elm.Trixel.Types.General.make = function (_elm) {
    var Scale = {ctor: "Scale"};
    var GridY = {ctor: "GridY"};
    var GridX = {ctor: "GridX"};
+   var ErasingSwitch = function (a) {
+      return {ctor: "ErasingSwitch"
+             ,_0: a};
+   };
+   var BrushSwitch = function (a) {
+      return {ctor: "BrushSwitch"
+             ,_0: a};
+   };
    var SwitchAction = function (a) {
       return {ctor: "SwitchAction"
              ,_0: a};
@@ -14078,23 +14107,42 @@ Elm.Trixel.Types.General.make = function (_elm) {
              ,action: b
              ,active: a};
    });
-   var State = F8(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g,
-   h) {
+   var State = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return {_: {}
+                                        ,actions: i
+                                        ,boxModels: d
+                                        ,colorScheme: c
+                                        ,condition: h
+                                        ,grid: g
+                                        ,lastMousePosition: j
+                                        ,mouseState: f
+                                        ,trixelColor: b
+                                        ,trixelInfo: a
+                                        ,windowDimensions: e};
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
+   var WorkSpaceActions = F2(function (a,
+   b) {
       return {_: {}
-             ,boxModels: d
-             ,colorScheme: c
-             ,condition: h
-             ,grid: g
-             ,mouseState: f
-             ,trixelColor: b
-             ,trixelInfo: a
-             ,windowDimensions: e};
+             ,isBrushActive: a
+             ,isErasing: b};
    });
    var StringMessage = function (a) {
       return {ctor: "StringMessage"
@@ -14119,17 +14167,19 @@ Elm.Trixel.Types.General.make = function (_elm) {
              ,menu: a
              ,workspace: c};
    });
-   var TrixelInfo = F8(function (a,
+   var TrixelInfo = F9(function (a,
    b,
    c,
    d,
    e,
    f,
    g,
-   h) {
+   h,
+   i) {
       return {_: {}
              ,bounds: a
              ,count: e
+             ,dimensions: i
              ,extraOffset: h
              ,height: b
              ,mode: d
@@ -14182,6 +14232,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,ActiveCondition: ActiveCondition
                                       ,EmptyMessage: EmptyMessage
                                       ,StringMessage: StringMessage
+                                      ,WorkSpaceActions: WorkSpaceActions
                                       ,State: State
                                       ,PostOfficeState: PostOfficeState
                                       ,None: None
@@ -14197,6 +14248,8 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,MoveMouse: MoveMouse
                                       ,MoveOffset: MoveOffset
                                       ,SwitchAction: SwitchAction
+                                      ,BrushSwitch: BrushSwitch
+                                      ,ErasingSwitch: ErasingSwitch
                                       ,GridX: GridX
                                       ,GridY: GridY
                                       ,Scale: Scale};
@@ -14245,7 +14298,7 @@ Elm.Trixel.Types.Html.make = function (_elm) {
             case "BorderTop":
             return "border-top";}
          _U.badCase($moduleName,
-         "between lines 108 and 122");
+         "between lines 122 and 136");
       }();
    };
    var computeBorderStyleCSSValue = function (borderStyle) {
@@ -14258,7 +14311,7 @@ Elm.Trixel.Types.Html.make = function (_elm) {
             case "SolidBorder":
             return "solid";}
          _U.badCase($moduleName,
-         "between lines 95 and 103");
+         "between lines 109 and 117");
       }();
    };
    var computeBoxSizingCSS = function (boxSizing) {
@@ -14275,7 +14328,7 @@ Elm.Trixel.Types.Html.make = function (_elm) {
                    case "InitialBox":
                    return "initial";}
                 _U.badCase($moduleName,
-                "between lines 62 and 74");
+                "between lines 76 and 88");
              }()};
    };
    var BoxModel = F5(function (a,
@@ -14290,6 +14343,19 @@ Elm.Trixel.Types.Html.make = function (_elm) {
              ,sizing: e
              ,width: a};
    });
+   var computeDimensionsFromBoxModel = function (boxModel) {
+      return function () {
+         var _v3 = boxModel.sizing;
+         switch (_v3.ctor)
+         {case "BorderBox":
+            return {ctor: "_Tuple2"
+                   ,_0: boxModel.width + boxModel.padding.x + boxModel.margin.x
+                   ,_1: boxModel.height + boxModel.padding.y + boxModel.margin.y};}
+         return {ctor: "_Tuple2"
+                ,_0: boxModel.width
+                ,_1: boxModel.height};
+      }();
+   };
    var toPixels = function (value) {
       return A2($Basics._op["++"],
       $Basics.toString(value),
@@ -14372,6 +14438,7 @@ Elm.Trixel.Types.Html.make = function (_elm) {
                                    ,toPixels: toPixels
                                    ,vectorToPixels: vectorToPixels
                                    ,computeBoxModelCSS: computeBoxModelCSS
+                                   ,computeDimensionsFromBoxModel: computeDimensionsFromBoxModel
                                    ,BoxModel: BoxModel
                                    ,computeBoxSizingCSS: computeBoxSizingCSS
                                    ,computeDefaultBorderCSS: computeDefaultBorderCSS
@@ -14637,25 +14704,62 @@ Elm.Trixel.Update.make = function (_elm) {
    var updateMousePosition = F2(function (point,
    state) {
       return function () {
-         var bounds = state.trixelInfo.bounds;
-         var width = bounds.max.x - bounds.min.x;
-         var offsetX = (state.boxModels.workspace.width - width) / 2;
-         var height = bounds.max.y - bounds.min.y;
-         var offsetY = (state.boxModels.workspace.height - height) / 2;
+         var $ = _U.eq(state.trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
+                                           ,_0: state.trixelInfo.width
+                                           ,_1: state.trixelInfo.height
+                                           ,_2: state.trixelInfo.width
+                                           ,_3: state.trixelInfo.height / 2} : {ctor: "_Tuple4"
+                                                                               ,_0: state.trixelInfo.height
+                                                                               ,_1: state.trixelInfo.width
+                                                                               ,_2: state.trixelInfo.height / 2
+                                                                               ,_3: state.trixelInfo.width},
+         triangleWidth = $._0,
+         triangleHeight = $._1,
+         cursorOffsetX = $._2,
+         cursorOffsetY = $._3;
+         var $ = $Trixel$Types$Html.computeDimensionsFromBoxModel(state.boxModels.menu),
+         menuOffsetX = $._0,
+         menuOffsetY = $._1;
+         var offsetY = (state.boxModels.workspace.height - state.trixelInfo.dimensions.y) / 2;
+         var offsetX = (state.boxModels.workspace.width - state.trixelInfo.dimensions.x) / 2;
          var margin = state.boxModels.workspace.margin;
          var padding = state.boxModels.workspace.padding;
-         var cursorX = point.x - padding.x - margin.x - offsetX;
-         var pointX = cursorX / state.trixelInfo.width - 1;
-         var cursorY = height - (point.y - padding.y - margin.y - state.boxModels.menu.height - offsetY);
-         var pointY = cursorY / state.trixelInfo.height - 1;
+         var cursorX = point.x - padding.x - margin.x - offsetX - state.trixelInfo.offset.x;
+         var pointX = $Basics.toFloat($Basics.round((cursorX - cursorOffsetX) / triangleWidth));
+         var cursorY = state.trixelInfo.dimensions.y - (point.y - padding.y - margin.y - menuOffsetY - offsetY) - state.trixelInfo.offset.y;
+         var pointY = $Basics.toFloat($Basics.round((cursorY - cursorOffsetY) / triangleHeight));
          return _U.replace([["mouseState"
                             ,_U.cmp(pointX,
-                            0) > -1 && (_U.cmp(pointY,
                             0) > -1 && (_U.cmp(pointX,
-                            width) < 1 && _U.cmp(pointY,
-                            height) < 1)) ? $Trixel$Types$General.MouseHover({_: {}
-                                                                             ,x: pointX
-                                                                             ,y: pointY}) : $Trixel$Types$General.MouseNone]],
+                            state.trixelInfo.count.x) < 0 && (_U.cmp(pointY,
+                            0) > -1 && _U.cmp(pointY,
+                            state.trixelInfo.count.y) < 0)) ? $Trixel$Types$General.MouseHover({_: {}
+                                                                                               ,x: pointX
+                                                                                               ,y: pointY}) : $Trixel$Types$General.MouseNone]
+                           ,["lastMousePosition",point]],
+         state);
+      }();
+   });
+   var updateErasingAction = F2(function (isErasing,
+   state) {
+      return function () {
+         var actions = state.actions;
+         return _U.replace([["actions"
+                            ,_U.replace([["isErasing"
+                                         ,isErasing]],
+                            actions)]],
+         state);
+      }();
+   });
+   var updateBrushAction = F2(function (isActive,
+   state) {
+      return function () {
+         var actions = state.actions;
+         return _U.replace([["actions"
+                            ,_U.replace([["isBrushActive"
+                                         ,isActive]],
+                            actions)]],
          state);
       }();
    });
@@ -14694,14 +14798,22 @@ Elm.Trixel.Update.make = function (_elm) {
    state) {
       return function () {
          switch (action.ctor)
-         {case "MoveMouse":
+         {case "BrushSwitch":
+            return A2(updateBrushAction,
+              action._0,
+              state);
+            case "ErasingSwitch":
+            return A2(updateErasingAction,
+              action._0,
+              state);
+            case "MoveMouse":
             return A2(updateMousePosition,
               action._0,
               state);
             case "MoveOffset":
-            return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateOffset,
+            return update($Trixel$Types$General.MoveMouse(state.lastMousePosition))($Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateOffset,
               action._0,
-              state));
+              state)));
             case "NewDocument":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid(resetState(state));
             case "None": return state;
@@ -14742,7 +14854,7 @@ Elm.Trixel.Update.make = function (_elm) {
               action._0.action,
               state);}
          _U.badCase($moduleName,
-         "between lines 12 and 59");
+         "between lines 12 and 66");
       }();
    });
    _elm.Trixel.Update.values = {_op: _op
@@ -14946,7 +15058,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                          return $Trixel$Types$General.SetScale($Trixel$Types$Math.stringToFloat(s) / 100);
                       }};}
             _U.badCase($moduleName,
-            "between lines 130 and 142");
+            "between lines 129 and 141");
          }(),
          $default = $._0,
          caption = $._1,
@@ -15236,9 +15348,12 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
          margin.y,
          workspace.sizing);
          return $Html$Attributes.style(A2($List._op["::"],
-         {ctor: "_Tuple2"
-         ,_0: "cursor"
-         ,_1: "none"},
+         _U.eq(state.mouseState,
+         $Trixel$Types$General.MouseNone) ? {ctor: "_Tuple2"
+                                            ,_0: "cursor"
+                                            ,_1: "default"} : {ctor: "_Tuple2"
+                                                              ,_0: "cursor"
+                                                              ,_1: "pointer"},
          $Trixel$Types$Html.computeBoxModelCSS(boxModel)));
       }();
    };
@@ -15282,6 +15397,16 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var getHoverColor = function (state) {
+      return function () {
+         var originalColor = $Color.toRgb(state.colorScheme.subbg.elm);
+         return A4($Color.rgba,
+         255 - originalColor.red,
+         255 - originalColor.green,
+         255 - originalColor.blue,
+         0.5);
+      }();
+   };
    var getTrixelOrientation = F3(function (x,
    y,
    mode) {
@@ -15351,7 +15476,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
                  x + triangleWidth,
                  y + triangleHeight);}
             _U.badCase($moduleName,
-            "between lines 114 and 138");
+            "between lines 118 and 142");
          }();
          return styleFunction(triangle);
       }();
@@ -15364,22 +15489,8 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    trixels) {
       return _U.eq(countX,
       0) ? trixels : function () {
-         var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
-                                           ,_0: state.trixelInfo.width
-                                           ,_1: state.trixelInfo.height
-                                           ,_2: countX
-                                           ,_3: countY} : {ctor: "_Tuple4"
-                                                          ,_0: state.trixelInfo.height
-                                                          ,_1: state.trixelInfo.width
-                                                          ,_2: countY
-                                                          ,_3: countX},
-         scaleX = $._0,
-         scaleY = $._1,
-         countX$ = $._2,
-         countY$ = $._3;
-         var x = (countX$ - 1) * scaleX - state.trixelInfo.extraOffset.x;
-         var y = (countY$ - 1) * scaleY - state.trixelInfo.extraOffset.y;
+         var y = (countY - 1) * height - state.trixelInfo.extraOffset.y;
+         var x = (countX - 1) * width - state.trixelInfo.extraOffset.x;
          return A5(renderTrixelRow,
          state,
          countX - 1,
@@ -15425,25 +15536,22 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    });
    var generateGrid = function (state) {
       return function () {
-         var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
-         x = $.x,
-         y = $.y;
-         var count = state.trixelInfo.count;
          var $ = _U.eq(state.trixelInfo.mode,
          $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
-                                           ,_0: count.x
-                                           ,_1: count.y} : {ctor: "_Tuple2"
-                                                           ,_0: count.y
-                                                           ,_1: count.x},
-         countX = $._0,
-         countY = $._1;
+                                           ,_0: state.trixelInfo.width
+                                           ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                           ,_0: state.trixelInfo.height
+                                                                           ,_1: state.trixelInfo.width},
+         triangleWidth = $._0,
+         triangleHeight = $._1;
+         var count = state.trixelInfo.count;
          return _U.replace([["grid"
                             ,A6(renderGrid,
                             state,
-                            countX,
-                            countY,
-                            x,
-                            y,
+                            count.x,
+                            count.y,
+                            triangleWidth,
+                            triangleHeight,
                             _L.fromArray([]))]],
          state);
       }();
@@ -15480,7 +15588,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
                  state.trixelInfo.height,
                  function (s) {
                     return A2($Graphics$Collage.filled,
-                    $Color.red,
+                    getHoverColor(state),
                     s);
                  }),
                  trixels);
@@ -15488,7 +15596,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
             case "MouseNone":
             return trixels;}
          _U.badCase($moduleName,
-         "between lines 206 and 229");
+         "between lines 208 and 233");
       }();
    });
    var normalizeCoordinates = F2(function (coordinate,
@@ -15570,7 +15678,11 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
                                                              ,y: A2($Basics.min,
                                                              workspace.height,
                                                              maxBoundsY)}
-                                                       ,min: $Trixel$Types$Math.zeroVector}]],
+                                                       ,min: $Trixel$Types$Math.zeroVector}]
+                                                     ,["dimensions"
+                                                      ,{_: {}
+                                                       ,x: maxBoundsX
+                                                       ,y: maxBoundsY}]],
                                          trixelInfo)]],
          state));
       }();
