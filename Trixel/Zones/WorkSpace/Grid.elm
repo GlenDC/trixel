@@ -7,7 +7,7 @@ import Trixel.Constants exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
-import Color exposing (red)
+import Color exposing (Color, toRgb, rgba)
 
 
 isPointInTriangle : Vector -> Vector -> Vector -> Vector -> Bool
@@ -225,5 +225,17 @@ renderMouse state width height trixels =
               x y
               state.trixelInfo.width
               state.trixelInfo.height
-              (\s -> filled red s)
+              (\s -> filled (getHoverColor state) s)
             ) :: trixels
+
+
+getHoverColor: State -> Color
+getHoverColor state =
+  let originalColor =
+        toRgb state.colorScheme.subbg.elm
+  in
+    rgba
+      (255 - originalColor.red)
+      (255 - originalColor.green)
+      (255 - originalColor.blue)
+      0.5
