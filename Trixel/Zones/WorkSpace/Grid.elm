@@ -86,6 +86,10 @@ updateGrid state =
                         , y = min workspace.height maxBoundsY
                         }
                     }
+                , dimensions <-
+                    { x = maxBoundsX
+                    , y = maxBoundsY
+                    }
             }
     }
     |> generateGrid

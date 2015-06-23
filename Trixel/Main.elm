@@ -50,6 +50,7 @@ constructNewState countX countY =
       , scale = 1
       , offset = zeroVector
       , extraOffset = zeroVector
+      , dimensions = zeroVector
       }
   , trixelColor = red
   , colorScheme = zenburnScheme

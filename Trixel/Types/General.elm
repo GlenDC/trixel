@@ -56,6 +56,7 @@ type alias TrixelInfo =
   , scale : Float -- scale of the workspace
   , offset : Vector -- offset of the workspace, not used when .scale <= 1
   , extraOffset : Vector -- extra offset
+  , dimensions : Vector -- dimensions of the grid
   }
 
 

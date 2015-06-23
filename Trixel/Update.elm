@@ -139,26 +139,20 @@ updateMousePosition point state =
       margin =
         state.boxModels.workspace.margin
 
-      bounds =
-        state.trixelInfo.bounds
-
-      width =
-        bounds.max.x - bounds.min.x
-      height =
-        bounds.max.y - bounds.min.y
-
       offsetX =
-        (state.boxModels.workspace.width - width) / 2
+        (state.boxModels.workspace.width - state.trixelInfo.dimensions.x) / 2
       offsetY =
-        (state.boxModels.workspace.height - height) / 2
+        (state.boxModels.workspace.height - state.trixelInfo.dimensions.y) / 2
 
       (menuOffsetX, menuOffsetY) =
         computeDimensionsFromBoxModel state.boxModels.menu
 
       cursorX =
-        point.x - padding.x - margin.x - offsetX
+        point.x - padding.x - margin.x - offsetX - state.trixelInfo.offset.x
       cursorY =
-        height - (point.y - padding.y - margin.y - menuOffsetY - offsetY)
+        state.trixelInfo.dimensions.y
+          - (point.y - padding.y - margin.y - menuOffsetY - offsetY)
+          - state.trixelInfo.offset.y
 
       (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
         if state.trixelInfo.mode == Vertical
