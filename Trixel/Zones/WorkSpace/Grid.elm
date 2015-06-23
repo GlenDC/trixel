@@ -157,28 +157,25 @@ renderTrixelRow state countX countY width height trixels =
   if countX == 0
     then trixels
     else
-      let (scaleX, scaleY, countX', countY') =
-            if state.trixelInfo.mode == Vertical
-              then (state.trixelInfo.width, state.trixelInfo.height, countX, countY)
-              else (state.trixelInfo.height, state.trixelInfo.width, countY, countX)
-          x =
-            ((countX' - 1) * scaleX) - state.trixelInfo.extraOffset.x
+      let x =
+            ((countX - 1) * width) - state.trixelInfo.extraOffset.x
           y =
-            ((countY' - 1) * scaleY) - state.trixelInfo.extraOffset.y
-    in
-      (renderTrixel
-        (getTrixelOrientation countX countY state.trixelInfo.mode)
-        x y
-        state.trixelInfo.width state.trixelInfo.height
-        (\triangle -> outlined (solid state.colorScheme.bg.elm) triangle)
-      ) :: trixels
-      |> renderTrixelRow state (countX - 1) countY width height
+            ((countY - 1) * height) - state.trixelInfo.extraOffset.y
+      in
+        (renderTrixel
+          (getTrixelOrientation countX countY state.trixelInfo.mode)
+          x y
+          state.trixelInfo.width state.trixelInfo.height
+          (\triangle -> outlined (solid state.colorScheme.bg.elm) triangle)
+        ) :: trixels
+        |> renderTrixelRow state (countX - 1) countY width height
 
 
 renderGrid : State -> Float -> Float -> Float -> Float -> List Form -> List Form
 renderGrid state countX countY width height trixels =
   if countY == 0
-    then trixels
+    then
+      trixels
     else
       renderTrixelRow state countX countY width height trixels
       |> renderGrid state countX (countY - 1) width height
@@ -188,16 +185,17 @@ generateGrid : State -> State
 generateGrid state =
   let count =
         state.trixelInfo.count
-      {x, y} =
-        computeDimensionsFromBounds state.trixelInfo.bounds
-      (countX, countY) =
+
+      (triangleWidth, triangleHeight) =
         if state.trixelInfo.mode == Vertical
-          then (count.x, count.y)
-          else (count.y, count.x)
+          then
+            (state.trixelInfo.width, state.trixelInfo.height)
+          else
+            (state.trixelInfo.height, state.trixelInfo.width)
   in
     { state
         | grid <-
-            renderGrid state countX countY x y []
+            renderGrid state count.x count.y triangleWidth triangleHeight []
     }
 
 
@@ -213,8 +211,10 @@ renderMouse state width height trixels =
         else
           let (triangleWidth, triangleHeight) =
                   if state.trixelInfo.mode == Vertical
-                    then (state.trixelInfo.width, state.trixelInfo.height)
-                    else (state.trixelInfo.height, state.trixelInfo.width)
+                    then
+                      (state.trixelInfo.width, state.trixelInfo.height)
+                    else
+                      (state.trixelInfo.height, state.trixelInfo.width)
               x =
                 (position.x * triangleWidth) - state.trixelInfo.extraOffset.x
               y =
