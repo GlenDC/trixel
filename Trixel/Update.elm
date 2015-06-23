@@ -36,6 +36,7 @@ update action state =
     MoveOffset point ->
       updateOffset point state
       |> updateGrid
+      |> update (MoveMouse state.lastMousePosition)
 
     MoveMouse point ->
       updateMousePosition point state
@@ -176,12 +177,14 @@ updateMousePosition point state =
         (cursorY - cursorOffsetY) / triangleHeight
         |> round |> toFloat
   in
-    { state |
-        mouseState <-
+    { state
+        | mouseState <-
           if pointX >= 0 && pointX < state.trixelInfo.count.x
             && pointY >= 0 && pointY < state.trixelInfo.count.y
             then MouseHover { x = pointX, y = pointY}
             else MouseNone
+        , lastMousePosition <-
+            point
     }
 
 

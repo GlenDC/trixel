@@ -67,6 +67,7 @@ constructNewState countX countY =
       { isBrushActive = False
       , isErasing = False
       }
+  , lastMousePosition = zeroVector
   }
 
 

@@ -107,6 +107,7 @@ type alias State =
   , grid : List Form
   , condition : Condition
   , actions : WorkSpaceActions
+  , lastMousePosition : Vector
   }
 
 
