@@ -52,6 +52,12 @@ update action state =
       (Debug.log "todo, SaveDoc..." state)
       |> updateGrid
 
+    BrushSwitch isActive ->
+      updateBrushAction isActive state
+
+    ErasingSwitch isErasing ->
+      updateErasingAction isErasing state
+
     SwitchAction actionState ->
       update actionState.action state
 
@@ -98,6 +104,32 @@ updateOffset offset state =
                       }
                 }
         }
+
+
+updateBrushAction : Bool -> State -> State
+updateBrushAction isActive state =
+  let actions =
+        state.actions
+  in
+    { state
+        | actions <-
+            { actions
+                | isBrushActive <- isActive
+            }
+    }
+
+
+updateErasingAction : Bool -> State -> State
+updateErasingAction isErasing state =
+  let actions =
+        state.actions
+  in
+    { state
+        | actions <-
+            { actions
+                | isErasing <- isErasing
+            }
+    }
 
 
 updateMousePosition : Vector -> State -> State

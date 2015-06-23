@@ -62,6 +62,10 @@ constructNewState countX countY =
   , mouseState = MouseNone
   , grid = []
   , condition = IdleCondition
+  , actions =
+      { isBrushActive = False
+      , isErasing = False
+      }
   }
 
 

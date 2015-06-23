@@ -25,6 +25,22 @@ moveMouseSignal =
     Mouse.position
 
 
+leftMouseSignal : Signal PostOfficeAction
+leftMouseSignal =
+  Signal.map
+    (\isDown ->
+      PostAction (BrushSwitch isDown))
+    Mouse.isDown
+
+
+ctrlKeyboardSignal : Signal PostOfficeAction
+ctrlKeyboardSignal =
+  Signal.map
+    (\isDown ->
+      PostAction (ErasingSwitch isDown))
+    Keyboard.ctrl
+
+
 postOfficeTrashQuery : Mailbox TrixelAction
 postOfficeTrashQuery = mailbox None
 
@@ -71,6 +87,8 @@ workspaceSignals =
     [ postOfficeQuery.signal
     , moveOffsetSignal
     , moveMouseSignal
+    , leftMouseSignal
+    , ctrlKeyboardSignal
     ]
   |> Signal.foldp workspacePostOffice
       (SwitchAction { active = False, action = None })

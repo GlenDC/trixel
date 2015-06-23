@@ -87,6 +87,12 @@ type Message
   | StringMessage String
 
 
+type alias WorkSpaceActions =
+  { isBrushActive : Bool
+  , isErasing : Bool
+  }
+
+
 -- The entire editor state
 -- Not sure if it's a good idea to have so much as a state, being passed around
 -- We might want to check if there are options to store some stuff somewhere else
@@ -99,6 +105,7 @@ type alias State =
   , mouseState : MouseState
   , grid : List Form
   , condition : Condition
+  , actions : WorkSpaceActions
   }
 
 
@@ -125,6 +132,8 @@ type TrixelAction
   | MoveMouse Vector -- Moving the cursor
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action
+  | BrushSwitch Bool
+  | ErasingSwitch Bool
 
 
 -- Used to create the correct gui-input for a specific TrixelAction
