@@ -71,7 +71,7 @@ constructNewState countX countY =
       { isBrushActive = False
       , isErasing = False
       }
-  , lastMousePosition = zeroVector
+  , workState = cleanWorkState
   , layers = insertNewLayer 0 []
   , currentLayer = 0
   }

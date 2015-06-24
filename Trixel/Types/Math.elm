@@ -8,6 +8,11 @@ zeroVector =
   constructVector 0 0
 
 
+negativeUnitVector : Vector
+negativeUnitVector =
+  constructVector -1 -1
+
+
 unitVector : Vector
 unitVector =
   constructVector 1 1

@@ -101,6 +101,21 @@ type alias RenderCache =
   }
 
 
+type alias WorkState =
+  { lastMousePosition : Vector
+  , lastErasePosition : Vector
+  , lastPaintPosition : Vector
+  }
+
+
+cleanWorkState : WorkState
+cleanWorkState =
+  { lastMousePosition = negativeUnitVector
+  , lastErasePosition = negativeUnitVector
+  , lastPaintPosition = negativeUnitVector
+  }
+
+
 -- The entire editor state
 -- Not sure if it's a good idea to have so much as a state, being passed around
 -- We might want to check if there are options to store some stuff somewhere else
@@ -114,7 +129,7 @@ type alias State =
   , renderCache : RenderCache
   , condition : Condition
   , actions : WorkSpaceActions
-  , lastMousePosition : Vector
+  , workState : WorkState
   , layers : TrixelLayers
   , currentLayer : LayerPosition
   }

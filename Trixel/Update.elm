@@ -38,7 +38,7 @@ update action state =
     MoveOffset point ->
       updateOffset point state
       |> updateGrid
-      |> update (MoveMouse state.lastMousePosition)
+      |> update (MoveMouse state.workState.lastMousePosition)
 
     MoveMouse point ->
       updateMousePosition point state
@@ -120,6 +120,12 @@ updateOffset offset state =
         }
 
 
+comparePositions : Vector -> Vector -> Bool
+comparePositions a b =
+  (round a.x) == (round b.x)
+    && (round a.y) == (round b.y)
+
+
 applyBrushAction : State -> State
 applyBrushAction state =
   (case state.mouseState of
@@ -129,22 +135,48 @@ applyBrushAction state =
     MouseHover position ->
       if state.actions.isBrushActive
         then
-          let modifiedLayers =
-                if state.actions.isErasing
-                  then
-                    eraseTrixel
-                      position
-                      state.currentLayer
-                      state.layers
-                  else
-                    insertTrixel
-                      (constructNewTrixel position state.trixelColor)
-                      state.currentLayer
-                      state.layers
+          let workState =
+                state.workState
           in
-            { state
-                | layers <- modifiedLayers
-            }
+            if state.actions.isErasing
+              then -- Erase
+                if comparePositions
+                      workState.lastErasePosition
+                      position
+                then
+                  state -- same position as last time
+                else
+                  { state
+                      | layers <-
+                          (eraseTrixel
+                            position
+                            state.currentLayer
+                            state.layers)
+                      , workState <-
+                          { workState
+                              | lastErasePosition <-
+                                  position
+                          }
+                  }
+              else -- Paint
+                if comparePositions
+                      workState.lastPaintPosition
+                      position
+                then
+                  state -- same position as last time
+                else
+                  { state
+                      | layers <-
+                          (insertTrixel
+                            (constructNewTrixel position state.trixelColor)
+                            state.currentLayer
+                            state.layers)
+                      , workState <-
+                          { workState
+                              | lastPaintPosition <-
+                                  position
+                          }
+                  }
         else
           state)
   |> updateLayers
@@ -219,6 +251,9 @@ updateMousePosition point state =
       pointY =
         (cursorY - cursorOffsetY) / triangleHeight
         |> round |> toFloat
+
+      workState =
+        state.workState
   in
     { state
         | mouseState <-
@@ -226,8 +261,11 @@ updateMousePosition point state =
             && pointY >= 0 && pointY < state.trixelInfo.count.y
             then MouseHover { x = pointX, y = pointY}
             else MouseNone
-        , lastMousePosition <-
-            point
+        , workState <-
+            { workState
+              | lastMousePosition <-
+                  point
+            }
     }
 
 
