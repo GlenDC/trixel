@@ -155,6 +155,7 @@ type TrixelAction
   | SetScale Float -- setting the scale of the workspace
   | SetGridX Float -- Set the x-count for the grid of the workspace
   | SetGridY Float -- Set the y-count for the grid of the workspace
+  | SetColor Color -- Set the drawing color
   | MoveMouse Vector -- Moving the cursor
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action

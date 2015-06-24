@@ -10,6 +10,7 @@ import Html exposing (Html, Attribute, div, input, button, text, label, select, 
 import Html.Events exposing (on, onClick, targetValue, onMouseEnter, onFocus)
 import Html.Attributes exposing (style, value, selected, class)
 
+import Color exposing (..)
 import Signal exposing (forwardTo)
 import Json.Decode
 import String
@@ -46,6 +47,7 @@ view  state =
           (SetScale (state.trixelInfo.scale + 0.20)) boxModel state)
 
       , (constructModeList boxModel state)
+      , (constructColorList boxModel state)
       ]
 
 
@@ -205,3 +207,82 @@ constructModeList menuBoxModel state =
               [ text "Vertical" ]
           ]
       ]
+
+constructColorList : BoxModel -> State -> Html
+constructColorList menuBoxModel state =
+  let width =
+        clamp 125 150 (menuBoxModel.width * 0.095)
+      height =
+        menuBoxModel.height - (menuBoxModel.padding.y * 2)
+
+      boxModel =
+        constructBoxModel width height 5 5 2 2 BorderBox
+
+      selectStyle =
+        style ((computeBoxModelCSS boxModel) ++
+          [ ("background-color", state.colorScheme.selbg.html)
+          , ("color", state.colorScheme.selfg.html)
+          , ("font-size", boxModel.height / 1.85 |> toPixels)
+          , ("float", "left")
+          , computeDefaultBorderCSS state.colorScheme.fg.html
+          ])
+
+      selectFunction value =
+        SetColor (
+          case (stringToInt value) of
+            1 -> orange
+            2 -> yellow
+            3 -> green
+            4 -> blue
+            5 -> purple
+            6 -> brown
+            7 -> white
+            8 -> grey
+            9 -> black
+            _ -> red)
+  in
+    div []
+      [ label
+          [ style
+            [ ("float", "left")
+            , ("padding", vectorToPixels { x = 10, y = 6 })
+            , ("color", state.colorScheme.text.html)
+            ]
+          ]
+          [ text "Color" ]
+      , select
+          [ selectStyle
+          , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
+          ]
+          [ constructColorOption state red 0 "red"
+          , constructColorOption state orange 1 "orange"
+          , constructColorOption state yellow 2 "yellow"
+          , constructColorOption state green 3 "green"
+          , constructColorOption state blue 4 "blue"
+          , constructColorOption state purple 5 "purple"
+          , constructColorOption state brown 6 "brown"
+          , constructColorOption state white 7 "white"
+          , constructColorOption state grey 8 "grey"
+          , constructColorOption state black 9 "black"
+          ]
+      ]
+
+{-
+
+red : Color
+orange : Color
+yellow : Color
+green : Color
+blue : Color
+purple : Color
+brown : Color
+
+-}
+
+constructColorOption : State -> Color -> Int -> String -> Html
+constructColorOption state color val description =
+  option
+    [ selected (state.trixelColor == color)
+    , value (toString val)
+    ]
+    [ text description ]

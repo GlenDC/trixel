@@ -8,6 +8,8 @@ import Trixel.Types.Html exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (updateGrid, updateLayers)
 import Trixel.Constants exposing (..)
 
+import Color exposing (Color)
+
 import Debug
 
 update action state =
@@ -19,6 +21,9 @@ update action state =
     SetGridY y ->
       updateGridY y state
       |> updateGrid
+
+    SetColor color ->
+      updateTrixelColor color state
 
     SetScale scale ->
       updateScale scale state
@@ -356,6 +361,15 @@ updateGridY y state =
             }
     }
     |> updateWorkGridRows
+
+
+updateTrixelColor : Color -> State -> State
+updateTrixelColor color state =
+   { state
+      | trixelColor <-
+          color
+    }
+
 
 
 updateWorkGridRows : State -> State
