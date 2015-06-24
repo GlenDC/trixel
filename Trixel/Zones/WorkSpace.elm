@@ -59,6 +59,11 @@ viewWorkSpace state =
         computeDimensionsFromBounds state.trixelInfo.bounds
   in
     state.renderCache.layers ++
-      (renderMouse state x y state.renderCache.grid)
+      (renderMouse state x y
+        ( if state.userSettings.showGrid
+          then state.renderCache.grid
+          else []
+          )
+        )
     |> collage (round x) (round y)
     |> fromElement

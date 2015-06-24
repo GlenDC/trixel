@@ -69,6 +69,9 @@ update action state =
       updateErasingAction isErasing state
       |> applyBrushAction
 
+    ToggleGridVisibility ->
+      toggleGridVisibility state
+
     SwitchAction actionState ->
       update actionState.action state
 
@@ -197,6 +200,20 @@ updateBrushAction isActive state =
             { actions
                 | isBrushActive <- isActive
             }
+    }
+
+
+toggleGridVisibility : State -> State
+toggleGridVisibility state =
+  let userSettings =
+        state.userSettings
+  in
+    { state
+        | userSettings <-
+          { userSettings
+              | showGrid <-
+                not userSettings.showGrid
+          }
     }
 
 

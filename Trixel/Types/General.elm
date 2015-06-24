@@ -116,6 +116,17 @@ cleanWorkState =
   }
 
 
+type alias UserSettings =
+  { showGrid : Bool
+  }
+
+
+defaultUserSettings : UserSettings
+defaultUserSettings =
+  { showGrid = True
+  }
+
+
 -- The entire editor state
 -- Not sure if it's a good idea to have so much as a state, being passed around
 -- We might want to check if there are options to store some stuff somewhere else
@@ -132,6 +143,7 @@ type alias State =
   , workState : WorkState
   , layers : TrixelLayers
   , currentLayer : LayerPosition
+  , userSettings : UserSettings
   }
 
 
@@ -161,6 +173,7 @@ type TrixelAction
   | SwitchAction PostOfficeState -- used for a filtered post-office action
   | BrushSwitch Bool
   | ErasingSwitch Bool
+  | ToggleGridVisibility
 
 
 -- Used to create the correct gui-input for a specific TrixelAction

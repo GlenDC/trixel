@@ -1,6 +1,7 @@
 module Trixel.PostOffice where
 
 import Trixel.Types.General exposing (..)
+import Trixel.Constants exposing (..)
 
 import Signal exposing (..)
 import Keyboard
@@ -39,6 +40,18 @@ ctrlKeyboardSignal =
     (\isDown ->
       PostAction (ErasingSwitch isDown))
     Keyboard.ctrl
+
+
+toggleGridVisibilitySignal : Signal PostOfficeAction
+toggleGridVisibilitySignal =
+  Signal.map
+    (\isDown ->
+      PostAction (
+        if isDown
+          then ToggleGridVisibility
+          else None
+          ))
+    (Keyboard.isDown shortcutToggleGridVisibility)
 
 
 postOfficeTrashQuery : Mailbox TrixelAction
@@ -89,6 +102,7 @@ workspaceSignals =
     , moveMouseSignal
     , leftMouseSignal
     , ctrlKeyboardSignal
+    , toggleGridVisibilitySignal
     ]
   |> Signal.foldp workspacePostOffice
       (SwitchAction { active = False, action = None })

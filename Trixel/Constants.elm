@@ -1,5 +1,9 @@
 module Trixel.Constants where
 
+import Keyboard exposing (KeyCode)
+
+import Char
+
 
 version : String
 version =
@@ -34,3 +38,8 @@ sqrt3 =
 maxTrixelRowCount : Float
 maxTrixelRowCount =
   150
+
+
+shortcutToggleGridVisibility : KeyCode
+shortcutToggleGridVisibility =
+  Char.toCode 'G'

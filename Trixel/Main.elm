@@ -74,6 +74,7 @@ constructNewState countX countY =
   , workState = cleanWorkState
   , layers = insertNewLayer 0 []
   , currentLayer = 0
+  , userSettings = defaultUserSettings
   }
 
 
