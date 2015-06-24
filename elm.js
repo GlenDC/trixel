@@ -13645,7 +13645,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.0.7";
+   var version = "0.1.0";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -13679,6 +13679,7 @@ Elm.Trixel.Main.make = function (_elm) {
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
    $Trixel$Update = Elm.Trixel.Update.make(_elm),
    $Trixel$Zones$Footer = Elm.Trixel.Zones.Footer.make(_elm),
@@ -13728,9 +13729,14 @@ Elm.Trixel.Main.make = function (_elm) {
                          ,workspace: $Trixel$Types$Html.zeroBoxModel}
              ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
              ,condition: $Trixel$Types$General.IdleCondition
-             ,grid: _L.fromArray([])
-             ,lastMousePosition: $Trixel$Types$Math.zeroVector
+             ,currentLayer: 0
+             ,layers: A2($Trixel$Types$Layer.insertNewLayer,
+             0,
+             _L.fromArray([]))
              ,mouseState: $Trixel$Types$General.MouseNone
+             ,renderCache: {_: {}
+                           ,grid: _L.fromArray([])
+                           ,layers: _L.fromArray([])}
              ,trixelColor: $Color.red
              ,trixelInfo: {_: {}
                           ,bounds: $Trixel$Types$Math.zeroBounds
@@ -13744,7 +13750,8 @@ Elm.Trixel.Main.make = function (_elm) {
                           ,offset: $Trixel$Types$Math.zeroVector
                           ,scale: 1
                           ,width: 0}
-             ,windowDimensions: $Trixel$Types$Math.zeroVector};
+             ,windowDimensions: $Trixel$Types$Math.zeroVector
+             ,workState: $Trixel$Types$General.cleanWorkState};
    });
    var windowDimemensionsSignal = A2($Signal.map,
    function (_v0) {
@@ -13755,7 +13762,7 @@ Elm.Trixel.Main.make = function (_elm) {
                                                       ,x: $Basics.toFloat(_v0._0)
                                                       ,y: $Basics.toFloat(_v0._1)});}
          _U.badCase($moduleName,
-         "on line 27, column 7 to 50");
+         "on line 28, column 7 to 50");
       }();
    },
    $Window.dimensions);
@@ -14049,6 +14056,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
    var Scale = {ctor: "Scale"};
    var GridY = {ctor: "GridY"};
@@ -14117,17 +14125,23 @@ Elm.Trixel.Types.General.make = function (_elm) {
                         return function (h) {
                            return function (i) {
                               return function (j) {
-                                 return {_: {}
-                                        ,actions: i
-                                        ,boxModels: d
-                                        ,colorScheme: c
-                                        ,condition: h
-                                        ,grid: g
-                                        ,lastMousePosition: j
-                                        ,mouseState: f
-                                        ,trixelColor: b
-                                        ,trixelInfo: a
-                                        ,windowDimensions: e};
+                                 return function (k) {
+                                    return function (l) {
+                                       return {_: {}
+                                              ,actions: i
+                                              ,boxModels: d
+                                              ,colorScheme: c
+                                              ,condition: h
+                                              ,currentLayer: l
+                                              ,layers: k
+                                              ,mouseState: f
+                                              ,renderCache: g
+                                              ,trixelColor: b
+                                              ,trixelInfo: a
+                                              ,windowDimensions: e
+                                              ,workState: j};
+                                    };
+                                 };
                               };
                            };
                         };
@@ -14138,6 +14152,24 @@ Elm.Trixel.Types.General.make = function (_elm) {
          };
       };
    };
+   var cleanWorkState = {_: {}
+                        ,lastErasePosition: $Trixel$Types$Math.negativeUnitVector
+                        ,lastMousePosition: $Trixel$Types$Math.negativeUnitVector
+                        ,lastPaintPosition: $Trixel$Types$Math.negativeUnitVector};
+   var WorkState = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,lastErasePosition: b
+             ,lastMousePosition: a
+             ,lastPaintPosition: c};
+   });
+   var RenderCache = F2(function (a,
+   b) {
+      return {_: {}
+             ,grid: a
+             ,layers: b};
+   });
    var WorkSpaceActions = F2(function (a,
    b) {
       return {_: {}
@@ -14206,12 +14238,12 @@ Elm.Trixel.Types.General.make = function (_elm) {
                       "active: ",
                       condition._0._0);}
                  _U.badCase($moduleName,
-                 "between lines 24 and 29");
+                 "between lines 25 and 30");
               }();
             case "IdleCondition":
             return "idle";}
          _U.badCase($moduleName,
-         "between lines 19 and 29");
+         "between lines 20 and 30");
       }();
    };
    var actionQuery = $Signal.mailbox(None);
@@ -14233,6 +14265,9 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,EmptyMessage: EmptyMessage
                                       ,StringMessage: StringMessage
                                       ,WorkSpaceActions: WorkSpaceActions
+                                      ,RenderCache: RenderCache
+                                      ,WorkState: WorkState
+                                      ,cleanWorkState: cleanWorkState
                                       ,State: State
                                       ,PostOfficeState: PostOfficeState
                                       ,None: None
@@ -14254,6 +14289,251 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,GridY: GridY
                                       ,Scale: Scale};
    return _elm.Trixel.Types.General.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.Grid = Elm.Trixel.Types.Grid || {};
+Elm.Trixel.Types.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.Grid = _elm.Trixel.Types.Grid || {};
+   if (_elm.Trixel.Types.Grid.values)
+   return _elm.Trixel.Types.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var constructNewTrixel = F2(function (position,
+   color) {
+      return {_: {}
+             ,color: color
+             ,position: position};
+   });
+   var constructTrixelContent = function (trixel) {
+      return {_: {}
+             ,color: trixel.color};
+   };
+   var constructTrixel = F2(function (position,
+   content) {
+      return A2(constructNewTrixel,
+      position,
+      content.color);
+   });
+   var findColumn = F2(function (position,
+   columns) {
+      return function () {
+         var filteredColumns = A2($List.filter,
+         function (gridTrixel) {
+            return _U.eq(gridTrixel.position,
+            position);
+         },
+         columns);
+         return function () {
+            var _v0 = $List.head(filteredColumns);
+            switch (_v0.ctor)
+            {case "Just":
+               return $Maybe.Just(_v0._0.content);
+               case "Nothing":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 189 and 194");
+         }();
+      }();
+   });
+   var findRow = F2(function (position,
+   rows) {
+      return function () {
+         var filteredRows = A2($List.filter,
+         function (gridRow) {
+            return _U.eq(gridRow.position,
+            position);
+         },
+         rows);
+         return function () {
+            var _v2 = $List.head(filteredRows);
+            switch (_v2.ctor)
+            {case "Just":
+               return $Maybe.Just(_v2._0.columns);
+               case "Nothing":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 173 and 178");
+         }();
+      }();
+   });
+   var constructGridTrixel = function (trixel) {
+      return {_: {}
+             ,content: constructTrixelContent(trixel)
+             ,position: $Basics.round(trixel.position.x)};
+   };
+   var constructGridRow = F2(function (position,
+   gridTrixel) {
+      return {_: {}
+             ,columns: _L.fromArray([gridTrixel])
+             ,position: position};
+   });
+   var eraseGridRowByPredicate = F2(function (predicate,
+   rows) {
+      return A2($List.filter,
+      predicate,
+      rows);
+   });
+   var eraseGridRow = F2(function (position,
+   rows) {
+      return A2($List.filter,
+      function (row) {
+         return !_U.eq(row.position,
+         position);
+      },
+      rows);
+   });
+   var eraseGridTrixelByPredicate = F2(function (predicate,
+   columns) {
+      return A2($List.filter,
+      predicate,
+      columns);
+   });
+   var eraseGridTrixel = F2(function (position,
+   columns) {
+      return A2($List.filter,
+      function (gridTrixel) {
+         return !_U.eq(gridTrixel.position,
+         position);
+      },
+      columns);
+   });
+   var findTrixelInGrid = F2(function (position,
+   grid) {
+      return function () {
+         var _v4 = A2(findRow,
+         $Basics.round(position.y),
+         grid);
+         switch (_v4.ctor)
+         {case "Just":
+            return function () {
+                 var _v6 = A2(findColumn,
+                 $Basics.round(position.x),
+                 _v4._0);
+                 switch (_v6.ctor)
+                 {case "Just":
+                    return $Maybe.Just(A2(constructTrixel,
+                      position,
+                      _v6._0));
+                    case "Nothing":
+                    return $Maybe.Nothing;}
+                 _U.badCase($moduleName,
+                 "between lines 116 and 122");
+              }();
+            case "Nothing":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 111 and 122");
+      }();
+   });
+   var insertTrixelInGrid = F2(function (trixel,
+   grid) {
+      return function () {
+         var y = $Basics.round(trixel.position.y);
+         var x = $Basics.round(trixel.position.x);
+         return function () {
+            var _v8 = A2(findRow,y,grid);
+            switch (_v8.ctor)
+            {case "Just":
+               return function () {
+                    var filteredRow = A2(eraseGridTrixel,
+                    x,
+                    _v8._0);
+                    var filteredGrid = A2(eraseGridRow,
+                    y,
+                    grid);
+                    var gridTrixel = constructGridTrixel(trixel);
+                    return A2($List._op["::"],
+                    {_: {}
+                    ,columns: A2($List._op["::"],
+                    gridTrixel,
+                    filteredRow)
+                    ,position: y},
+                    filteredGrid);
+                 }();
+               case "Nothing":
+               return function () {
+                    var gridRow = constructGridRow(y)(constructGridTrixel(trixel));
+                    return A2($List._op["::"],
+                    gridRow,
+                    grid);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 81 and 106");
+         }();
+      }();
+   });
+   var eraseTrixelInGrid = F2(function (position,
+   grid) {
+      return function () {
+         var x = $Basics.round(position.x);
+         var y = $Basics.round(position.y);
+         return function () {
+            var _v10 = A2(findRow,
+            y,
+            grid);
+            switch (_v10.ctor)
+            {case "Just":
+               return function () {
+                    var filteredRow = A2(eraseGridTrixel,
+                    x,
+                    _v10._0);
+                    var filteredGrid = A2(eraseGridRow,
+                    y,
+                    grid);
+                    return A2($List._op["::"],
+                    {_: {}
+                    ,columns: filteredRow
+                    ,position: y},
+                    filteredGrid);
+                 }();
+               case "Nothing": return grid;}
+            _U.badCase($moduleName,
+            "between lines 58 and 72");
+         }();
+      }();
+   });
+   var GridRow = F2(function (a,
+   b) {
+      return {_: {}
+             ,columns: b
+             ,position: a};
+   });
+   var GridTrixel = F2(function (a,
+   b) {
+      return {_: {}
+             ,content: b
+             ,position: a};
+   });
+   var TrixelContent = function (a) {
+      return {_: {},color: a};
+   };
+   var Trixel = F2(function (a,b) {
+      return {_: {}
+             ,color: a
+             ,position: b};
+   });
+   _elm.Trixel.Types.Grid.values = {_op: _op
+                                   ,findTrixelInGrid: findTrixelInGrid
+                                   ,insertTrixelInGrid: insertTrixelInGrid
+                                   ,eraseTrixelInGrid: eraseTrixelInGrid
+                                   ,constructNewTrixel: constructNewTrixel
+                                   ,eraseGridTrixelByPredicate: eraseGridTrixelByPredicate
+                                   ,eraseGridRowByPredicate: eraseGridRowByPredicate
+                                   ,GridRow: GridRow
+                                   ,Trixel: Trixel};
+   return _elm.Trixel.Types.Grid.values;
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Types = Elm.Trixel.Types || {};
@@ -14461,6 +14741,200 @@ Elm.Trixel.Types.Html.make = function (_elm) {
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.Layer = Elm.Trixel.Types.Layer || {};
+Elm.Trixel.Types.Layer.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.Layer = _elm.Trixel.Types.Layer || {};
+   if (_elm.Trixel.Types.Layer.values)
+   return _elm.Trixel.Types.Layer.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.Layer",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Trixel$Types$Grid = Elm.Trixel.Types.Grid.make(_elm),
+   $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
+   var eraseLayerTrixelByPosition = F2(function (position,
+   layers) {
+      return A2($List.map,
+      function (layer) {
+         return _U.replace([["grid"
+                            ,A2($List.map,
+                            function (row) {
+                               return _U.replace([["columns"
+                                                  ,A2($Trixel$Types$Grid.eraseGridTrixelByPredicate,
+                                                  function (column) {
+                                                     return _U.cmp(column.position,
+                                                     position) < 0;
+                                                  },
+                                                  row.columns)]],
+                               row);
+                            },
+                            layer.grid)]],
+         layer);
+      },
+      layers);
+   });
+   var eraseLayerRowByPosition = F2(function (position,
+   layers) {
+      return A2($List.map,
+      function (layer) {
+         return _U.replace([["grid"
+                            ,A2($Trixel$Types$Grid.eraseGridRowByPredicate,
+                            function (row) {
+                               return _U.cmp(row.position,
+                               position) < 0;
+                            },
+                            layer.grid)]],
+         layer);
+      },
+      layers);
+   });
+   var findLayer = F2(function (position,
+   layers) {
+      return $List.head(A2($List.filter,
+      function (layer) {
+         return _U.eq(layer.position,
+         position);
+      },
+      layers));
+   });
+   var findTrixel = F3(function (position,
+   layerPosition,
+   layers) {
+      return function () {
+         var _v0 = A2(findLayer,
+         layerPosition,
+         layers);
+         switch (_v0.ctor)
+         {case "Just":
+            return A2($Trixel$Types$Grid.findTrixelInGrid,
+              position,
+              _v0._0.grid);
+            case "Nothing":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 73 and 78");
+      }();
+   });
+   var eraseLayer = F2(function (position,
+   layers) {
+      return A2($List.filter,
+      function (layer) {
+         return !_U.eq(layer.position,
+         position);
+      },
+      layers);
+   });
+   var eraseTrixel = F3(function (position,
+   layerPosition,
+   layers) {
+      return function () {
+         var _v2 = A2(findLayer,
+         layerPosition,
+         layers);
+         switch (_v2.ctor)
+         {case "Just":
+            return function () {
+                 var filteredLayers = A2(eraseLayer,
+                 layerPosition,
+                 layers);
+                 return A2($List._op["::"],
+                 {_: {}
+                 ,grid: A2($Trixel$Types$Grid.eraseTrixelInGrid,
+                 position,
+                 _v2._0.grid)
+                 ,position: layerPosition},
+                 filteredLayers);
+              }();
+            case "Nothing": return layers;}
+         _U.badCase($moduleName,
+         "between lines 83 and 94");
+      }();
+   });
+   var insertTrixel = F3(function (trixel,
+   layerPosition,
+   layers) {
+      return function () {
+         var _v4 = A2(findLayer,
+         layerPosition,
+         layers);
+         switch (_v4.ctor)
+         {case "Just":
+            return function () {
+                 var grid = A2($Trixel$Types$Grid.insertTrixelInGrid,
+                 trixel,
+                 _v4._0.grid);
+                 return A2($List._op["::"],
+                 {_: {}
+                 ,grid: grid
+                 ,position: layerPosition},
+                 A2(eraseLayer,
+                 layerPosition,
+                 layers));
+              }();
+            case "Nothing":
+            return function () {
+                 var grid = A2($Trixel$Types$Grid.insertTrixelInGrid,
+                 trixel,
+                 _L.fromArray([]));
+                 return A2($List._op["::"],
+                 {_: {}
+                 ,grid: grid
+                 ,position: layerPosition},
+                 layers);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 99 and 116");
+      }();
+   });
+   var insertLayer = F2(function (layer,
+   layers) {
+      return function () {
+         var _v6 = A2(findLayer,
+         layer.position,
+         layers);
+         switch (_v6.ctor)
+         {case "Nothing":
+            return A2($List._op["::"],
+              layer,
+              layers);}
+         return layers;
+      }();
+   });
+   var insertNewLayer = F2(function (position,
+   layers) {
+      return A2(insertLayer,
+      {_: {}
+      ,grid: _L.fromArray([])
+      ,position: position},
+      layers);
+   });
+   var Layer = F2(function (a,b) {
+      return {_: {}
+             ,grid: b
+             ,position: a};
+   });
+   _elm.Trixel.Types.Layer.values = {_op: _op
+                                    ,insertNewLayer: insertNewLayer
+                                    ,insertLayer: insertLayer
+                                    ,eraseLayer: eraseLayer
+                                    ,findLayer: findLayer
+                                    ,findTrixel: findTrixel
+                                    ,eraseTrixel: eraseTrixel
+                                    ,insertTrixel: insertTrixel
+                                    ,eraseLayerRowByPosition: eraseLayerRowByPosition
+                                    ,eraseLayerTrixelByPosition: eraseLayerTrixelByPosition
+                                    ,Layer: Layer};
+   return _elm.Trixel.Types.Layer.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
 Elm.Trixel.Types.Math = Elm.Trixel.Types.Math || {};
 Elm.Trixel.Types.Math.make = function (_elm) {
    "use strict";
@@ -14484,7 +14958,7 @@ Elm.Trixel.Types.Math.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 86 and 88");
+         "between lines 91 and 93");
       }();
    };
    var stringToInt = function (string) {
@@ -14494,7 +14968,7 @@ Elm.Trixel.Types.Math.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v3._0;}
          _U.badCase($moduleName,
-         "between lines 79 and 81");
+         "between lines 84 and 86");
       }();
    };
    var computeDimensionsFromBounds = function (bounds) {
@@ -14561,11 +15035,15 @@ Elm.Trixel.Types.Math.make = function (_elm) {
    var unitVector = A2(constructVector,
    1,
    1);
+   var negativeUnitVector = A2(constructVector,
+   -1,
+   -1);
    var zeroVector = A2(constructVector,
    0,
    0);
    _elm.Trixel.Types.Math.values = {_op: _op
                                    ,zeroVector: zeroVector
+                                   ,negativeUnitVector: negativeUnitVector
                                    ,unitVector: unitVector
                                    ,zeroBounds: zeroBounds
                                    ,addVectors: addVectors
@@ -14598,7 +15076,9 @@ Elm.Trixel.Update.make = function (_elm) {
    $Debug = Elm.Debug.make(_elm),
    $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Grid = Elm.Trixel.Types.Grid.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
    $Trixel$Zones$WorkSpace$Grid = Elm.Trixel.Zones.WorkSpace.Grid.make(_elm);
    var updateCondition = F2(function (condition,
@@ -14617,34 +15097,48 @@ Elm.Trixel.Update.make = function (_elm) {
          state);
       }();
    });
+   var updateWorkGridColumns = function (state) {
+      return _U.replace([["layers"
+                         ,A2($Trixel$Types$Layer.eraseLayerTrixelByPosition,
+                         $Basics.round(state.trixelInfo.count.x),
+                         state.layers)]],
+      state);
+   };
+   var updateWorkGridRows = function (state) {
+      return _U.replace([["layers"
+                         ,A2($Trixel$Types$Layer.eraseLayerRowByPosition,
+                         $Basics.round(state.trixelInfo.count.y),
+                         state.layers)]],
+      state);
+   };
    var updateGridY = F2(function (y,
    state) {
       return function () {
          var trixelInfo = state.trixelInfo;
-         return _U.replace([["trixelInfo"
-                            ,_U.replace([["count"
-                                         ,{_: {}
-                                          ,x: trixelInfo.count.x
-                                          ,y: $Basics.min($Trixel$Constants.maxTrixelRowCount)(A2($Basics.max,
-                                          1,
-                                          y))}]],
-                            trixelInfo)]],
-         state);
+         return updateWorkGridRows(_U.replace([["trixelInfo"
+                                               ,_U.replace([["count"
+                                                            ,{_: {}
+                                                             ,x: trixelInfo.count.x
+                                                             ,y: $Basics.min($Trixel$Constants.maxTrixelRowCount)(A2($Basics.max,
+                                                             1,
+                                                             y))}]],
+                                               trixelInfo)]],
+         state));
       }();
    });
    var updateGridX = F2(function (x,
    state) {
       return function () {
          var trixelInfo = state.trixelInfo;
-         return _U.replace([["trixelInfo"
-                            ,_U.replace([["count"
-                                         ,{_: {}
-                                          ,x: $Basics.min($Trixel$Constants.maxTrixelRowCount)(A2($Basics.max,
-                                          1,
-                                          x))
-                                          ,y: trixelInfo.count.y}]],
-                            trixelInfo)]],
-         state);
+         return updateWorkGridColumns(_U.replace([["trixelInfo"
+                                                  ,_U.replace([["count"
+                                                               ,{_: {}
+                                                                ,x: $Basics.min($Trixel$Constants.maxTrixelRowCount)(A2($Basics.max,
+                                                                1,
+                                                                x))
+                                                                ,y: trixelInfo.count.y}]],
+                                                  trixelInfo)]],
+         state));
       }();
    });
    var updateWindowDimensions = F2(function (dimensions,
@@ -14704,6 +15198,7 @@ Elm.Trixel.Update.make = function (_elm) {
    var updateMousePosition = F2(function (point,
    state) {
       return function () {
+         var workState = state.workState;
          var $ = _U.eq(state.trixelInfo.mode,
          $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
                                            ,_0: state.trixelInfo.width
@@ -14737,7 +15232,10 @@ Elm.Trixel.Update.make = function (_elm) {
                             state.trixelInfo.count.y) < 0)) ? $Trixel$Types$General.MouseHover({_: {}
                                                                                                ,x: pointX
                                                                                                ,y: pointY}) : $Trixel$Types$General.MouseNone]
-                           ,["lastMousePosition",point]],
+                           ,["workState"
+                            ,_U.replace([["lastMousePosition"
+                                         ,point]],
+                            workState)]],
          state);
       }();
    });
@@ -14763,6 +15261,50 @@ Elm.Trixel.Update.make = function (_elm) {
          state);
       }();
    });
+   var comparePositions = F2(function (a,
+   b) {
+      return _U.eq($Basics.round(a.x),
+      $Basics.round(b.x)) && _U.eq($Basics.round(a.y),
+      $Basics.round(b.y));
+   });
+   var applyBrushAction = function (state) {
+      return $Trixel$Zones$WorkSpace$Grid.updateLayers(function () {
+         var _v0 = state.mouseState;
+         switch (_v0.ctor)
+         {case "MouseHover":
+            return state.actions.isBrushActive ? function () {
+                 var workState = state.workState;
+                 return state.actions.isErasing ? A2(comparePositions,
+                 workState.lastErasePosition,
+                 _v0._0) ? state : _U.replace([["layers"
+                                               ,A3($Trixel$Types$Layer.eraseTrixel,
+                                               _v0._0,
+                                               state.currentLayer,
+                                               state.layers)]
+                                              ,["workState"
+                                               ,_U.replace([["lastErasePosition"
+                                                            ,_v0._0]],
+                                               workState)]],
+                 state) : A2(comparePositions,
+                 workState.lastPaintPosition,
+                 _v0._0) ? state : _U.replace([["layers"
+                                               ,A3($Trixel$Types$Layer.insertTrixel,
+                                               A2($Trixel$Types$Grid.constructNewTrixel,
+                                               _v0._0,
+                                               state.trixelColor),
+                                               state.currentLayer,
+                                               state.layers)]
+                                              ,["workState"
+                                               ,_U.replace([["lastPaintPosition"
+                                                            ,_v0._0]],
+                                               workState)]],
+                 state);
+              }() : state;
+            case "MouseNone": return state;}
+         _U.badCase($moduleName,
+         "between lines 131 and 181");
+      }());
+   };
    var updateOffset = F2(function (offset,
    state) {
       return _U.cmp(state.trixelInfo.scale,
@@ -14787,10 +15329,16 @@ Elm.Trixel.Update.make = function (_elm) {
          var trixelInfo = state.trixelInfo;
          return _U.replace([["trixelInfo"
                             ,_U.replace([["count"
-                                         ,{_: {},x: 1,y: 1}]
+                                         ,{_: {},x: 10,y: 10}]
                                         ,["mode"
-                                         ,$Trixel$Types$General.Vertical]],
-                            trixelInfo)]],
+                                         ,$Trixel$Types$General.Vertical]
+                                        ,["scale",1]],
+                            trixelInfo)]
+                           ,["currentLayer",0]
+                           ,["layers"
+                            ,A2($Trixel$Types$Layer.insertNewLayer,
+                            0,
+                            _L.fromArray([]))]],
          state);
       }();
    };
@@ -14799,19 +15347,19 @@ Elm.Trixel.Update.make = function (_elm) {
       return function () {
          switch (action.ctor)
          {case "BrushSwitch":
-            return A2(updateBrushAction,
+            return applyBrushAction(A2(updateBrushAction,
               action._0,
-              state);
+              state));
             case "ErasingSwitch":
-            return A2(updateErasingAction,
+            return applyBrushAction(A2(updateErasingAction,
               action._0,
-              state);
+              state));
             case "MoveMouse":
-            return A2(updateMousePosition,
+            return applyBrushAction(A2(updateMousePosition,
               action._0,
-              state);
+              state));
             case "MoveOffset":
-            return update($Trixel$Types$General.MoveMouse(state.lastMousePosition))($Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateOffset,
+            return update($Trixel$Types$General.MoveMouse(state.workState.lastMousePosition))($Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateOffset,
               action._0,
               state)));
             case "NewDocument":
@@ -14854,7 +15402,7 @@ Elm.Trixel.Update.make = function (_elm) {
               action._0.action,
               state);}
          _U.badCase($moduleName,
-         "between lines 12 and 66");
+         "between lines 14 and 71");
       }();
    });
    _elm.Trixel.Update.values = {_op: _op
@@ -15316,14 +15864,15 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
          var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
          x = $.x,
          y = $.y;
-         return $Html.fromElement(A3($Graphics$Collage.collage,
+         return $Html.fromElement(A2($Graphics$Collage.collage,
          $Basics.round(x),
-         $Basics.round(y),
+         $Basics.round(y))(A2($Basics._op["++"],
+         state.renderCache.layers,
          A4($Trixel$Zones$WorkSpace$Grid.renderMouse,
          state,
          x,
          y,
-         state.grid)));
+         state.renderCache.grid))));
       }();
    };
    var constructMainStyle = function (state) {
@@ -15394,19 +15943,35 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
    $Trixel$Constants = Elm.Trixel.Constants.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
+   $Trixel$Types$Grid = Elm.Trixel.Types.Grid.make(_elm),
+   $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
    var getHoverColor = function (state) {
       return function () {
-         var originalColor = $Color.toRgb(state.colorScheme.subbg.elm);
+         var originalColor = $Color.toRgb(state.trixelColor);
+         var red = $Basics.toFloat(originalColor.red);
+         var green = $Basics.toFloat(originalColor.green);
+         var blue = $Basics.toFloat(originalColor.blue);
          return A4($Color.rgba,
-         255 - originalColor.red,
-         255 - originalColor.green,
-         255 - originalColor.blue,
-         0.5);
+         $Basics.round((255 - red) * 0.2 + red * 0.8),
+         $Basics.round((255 - green) * 0.2 + green * 0.8),
+         $Basics.round((255 - blue) * 0.2 + blue * 0.8),
+         0.75);
       }();
    };
+   var StaticTrixelRenderInfo = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,dimensions: b
+             ,mode: d
+             ,offset: a
+             ,positionDimensions: c};
+   });
    var getTrixelOrientation = F3(function (x,
    y,
    mode) {
@@ -15476,7 +16041,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
                  x + triangleWidth,
                  y + triangleHeight);}
             _U.badCase($moduleName,
-            "between lines 118 and 142");
+            "between lines 142 and 166");
          }();
          return styleFunction(triangle);
       }();
@@ -15536,6 +16101,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    });
    var generateGrid = function (state) {
       return function () {
+         var renderCache = state.renderCache;
          var $ = _U.eq(state.trixelInfo.mode,
          $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
                                            ,_0: state.trixelInfo.width
@@ -15545,14 +16111,16 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
          triangleWidth = $._0,
          triangleHeight = $._1;
          var count = state.trixelInfo.count;
-         return _U.replace([["grid"
-                            ,A6(renderGrid,
-                            state,
-                            count.x,
-                            count.y,
-                            triangleWidth,
-                            triangleHeight,
-                            _L.fromArray([]))]],
+         return _U.replace([["renderCache"
+                            ,_U.replace([["grid"
+                                         ,A6(renderGrid,
+                                         state,
+                                         count.x,
+                                         count.y,
+                                         triangleWidth,
+                                         triangleHeight,
+                                         _L.fromArray([]))]],
+                            renderCache)]],
          state);
       }();
    };
@@ -15596,9 +16164,118 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
             case "MouseNone":
             return trixels;}
          _U.badCase($moduleName,
-         "between lines 208 and 233");
+         "between lines 237 and 262");
       }();
    });
+   var renderGridTrixel = F5(function (x,
+   y,
+   renderInfo,
+   color,
+   trixels) {
+      return function () {
+         var yPosition = y * renderInfo.positionDimensions.y - renderInfo.offset.y;
+         var xPosition = x * renderInfo.positionDimensions.x - renderInfo.offset.x;
+         return A2($List._op["::"],
+         A6(renderTrixel,
+         A3(getTrixelOrientation,
+         x,
+         y,
+         renderInfo.mode),
+         xPosition,
+         yPosition,
+         renderInfo.dimensions.x,
+         renderInfo.dimensions.y,
+         function (s) {
+            return A2($Graphics$Collage.filled,
+            color,
+            s);
+         }),
+         trixels);
+      }();
+   });
+   var renderColumn = F4(function (columns,
+   y,
+   renderInfo,
+   trixels) {
+      return function () {
+         var _v3 = $List.head(columns);
+         switch (_v3.ctor)
+         {case "Just":
+            return A3(renderColumn,
+              A2($List.drop,1,columns),
+              y,
+              renderInfo)(A5(renderGridTrixel,
+              $Basics.toFloat(_v3._0.position),
+              y,
+              renderInfo,
+              _v3._0.content.color,
+              trixels));
+            case "Nothing": return trixels;}
+         _U.badCase($moduleName,
+         "between lines 290 and 301");
+      }();
+   });
+   var renderLayer = F3(function (rows,
+   renderInfo,
+   trixels) {
+      return function () {
+         var _v5 = $List.head(rows);
+         switch (_v5.ctor)
+         {case "Just":
+            return A2(renderLayer,
+              A2($List.drop,1,rows),
+              renderInfo)(A4(renderColumn,
+              _v5._0.columns,
+              $Basics.toFloat(_v5._0.position),
+              renderInfo,
+              trixels));
+            case "Nothing": return trixels;}
+         _U.badCase($moduleName,
+         "between lines 306 and 312");
+      }();
+   });
+   var renderLayers = F3(function (layers,
+   renderInfo,
+   trixels) {
+      return function () {
+         var _v7 = $List.head(layers);
+         switch (_v7.ctor)
+         {case "Just":
+            return A2(renderLayers,
+              A2($List.drop,1,layers),
+              renderInfo)(A3(renderLayer,
+              _v7._0.grid,
+              renderInfo,
+              trixels));
+            case "Nothing": return trixels;}
+         _U.badCase($moduleName,
+         "between lines 317 and 323");
+      }();
+   });
+   var renderGridLayers = function (state) {
+      return function () {
+         var $ = _U.eq(state.trixelInfo.mode,
+         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
+                                           ,_0: state.trixelInfo.width
+                                           ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                           ,_0: state.trixelInfo.height
+                                                                           ,_1: state.trixelInfo.width},
+         width = $._0,
+         height = $._1;
+         return A3(renderLayers,
+         state.layers,
+         {_: {}
+         ,dimensions: {_: {}
+                      ,x: state.trixelInfo.width
+                      ,y: state.trixelInfo.height}
+         ,mode: state.trixelInfo.mode
+         ,offset: state.trixelInfo.extraOffset
+         ,positionDimensions: {_: {}
+                              ,x: width
+                              ,y: height}},
+         _L.fromArray([]));
+      }();
+   };
    var normalizeCoordinates = F2(function (coordinate,
    size) {
       return coordinate - size / 2;
@@ -15611,6 +16288,16 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
          return x * y;
       })(size)(count));
    });
+   var updateLayers = function (state) {
+      return function () {
+         var renderCache = state.renderCache;
+         return _U.replace([["renderCache"
+                            ,_U.replace([["layers"
+                                         ,renderGridLayers(state)]],
+                            renderCache)]],
+         state);
+      }();
+   };
    var updateGrid = function (state) {
       return function () {
          var trixelInfo = state.trixelInfo;
@@ -15661,30 +16348,31 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
                  ,_1: height / countY},
          triangleWidth = $._0,
          triangleHeight = $._1;
-         return generateGrid(_U.replace([["trixelInfo"
-                                         ,_U.replace([["width"
-                                                      ,triangleWidth]
-                                                     ,["height",triangleHeight]
-                                                     ,["extraOffset"
-                                                      ,{_: {}
-                                                       ,x: triangleOffsetX - trixelInfo.offset.x
-                                                       ,y: triangleOffsetY - trixelInfo.offset.y}]
-                                                     ,["bounds"
-                                                      ,{_: {}
-                                                       ,max: {_: {}
-                                                             ,x: A2($Basics.min,
-                                                             workspace.width,
-                                                             maxBoundsX)
-                                                             ,y: A2($Basics.min,
-                                                             workspace.height,
-                                                             maxBoundsY)}
-                                                       ,min: $Trixel$Types$Math.zeroVector}]
-                                                     ,["dimensions"
-                                                      ,{_: {}
-                                                       ,x: maxBoundsX
-                                                       ,y: maxBoundsY}]],
-                                         trixelInfo)]],
-         state));
+         return updateLayers(generateGrid(_U.replace([["trixelInfo"
+                                                      ,_U.replace([["width"
+                                                                   ,triangleWidth]
+                                                                  ,["height"
+                                                                   ,triangleHeight]
+                                                                  ,["extraOffset"
+                                                                   ,{_: {}
+                                                                    ,x: triangleOffsetX - trixelInfo.offset.x
+                                                                    ,y: triangleOffsetY - trixelInfo.offset.y}]
+                                                                  ,["bounds"
+                                                                   ,{_: {}
+                                                                    ,max: {_: {}
+                                                                          ,x: A2($Basics.min,
+                                                                          workspace.width,
+                                                                          maxBoundsX)
+                                                                          ,y: A2($Basics.min,
+                                                                          workspace.height,
+                                                                          maxBoundsY)}
+                                                                    ,min: $Trixel$Types$Math.zeroVector}]
+                                                                  ,["dimensions"
+                                                                   ,{_: {}
+                                                                    ,x: maxBoundsX
+                                                                    ,y: maxBoundsY}]],
+                                                      trixelInfo)]],
+         state)));
       }();
    };
    var isPointInTriangle = F4(function (p,
@@ -15710,6 +16398,7 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    });
    _elm.Trixel.Zones.WorkSpace.Grid.values = {_op: _op
                                              ,updateGrid: updateGrid
+                                             ,updateLayers: updateLayers
                                              ,renderMouse: renderMouse};
    return _elm.Trixel.Zones.WorkSpace.Grid.values;
 };
