@@ -13648,7 +13648,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var footerSize = 10;
    var email = "contact@glendc.com";
    var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.1.1";
+   var version = "0.1.2";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubPage: githubPage
@@ -14068,6 +14068,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
+   $Trixel$Types$Grid = Elm.Trixel.Types.Grid.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
    $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
@@ -14181,14 +14182,14 @@ Elm.Trixel.Types.General.make = function (_elm) {
    var cleanWorkState = {_: {}
                         ,lastErasePosition: $Trixel$Types$Math.negativeUnitVector
                         ,lastMousePosition: $Trixel$Types$Math.negativeUnitVector
-                        ,lastPaintPosition: $Trixel$Types$Math.negativeUnitVector};
+                        ,lastPaintedTrixel: $Trixel$Types$Grid.defaultTrixel};
    var WorkState = F3(function (a,
    b,
    c) {
       return {_: {}
              ,lastErasePosition: b
              ,lastMousePosition: a
-             ,lastPaintPosition: c};
+             ,lastPaintedTrixel: c};
    });
    var RenderCache = F2(function (a,
    b) {
@@ -14264,12 +14265,12 @@ Elm.Trixel.Types.General.make = function (_elm) {
                       "active: ",
                       condition._0._0);}
                  _U.badCase($moduleName,
-                 "between lines 25 and 30");
+                 "between lines 26 and 31");
               }();
             case "IdleCondition":
             return "idle";}
          _U.badCase($moduleName,
-         "between lines 20 and 30");
+         "between lines 21 and 31");
       }();
    };
    var actionQuery = $Signal.mailbox(None);
@@ -14373,7 +14374,7 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
                case "Nothing":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 189 and 194");
+            "between lines 197 and 202");
          }();
       }();
    });
@@ -14394,7 +14395,7 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
                case "Nothing":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 173 and 178");
+            "between lines 181 and 186");
          }();
       }();
    });
@@ -14459,12 +14460,12 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
                     case "Nothing":
                     return $Maybe.Nothing;}
                  _U.badCase($moduleName,
-                 "between lines 116 and 122");
+                 "between lines 124 and 130");
               }();
             case "Nothing":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 111 and 122");
+         "between lines 119 and 130");
       }();
    });
    var insertTrixelInGrid = F2(function (trixel,
@@ -14500,7 +14501,7 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
                     grid);
                  }();}
             _U.badCase($moduleName,
-            "between lines 81 and 106");
+            "between lines 89 and 114");
          }();
       }();
    });
@@ -14530,10 +14531,13 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
                  }();
                case "Nothing": return grid;}
             _U.badCase($moduleName,
-            "between lines 58 and 72");
+            "between lines 66 and 80");
          }();
       }();
    });
+   var defaultTrixel = {_: {}
+                       ,color: $Color.red
+                       ,position: $Trixel$Types$Math.negativeUnitVector};
    var GridRow = F2(function (a,
    b) {
       return {_: {}
@@ -14555,6 +14559,7 @@ Elm.Trixel.Types.Grid.make = function (_elm) {
              ,position: b};
    });
    _elm.Trixel.Types.Grid.values = {_op: _op
+                                   ,defaultTrixel: defaultTrixel
                                    ,findTrixelInGrid: findTrixelInGrid
                                    ,insertTrixelInGrid: insertTrixelInGrid
                                    ,eraseTrixelInGrid: eraseTrixelInGrid
@@ -15314,6 +15319,13 @@ Elm.Trixel.Update.make = function (_elm) {
       $Basics.round(b.x)) && _U.eq($Basics.round(a.y),
       $Basics.round(b.y));
    });
+   var compareTrixels = F2(function (trixelA,
+   trixelB) {
+      return A2(comparePositions,
+      trixelA.position,
+      trixelB.position) && _U.eq(trixelA.color,
+      trixelB.color);
+   });
    var applyBrushAction = function (state) {
       return $Trixel$Zones$WorkSpace$Grid.updateLayers(function () {
          var _v0 = state.mouseState;
@@ -15332,24 +15344,29 @@ Elm.Trixel.Update.make = function (_elm) {
                                                ,_U.replace([["lastErasePosition"
                                                             ,_v0._0]],
                                                workState)]],
-                 state) : A2(comparePositions,
-                 workState.lastPaintPosition,
-                 _v0._0) ? state : _U.replace([["layers"
-                                               ,A3($Trixel$Types$Layer.insertTrixel,
-                                               A2($Trixel$Types$Grid.constructNewTrixel,
-                                               _v0._0,
-                                               state.trixelColor),
-                                               state.currentLayer,
-                                               state.layers)]
-                                              ,["workState"
-                                               ,_U.replace([["lastPaintPosition"
-                                                            ,_v0._0]],
-                                               workState)]],
-                 state);
+                 state) : function () {
+                    var newTrixel = A2($Trixel$Types$Grid.constructNewTrixel,
+                    _v0._0,
+                    state.trixelColor);
+                    return A2(compareTrixels,
+                    workState.lastPaintedTrixel,
+                    newTrixel) ? state : _U.replace([["layers"
+                                                     ,A3($Trixel$Types$Layer.insertTrixel,
+                                                     A2($Trixel$Types$Grid.constructNewTrixel,
+                                                     _v0._0,
+                                                     state.trixelColor),
+                                                     state.currentLayer,
+                                                     state.layers)]
+                                                    ,["workState"
+                                                     ,_U.replace([["lastPaintedTrixel"
+                                                                  ,newTrixel]],
+                                                     workState)]],
+                    state);
+                 }();
               }() : state;
             case "MouseNone": return state;}
          _U.badCase($moduleName,
-         "between lines 139 and 189");
+         "between lines 145 and 198");
       }());
    };
    var updateOffset = F2(function (offset,
