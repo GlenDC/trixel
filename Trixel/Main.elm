@@ -3,6 +3,7 @@ module Trixel.Main where
 import Trixel.Types.ColorScheme exposing (ColorScheme, zenburnScheme)
 import Trixel.Update exposing (update)
 import Trixel.Types.General exposing (..)
+import Trixel.Types.Layer exposing (TrixelLayers, insertNewLayer)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.Constants exposing (..)
@@ -68,6 +69,8 @@ constructNewState countX countY =
       , isErasing = False
       }
   , lastMousePosition = zeroVector
+  , layers = insertNewLayer 0 []
+  , currentLayer = 0
   }
 
 

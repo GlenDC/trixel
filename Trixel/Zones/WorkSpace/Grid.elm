@@ -1,13 +1,23 @@
-module Trixel.Zones.WorkSpace.Grid (updateGrid, renderMouse) where
+module Trixel.Zones.WorkSpace.Grid
+  ( updateGrid
+  , renderMouse
+  , renderGridLayers
+  )
+  where
 
 import Trixel.Types.General exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Constants exposing (..)
 
+import Trixel.Types.Layer exposing (..)
+import Trixel.Types.Grid exposing (..)
+
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 
 import Color exposing (Color, toRgb, rgba)
+
+import List exposing (..)
 
 
 isPointInTriangle : Vector -> Vector -> Vector -> Vector -> Bool
@@ -203,7 +213,7 @@ generateGrid state =
     }
 
 
-renderMouse: State -> Float -> Float -> List Form -> List Form
+renderMouse : State -> Float -> Float -> List Form -> List Form
 renderMouse state width height trixels =
   case state.mouseState of
     MouseNone ->
@@ -233,13 +243,104 @@ renderMouse state width height trixels =
             ) :: trixels
 
 
-getHoverColor: State -> Color
+type alias StaticTrixelRenderInfo =
+  { offset : Vector
+  , dimensions : Vector
+  , positionDimensions : Vector
+  , mode : TrixelMode
+  }
+
+
+renderGridTrixel : Float -> Float -> StaticTrixelRenderInfo -> Color -> List Form -> List Form
+renderGridTrixel x y renderInfo color trixels =
+  let xPosition =
+        (x * renderInfo.positionDimensions.x) - renderInfo.offset.x
+      yPosition =
+        (y * renderInfo.positionDimensions.y) - renderInfo.offset.y
+  in
+    (renderTrixel
+      (getTrixelOrientation x y renderInfo.mode)
+      xPosition yPosition
+      renderInfo.dimensions.x
+      renderInfo.dimensions.y
+      (\s -> filled color s)
+    ) :: trixels
+
+renderColumn : GridColumns -> Float -> StaticTrixelRenderInfo -> List Form -> List Form
+renderColumn columns y renderInfo trixels =
+  case head columns of
+    Nothing ->
+      trixels
+
+    Just gridTrixel ->
+      renderGridTrixel
+        (toFloat gridTrixel.position)
+        y
+        renderInfo
+        gridTrixel.content.color
+        trixels
+      |> renderColumn (drop 1 columns) y renderInfo
+
+
+renderLayer : GridRows -> StaticTrixelRenderInfo -> List Form -> List Form
+renderLayer rows renderInfo trixels =
+  case head rows of
+    Nothing ->
+      trixels
+
+    Just row ->
+      renderColumn row.columns (toFloat row.position) renderInfo trixels
+      |> renderLayer (drop 1 rows) renderInfo
+
+
+renderLayers : TrixelLayers -> StaticTrixelRenderInfo -> List Form -> List Form
+renderLayers layers renderInfo trixels =
+  case head layers of
+    Nothing ->
+      trixels
+
+    Just layer ->
+      renderLayer layer.grid renderInfo trixels
+      |> renderLayers (drop 1 layers) renderInfo
+
+
+renderGridLayers : State -> List Form -> List Form
+renderGridLayers state trixels =
+  let (width, height) =
+        if state.trixelInfo.mode == Vertical
+          then
+            (state.trixelInfo.width, state.trixelInfo.height)
+          else
+            (state.trixelInfo.height, state.trixelInfo.width)
+  in
+    renderLayers
+      state.layers
+      { offset =
+          state.trixelInfo.extraOffset
+      , dimensions =
+          { x = state.trixelInfo.width
+          , y = state.trixelInfo.height
+          }
+      , positionDimensions =
+          { x = width
+          , y = height
+          }
+      , mode = state.trixelInfo.mode
+      }
+      trixels
+
+
+getHoverColor : State -> Color
 getHoverColor state =
   let originalColor =
-        toRgb state.colorScheme.subbg.elm
+        toRgb state.trixelColor
+
+      red = toFloat originalColor.red
+      green = toFloat originalColor.green
+      blue = toFloat originalColor.blue
   in
     rgba
-      (255 - originalColor.red)
-      (255 - originalColor.green)
-      (255 - originalColor.blue)
-      0.5
+      (round ((255 - red) * 0.2 + red * 0.8))
+      (round ((255 - green) * 0.2 + green * 0.8))
+      (round ((255 - blue) * 0.2 + blue * 0.8))
+      0.75

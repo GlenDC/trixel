@@ -1,6 +1,8 @@
 module Trixel.Update (update) where
 
 import Trixel.Types.General exposing (..)
+import Trixel.Types.Layer exposing (..)
+import Trixel.Types.Grid exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (updateGrid)
@@ -40,6 +42,7 @@ update action state =
 
     MoveMouse point ->
       updateMousePosition point state
+      |> applyBrushAction
 
     NewDocument ->
       resetState state
@@ -55,9 +58,11 @@ update action state =
 
     BrushSwitch isActive ->
       updateBrushAction isActive state
+      |> applyBrushAction
 
     ErasingSwitch isErasing ->
       updateErasingAction isErasing state
+      |> applyBrushAction
 
     SwitchAction actionState ->
       update actionState.action state
@@ -73,10 +78,18 @@ resetState state =
   in
     { state
         | trixelInfo <-
-            { trixelInfo |
-                count <- { x = 1, y = 1 },
-                mode <- Vertical
+            { trixelInfo
+                | count <-
+                    { x = 10, y = 10 }
+                , mode <-
+                    Vertical
+                , scale <-
+                    1
             }
+        , currentLayer <-
+            0
+        , layers <-
+            insertNewLayer 0 []
     }
 
 
@@ -105,6 +118,35 @@ updateOffset offset state =
                       }
                 }
         }
+
+
+applyBrushAction : State -> State
+applyBrushAction state =
+  case state.mouseState of
+    MouseNone ->
+      state
+
+    MouseHover position ->
+      if state.actions.isBrushActive
+        then
+          let modifiedLayers =
+                if state.actions.isErasing
+                  then
+                    eraseTrixel
+                      position
+                      state.currentLayer
+                      state.layers
+                  else
+                    insertTrixel
+                      (constructNewTrixel position state.trixelColor)
+                      state.currentLayer
+                      state.layers
+          in
+            { state
+                | layers <- modifiedLayers
+            }
+        else
+          state
 
 
 updateBrushAction : Bool -> State -> State
