@@ -2,6 +2,7 @@ module Trixel.Types.General where
 
 import Trixel.Types.ColorScheme exposing (ColorScheme)
 import Trixel.Types.Layer exposing (TrixelLayers, LayerPosition)
+import Trixel.Types.Grid exposing (Trixel, defaultTrixel)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 
@@ -104,7 +105,7 @@ type alias RenderCache =
 type alias WorkState =
   { lastMousePosition : Vector
   , lastErasePosition : Vector
-  , lastPaintPosition : Vector
+  , lastPaintedTrixel : Trixel
   }
 
 
@@ -112,7 +113,7 @@ cleanWorkState : WorkState
 cleanWorkState =
   { lastMousePosition = negativeUnitVector
   , lastErasePosition = negativeUnitVector
-  , lastPaintPosition = negativeUnitVector
+  , lastPaintedTrixel = defaultTrixel
   }
 
 

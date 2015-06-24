@@ -4,6 +4,7 @@ module Trixel.Types.Grid
   , GridRows
   , GridRow
   , Trixel
+  , defaultTrixel
   , findTrixelInGrid
   , insertTrixelInGrid
   , eraseTrixelInGrid
@@ -15,7 +16,7 @@ module Trixel.Types.Grid
 
 import Trixel.Types.Math exposing (..)
 
-import Color exposing (Color)
+import Color exposing (Color, red)
 import List exposing (..)
 import Maybe exposing (..)
 
@@ -47,6 +48,13 @@ type alias GridTrixel =
 type alias GridRow =
   { position : Int
   , columns : GridColumns
+  }
+
+
+defaultTrixel : Trixel
+defaultTrixel =
+  { color = red
+  , position = negativeUnitVector
   }
 
 

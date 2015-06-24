@@ -134,6 +134,12 @@ comparePositions a b =
     && (round a.y) == (round b.y)
 
 
+compareTrixels : Trixel -> Trixel -> Bool
+compareTrixels trixelA trixelB =
+  (comparePositions trixelA.position trixelB.position)
+  && (trixelA.color == trixelB.color)
+
+
 applyBrushAction : State -> State
 applyBrushAction state =
   (case state.mouseState of
@@ -167,24 +173,27 @@ applyBrushAction state =
                           }
                   }
               else -- Paint
-                if comparePositions
-                      workState.lastPaintPosition
-                      position
-                then
-                  state -- same position as last time
-                else
-                  { state
-                      | layers <-
-                          (insertTrixel
-                            (constructNewTrixel position state.trixelColor)
-                            state.currentLayer
-                            state.layers)
-                      , workState <-
-                          { workState
-                              | lastPaintPosition <-
-                                  position
-                          }
-                  }
+                let newTrixel =
+                      constructNewTrixel position state.trixelColor
+                in
+                  if compareTrixels
+                        workState.lastPaintedTrixel
+                        newTrixel
+                  then
+                    state -- same position as last time
+                  else
+                    { state
+                        | layers <-
+                            (insertTrixel
+                              (constructNewTrixel position state.trixelColor)
+                              state.currentLayer
+                              state.layers)
+                        , workState <-
+                            { workState
+                                | lastPaintedTrixel <-
+                                    newTrixel
+                            }
+                    }
         else
           state)
   |> updateLayers
