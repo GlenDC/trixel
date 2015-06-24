@@ -62,7 +62,10 @@ constructNewState countX countY =
       }
   , windowDimensions = zeroVector
   , mouseState = MouseNone
-  , grid = []
+  , renderCache =
+      { grid = []
+      , layers = []
+      }
   , condition = IdleCondition
   , actions =
       { isBrushActive = False

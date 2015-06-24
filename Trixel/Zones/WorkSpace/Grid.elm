@@ -1,7 +1,7 @@
 module Trixel.Zones.WorkSpace.Grid
   ( updateGrid
+  , updateLayers
   , renderMouse
-  , renderGridLayers
   )
   where
 
@@ -103,6 +103,20 @@ updateGrid state =
             }
     }
     |> generateGrid
+    |> updateLayers
+
+
+updateLayers : State -> State
+updateLayers state =
+  let renderCache =
+        state.renderCache
+  in
+    { state
+        | renderCache <-
+            { renderCache
+                | layers <- renderGridLayers state
+            }
+    }
 
 
 normalizeCoordinates : Float -> Float -> Float
@@ -206,10 +220,15 @@ generateGrid state =
             (state.trixelInfo.width, state.trixelInfo.height)
           else
             (state.trixelInfo.height, state.trixelInfo.width)
+
+      renderCache = state.renderCache
   in
     { state
-        | grid <-
-            renderGrid state count.x count.y triangleWidth triangleHeight []
+        | renderCache <-
+            { renderCache
+                | grid <-
+                    renderGrid state count.x count.y triangleWidth triangleHeight []
+            }
     }
 
 
@@ -304,8 +323,8 @@ renderLayers layers renderInfo trixels =
       |> renderLayers (drop 1 layers) renderInfo
 
 
-renderGridLayers : State -> List Form -> List Form
-renderGridLayers state trixels =
+renderGridLayers : State -> List Form
+renderGridLayers state =
   let (width, height) =
         if state.trixelInfo.mode == Vertical
           then
@@ -327,7 +346,7 @@ renderGridLayers state trixels =
           }
       , mode = state.trixelInfo.mode
       }
-      trixels
+      []
 
 
 getHoverColor : State -> Color

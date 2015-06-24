@@ -5,7 +5,7 @@ import Trixel.Types.General exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.PostOffice exposing (..)
-import Trixel.Zones.WorkSpace.Grid exposing (renderMouse, renderGridLayers)
+import Trixel.Zones.WorkSpace.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
 import Html.Attributes exposing (style, class)
@@ -58,7 +58,7 @@ viewWorkSpace state =
   let {x, y} =
         computeDimensionsFromBounds state.trixelInfo.bounds
   in
-    renderMouse state x y state.grid
-    |> renderGridLayers state
+    state.renderCache.layers ++
+      (renderMouse state x y state.renderCache.grid)
     |> collage (round x) (round y)
     |> fromElement

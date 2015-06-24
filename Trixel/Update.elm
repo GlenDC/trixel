@@ -5,7 +5,7 @@ import Trixel.Types.Layer exposing (..)
 import Trixel.Types.Grid exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
-import Trixel.Zones.WorkSpace.Grid exposing (updateGrid)
+import Trixel.Zones.WorkSpace.Grid exposing (updateGrid, updateLayers)
 import Trixel.Constants exposing (..)
 
 import Debug
@@ -122,7 +122,7 @@ updateOffset offset state =
 
 applyBrushAction : State -> State
 applyBrushAction state =
-  case state.mouseState of
+  (case state.mouseState of
     MouseNone ->
       state
 
@@ -146,7 +146,8 @@ applyBrushAction state =
                 | layers <- modifiedLayers
             }
         else
-          state
+          state)
+  |> updateLayers
 
 
 updateBrushAction : Bool -> State -> State

@@ -95,6 +95,12 @@ type alias WorkSpaceActions =
   }
 
 
+type alias RenderCache =
+  { grid : List Form
+  , layers : List Form
+  }
+
+
 -- The entire editor state
 -- Not sure if it's a good idea to have so much as a state, being passed around
 -- We might want to check if there are options to store some stuff somewhere else
@@ -105,7 +111,7 @@ type alias State =
   , boxModels : EditorBoxModels
   , windowDimensions : Vector
   , mouseState : MouseState
-  , grid : List Form
+  , renderCache : RenderCache
   , condition : Condition
   , actions : WorkSpaceActions
   , lastMousePosition : Vector
