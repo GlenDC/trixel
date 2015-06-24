@@ -338,6 +338,7 @@ updateGridX x state =
                     }
             }
     }
+    |> updateWorkGridColumns
 
 
 updateGridY : Float -> State -> State
@@ -354,6 +355,27 @@ updateGridY y state =
                     }
             }
     }
+    |> updateWorkGridRows
+
+
+updateWorkGridRows : State -> State
+updateWorkGridRows state =
+  { state
+      | layers <-
+          (eraseLayerRowByPosition
+            (round state.trixelInfo.count.y)
+            state.layers)
+  }
+
+
+updateWorkGridColumns : State -> State
+updateWorkGridColumns state =
+  { state
+      | layers <-
+          (eraseLayerTrixelByPosition
+            (round state.trixelInfo.count.x)
+            state.layers)
+  }
 
 
 updateMode : TrixelMode -> State -> State

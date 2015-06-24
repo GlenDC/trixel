@@ -9,6 +9,8 @@ module Trixel.Types.Layer
   , findTrixel
   , eraseTrixel
   , insertTrixel
+  , eraseLayerRowByPosition
+  , eraseLayerTrixelByPosition
   )
   where
 
@@ -112,3 +114,41 @@ insertTrixel trixel layerPosition layers =
         , grid = grid
         }
         :: (eraseLayer layerPosition layers)
+
+
+-- will erase the row when the y-position is to big
+eraseLayerRowByPosition : Int -> TrixelLayers -> TrixelLayers
+eraseLayerRowByPosition position layers =
+  List.map
+    (\layer ->
+      { layer
+          | grid <-
+              eraseGridRowByPredicate
+                (\row ->
+                  row.position < position)
+                layer.grid
+      })
+    layers
+
+-- will erase the trixel when the x-position is to big
+eraseLayerTrixelByPosition : Int -> TrixelLayers -> TrixelLayers
+eraseLayerTrixelByPosition position layers =
+  List.map
+    (\layer ->
+      { layer
+          | grid <-
+              List.map
+                (\row ->
+                  { row
+                      | columns <-
+                          eraseGridTrixelByPredicate
+                          (\column ->
+                            column.position < position)
+                          row.columns
+
+                  }
+                )
+                layer.grid
+        }
+    )
+    layers

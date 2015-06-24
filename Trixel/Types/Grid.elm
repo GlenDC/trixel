@@ -2,11 +2,14 @@ module Trixel.Types.Grid
   ( TrixelGrid
   , GridColumns
   , GridRows
+  , GridRow
   , Trixel
   , findTrixelInGrid
   , insertTrixelInGrid
   , eraseTrixelInGrid
   , constructNewTrixel
+  , eraseGridTrixelByPredicate
+  , eraseGridRowByPredicate
   )
   where
 
@@ -127,12 +130,22 @@ eraseGridTrixel position columns =
     columns
 
 
+eraseGridTrixelByPredicate : (GridTrixel -> Bool) -> GridColumns -> GridColumns
+eraseGridTrixelByPredicate predicate columns =
+  filter predicate columns
+
+
 eraseGridRow : Int -> GridRows -> GridRows
 eraseGridRow position rows =
   filter
     (\row ->
       row.position /= position)
     rows
+
+
+eraseGridRowByPredicate : (GridRow -> Bool) -> GridRows -> GridRows
+eraseGridRowByPredicate predicate rows =
+  filter predicate rows
 
 
 constructGridRow : Int -> GridTrixel -> GridRow
@@ -147,6 +160,7 @@ constructGridTrixel trixel =
   { position = round trixel.position.x
   , content = constructTrixelContent trixel
   }
+
 
 findRow : Int -> GridRows -> Maybe GridColumns
 findRow position rows =
