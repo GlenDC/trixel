@@ -68,17 +68,35 @@ handlePostedAction action state =
     PostAction trixelAction ->
       SwitchAction
         { state
-            | action <- trixelAction
+            | action <-
+                trixelAction
         }
 
-    PostCondition condition ->
-      if state.active == False && condition == IdleCondition
-        then SwitchAction state
-        else
-          SwitchAction
-            { active = condition /= IdleCondition
-            , action = SetCondition condition
-            }
+    EnteringHTMLInput ->
+      let inputsActive =
+            1 + state.inputsActive
+      in
+        SwitchAction
+          { state
+              | inputsActive <-
+                  inputsActive
+              , condition <-
+                  AntiUserInputCondition
+          }
+
+    LeavingHTMLInput ->
+      let inputsActive =
+            max 0 (state.inputsActive - 1)
+      in
+        SwitchAction
+          { state
+              | inputsActive <-
+                  inputsActive
+              , condition <-
+                  if inputsActive > 0
+                    then AntiUserInputCondition
+                    else NormalCondition
+          }
 
     PostNoAction ->
       SwitchAction state
@@ -105,19 +123,19 @@ workspaceSignals =
     , toggleGridVisibilitySignal
     ]
   |> Signal.foldp workspacePostOffice
-      (SwitchAction { active = False, action = None })
+      (SwitchAction
+        { action = None
+        , condition = NormalCondition
+        , inputsActive = 0
+        }
+      )
 
 
 filterPostOfficeSignal : TrixelAction -> Bool
 filterPostOfficeSignal trixelAction =
   case trixelAction of
     SwitchAction state ->
-      (case state.action of
-         SetCondition condition ->
-           True
-
-         _ ->
-          True)--state.active)
+      state.condition == NormalCondition
 
     _ ->
       True
@@ -134,4 +152,5 @@ postOfficeSignal =
 type PostOfficeAction
   = PostNoAction
   | PostAction TrixelAction
-  | PostCondition Condition
+  | EnteringHTMLInput
+  | LeavingHTMLInput

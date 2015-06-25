@@ -33,9 +33,6 @@ update action state =
       updateMode mode state
       |> updateGrid
 
-    SetCondition condition ->
-      updateCondition condition state
-
     ResizeWindow dimensions ->
       updateWindowDimensions dimensions state
       |> updateGrid
@@ -73,7 +70,11 @@ update action state =
       toggleGridVisibility state
 
     SwitchAction actionState ->
-      update actionState.action state
+      update actionState.action
+        { state
+            | condition <-
+                actionState.condition
+        }
 
     None ->
       state
@@ -428,11 +429,3 @@ updateMode mode state =
                     mode
             }
     }
-
-
-updateCondition : Condition -> State -> State
-updateCondition condition state =
-  { state
-      | condition <-
-          condition
-  }

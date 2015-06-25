@@ -14,7 +14,6 @@ import Trixel.Zones.Menu
 
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
-import Html.Events exposing (onMouseEnter)
 import Signal exposing (..)
 import Color exposing (red)
 
@@ -66,7 +65,7 @@ constructNewState countX countY =
       { grid = []
       , layers = []
       }
-  , condition = IdleCondition
+  , condition = NormalCondition
   , actions =
       { isBrushActive = False
       , isErasing = False
@@ -82,7 +81,6 @@ view : State -> Html
 view state =
   div
     [ constructMainStyle state
-    , onMouseEnter actionQuery.address (SetCondition IdleCondition)
     ]
     [ (Trixel.Zones.Menu.view state)
     , (Trixel.Zones.Footer.view state)

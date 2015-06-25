@@ -7,7 +7,7 @@ import Trixel.Types.General exposing (..)
 import Trixel.PostOffice exposing (..)
 
 import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
-import Html.Events exposing (on, onClick, targetValue, onMouseEnter, onFocus)
+import Html.Events exposing (on, onClick, targetValue, onBlur, onFocus)
 import Html.Attributes exposing (style, value, selected, class)
 
 import Color exposing (..)
@@ -24,7 +24,6 @@ view  state =
     div
       [ constructMainStyle boxModel state
       , class "noselect"
-      , onMouseEnter postOfficeQuery.address (PostCondition IdleCondition)
       ]
       [ (constructButton "New" NewDocument boxModel state)
 
@@ -103,6 +102,7 @@ constructArithmeticButton string action menuBoxModel state =
           , ("color", state.colorScheme.selfg.html)
           , ("font-size", (toPixels (boxModel.height / 1.75)))
           , ("float", "left")
+          , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
   in
@@ -126,6 +126,7 @@ constructSimpleText string textAlign menuBoxModel state =
           , ("text-align", textAlign)
           , ("font-size", (toPixels (boxModel.height / 1.75)))
           , ("float", "left")
+          , ("cursor", "default")
           ])
       ]
       [ text string ]
@@ -176,7 +177,8 @@ constructTextInput action menuBoxModel state =
       , input
           [ value (toString default)
           , on "blur" targetValue (Signal.message (forwardTo actionQuery.address fn))
-          , onFocus postOfficeQuery.address (PostCondition IdleCondition)
+          , onFocus postOfficeQuery.address EnteringHTMLInput
+          , onBlur postOfficeQuery.address LeavingHTMLInput
           , inputStyle
           ]
           []
@@ -199,6 +201,7 @@ constructModeList menuBoxModel state =
           , ("color", state.colorScheme.selfg.html)
           , ("font-size", boxModel.height / 1.85 |> toPixels)
           , ("float", "left")
+          , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
 
@@ -217,6 +220,8 @@ constructModeList menuBoxModel state =
       , select
           [ selectStyle
           , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
+          , onFocus postOfficeQuery.address EnteringHTMLInput
+          , onBlur postOfficeQuery.address LeavingHTMLInput
           ]
           [ option
               [ selected (state.trixelInfo.mode == IsometricMode)
@@ -247,6 +252,7 @@ constructColorList menuBoxModel state =
           , ("color", state.colorScheme.selfg.html)
           , ("font-size", boxModel.height / 1.85 |> toPixels)
           , ("float", "left")
+          , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
 
@@ -276,6 +282,8 @@ constructColorList menuBoxModel state =
       , select
           [ selectStyle
           , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
+          , onFocus postOfficeQuery.address EnteringHTMLInput
+          , onBlur postOfficeQuery.address LeavingHTMLInput
           ]
           [ constructColorOption state red 0 "red"
           , constructColorOption state orange 1 "orange"

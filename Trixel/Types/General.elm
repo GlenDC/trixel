@@ -16,21 +16,6 @@ actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
 
 
-computeConditionString : Condition -> String
-computeConditionString condition =
-  case condition of
-    IdleCondition
-      -> "idle"
-
-    ActiveCondition message
-      -> case message of
-        EmptyMessage
-          -> "active"
-
-        StringMessage string
-          -> "active: " ++ string
-
-
 -- Orientation of a trixel: 2 directions x 2 modes == 4 orientations
 type TrixelOrientation
   = Up -- used in Classic Mode
@@ -78,16 +63,9 @@ type MouseState
 
 
 -- Defining the current condition of the workspace
--- and optionally a message giving a more detailed context.
-
-type Condition
-  = IdleCondition
-  | ActiveCondition Message
-
-
-type Message
-  = EmptyMessage
-  | StringMessage String
+type WorkspaceCondition
+  = NormalCondition -- business as usual
+  | AntiUserInputCondition -- we're in an HTML input, so block keyboard-mouse input
 
 
 type alias WorkSpaceActions =
@@ -139,7 +117,7 @@ type alias State =
   , windowDimensions : Vector
   , mouseState : MouseState
   , renderCache : RenderCache
-  , condition : Condition
+  , condition : WorkspaceCondition
   , actions : WorkSpaceActions
   , workState : WorkState
   , layers : TrixelLayers
@@ -149,7 +127,8 @@ type alias State =
 
 
 type alias PostOfficeState =
-  { active : Bool
+  { inputsActive : Int
+  , condition : WorkspaceCondition
   , action : TrixelAction
   }
 
@@ -161,7 +140,6 @@ type TrixelAction
   = None -- no action
   | ResizeWindow Vector -- Resizing the main window
   | SetMode TrixelMode -- Setting the mode (defining the trixel behaviour)
-  | SetCondition Condition -- This will either be an idle state or an active state with optionally a context
   | NewDocument -- Start of the process to create a new document
   | OpenDocument -- Start of the process to open an existing document
   | SaveDocument -- Start of the process to save the current document

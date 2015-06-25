@@ -239,7 +239,7 @@ renderMouse state width height trixels =
       trixels
 
     MouseHover position -> 
-      if state.condition == IdleCondition
+      if state.condition /= NormalCondition
         then trixels
         else
           let (triangleWidth, triangleHeight) =
@@ -359,7 +359,7 @@ getHoverColor state =
       blue = toFloat originalColor.blue
   in
     rgba
-      (round ((255 - red) * 0.2 + red * 0.8))
-      (round ((255 - green) * 0.2 + green * 0.8))
-      (round ((255 - blue) * 0.2 + blue * 0.8))
-      0.75
+      (round ((255 - red) * 0.1 + red * 0.8 + 255 * 0.1))
+      (round ((255 - green) * 0.1 + green * 0.9))
+      (round ((255 - blue) * 0.1 + blue * 0.9))
+      0.85

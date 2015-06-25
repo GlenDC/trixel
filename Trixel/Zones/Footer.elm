@@ -8,14 +8,12 @@ import Trixel.PostOffice exposing (..)
 
 import Html exposing (Html, Attribute, div, text, footer, a)
 import Html.Attributes exposing (style, class, href)
-import Html.Events exposing (onMouseEnter)
 
 view : State -> Html
 view state =
   footer
     [ constructMainStyle state
     , class "noselect"
-    , onMouseEnter postOfficeQuery.address (PostCondition IdleCondition)
     ]
     [ div
         [ style

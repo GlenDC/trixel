@@ -9,7 +9,6 @@ import Trixel.Zones.WorkSpace.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
 import Html.Attributes exposing (style, class)
-import Html.Events exposing (onMouseEnter, onMouseLeave)
 
 import Color exposing (..)
 import Graphics.Collage exposing (..)
@@ -21,8 +20,6 @@ view state =
   div
     [ constructMainStyle state
     , class "noselect"
-    , onMouseEnter postOfficeQuery.address (PostCondition (ActiveCondition EmptyMessage))
-    , onMouseLeave postOfficeQuery.address (PostCondition IdleCondition)
     ]
     [ viewWorkSpace state ]
 
