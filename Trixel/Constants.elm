@@ -7,7 +7,7 @@ import Char
 
 version : String
 version =
-  "0.1.3"
+  "0.1.4"
 
 
 githubRepositoryURL : String
