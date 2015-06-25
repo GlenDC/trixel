@@ -33,9 +33,9 @@ computeConditionString condition =
 
 -- Orientation of a trixel: 2 directions x 2 modes == 4 orientations
 type TrixelOrientation
-  = Up -- used in Vertical Mode
+  = Up -- used in Classic Mode
   | Down
-  | Left -- used in Horizontal Mode
+  | Left -- used in Isometric Mode
   | Right
 
 
@@ -43,8 +43,8 @@ type TrixelOrientation
 -- The horizontal one gives a more isometric feeling,
 -- while the vertical better highlights the triangle in all its glory.
 type TrixelMode
-  = Horizontal
-  | Vertical
+  = ClassicMode
+  | IsometricMode
 
 
 -- All info needed to draw the trixel-workspace
@@ -160,7 +160,7 @@ type alias PostOfficeState =
 type TrixelAction
   = None -- no action
   | ResizeWindow Vector -- Resizing the main window
-  | SetMode TrixelMode -- Setting the mode to either Horizontal or Vertical Mode
+  | SetMode TrixelMode -- Setting the mode (defining the trixel behaviour)
   | SetCondition Condition -- This will either be an idle state or an active state with optionally a context
   | NewDocument -- Start of the process to create a new document
   | OpenDocument -- Start of the process to open an existing document

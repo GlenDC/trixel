@@ -46,7 +46,7 @@ updateGrid state =
         state.trixelInfo
 
       (scaledWidth, scaledHeight, countX, countY) =
-        if trixelInfo.mode == Vertical
+        if trixelInfo.mode == ClassicMode
           then
             ( workspace.width * trixelInfo.scale
             , workspace.height * trixelInfo.scale
@@ -72,7 +72,7 @@ updateGrid state =
         (width / deltaX, height / countY)
 
       (triangleOffsetX, triangleOffsetY, maxBoundsX, maxBoundsY) =
-        if trixelInfo.mode == Vertical
+        if trixelInfo.mode == ClassicMode
           then (width / 2, height / 2, width, height)
           else (height / 2, width / 2, height, width)
   in
@@ -171,11 +171,11 @@ getTrixelOrientation : Float -> Float -> TrixelMode -> TrixelOrientation
 getTrixelOrientation x y mode =
   if (round (x + y)) % 2 == 0
     then
-      if mode == Horizontal
+      if mode == IsometricMode
         then Left
         else Down
     else
-      if mode == Horizontal
+      if mode == IsometricMode
         then Right
         else Up
 
@@ -215,7 +215,7 @@ generateGrid state =
         state.trixelInfo.count
 
       (triangleWidth, triangleHeight) =
-        if state.trixelInfo.mode == Vertical
+        if state.trixelInfo.mode == ClassicMode
           then
             (state.trixelInfo.width, state.trixelInfo.height)
           else
@@ -243,7 +243,7 @@ renderMouse state width height trixels =
         then trixels
         else
           let (triangleWidth, triangleHeight) =
-                  if state.trixelInfo.mode == Vertical
+                  if state.trixelInfo.mode == ClassicMode
                     then
                       (state.trixelInfo.width, state.trixelInfo.height)
                     else
@@ -326,7 +326,7 @@ renderLayers layers renderInfo trixels =
 renderGridLayers : State -> List Form
 renderGridLayers state =
   let (width, height) =
-        if state.trixelInfo.mode == Vertical
+        if state.trixelInfo.mode == ClassicMode
           then
             (state.trixelInfo.width, state.trixelInfo.height)
           else

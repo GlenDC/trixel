@@ -203,7 +203,7 @@ constructModeList menuBoxModel state =
           ])
 
       selectFunction value =
-        SetMode (if (stringToInt value) == 0 then Horizontal else Vertical)
+        SetMode (if (stringToInt value) == 0 then IsometricMode else ClassicMode)
   in
     div []
       [ label
@@ -219,15 +219,15 @@ constructModeList menuBoxModel state =
           , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
           ]
           [ option
-              [ selected (state.trixelInfo.mode == Horizontal)
+              [ selected (state.trixelInfo.mode == IsometricMode)
               , value "0"
               ]
-              [ text "Horizontal" ]
+              [ text "Isometric" ]
           , option
-              [ selected (state.trixelInfo.mode == Vertical)
+              [ selected (state.trixelInfo.mode == ClassicMode)
               , value "1"
               ]
-              [ text "Vertical" ]
+              [ text "Classic" ]
           ]
       ]
 
@@ -290,17 +290,6 @@ constructColorList menuBoxModel state =
           ]
       ]
 
-{-
-
-red : Color
-orange : Color
-yellow : Color
-green : Color
-blue : Color
-purple : Color
-brown : Color
-
--}
 
 constructColorOption : State -> Color -> Int -> String -> Html
 constructColorOption state color val description =

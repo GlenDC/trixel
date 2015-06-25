@@ -46,7 +46,7 @@ constructNewState countX countY =
       { bounds = zeroBounds
       , height = 0
       , width = 0
-      , mode = Vertical
+      , mode = ClassicMode
       , count = { x = countX, y = countY }
       , scale = 1
       , offset = zeroVector

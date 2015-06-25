@@ -89,8 +89,6 @@ resetState state =
             { trixelInfo
                 | count <-
                     { x = 10, y = 10 }
-                , mode <-
-                    Vertical
                 , scale <-
                     1
             }
@@ -262,7 +260,7 @@ updateMousePosition point state =
           - state.trixelInfo.offset.y
 
       (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
-        if state.trixelInfo.mode == Vertical
+        if state.trixelInfo.mode == ClassicMode
           then
             ( state.trixelInfo.width
             , state.trixelInfo.height
