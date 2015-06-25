@@ -28,19 +28,22 @@ view  state =
       ]
       [ (constructButton "New" NewDocument boxModel state)
 
-      , (constructTextInput GridX boxModel state)
+      , constructSimpleText "GridX:" "right" boxModel state
+      , constructSimpleText (toString state.trixelInfo.count.x) "center" boxModel state
       , (constructArithmeticButton "-"
           (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state)
       , (constructArithmeticButton "+"
           (SetGridX (state.trixelInfo.count.x + 1)) boxModel state)
 
-      , (constructTextInput GridY boxModel state)
+      , constructSimpleText "GridY:" "right" boxModel state
+      , constructSimpleText (toString state.trixelInfo.count.y) "center" boxModel state
       , (constructArithmeticButton "-"
           (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state)
       , (constructArithmeticButton "+"
           (SetGridY (state.trixelInfo.count.y + 1)) boxModel state)
 
-      , (constructTextInput Scale boxModel state)
+      , constructSimpleText "Scale:" "right" boxModel state
+      , constructSimpleText ((toString (round (state.trixelInfo.scale * 100))) ++ "%") "center" boxModel state
       , (constructArithmeticButton "-"
           (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state)
       , (constructArithmeticButton "+"
@@ -107,6 +110,26 @@ constructArithmeticButton string action menuBoxModel state =
       [ onClick actionQuery.address action, buttonStyle ]
       [ text string ]
 
+constructSimpleText : String -> String -> BoxModel -> State -> Html
+constructSimpleText string textAlign menuBoxModel state =
+  let width =
+        clamp 40 50 (menuBoxModel.width * 0.05)
+      height =
+        menuBoxModel.height - (menuBoxModel.padding.y * 2)
+
+      boxModel =
+        constructBoxModel width height 5 5 2 2 BorderBox
+  in
+    div
+      [ style ((computeBoxModelCSS boxModel) ++
+          [ ("color", "lightGrey")
+          , ("text-align", textAlign)
+          , ("font-size", (toPixels (boxModel.height / 1.75)))
+          , ("float", "left")
+          ])
+      ]
+      [ text string ]
+
 
 constructTextInput : TrixelActionInput -> BoxModel -> State -> Html
 constructTextInput action menuBoxModel state =
@@ -146,7 +169,7 @@ constructTextInput action menuBoxModel state =
           [ style
               [ ("float", "left")
               , ("padding", vectorToPixels { x = 10, y = 6 })
-              , ("color", state.colorScheme.text.html)
+              , ("color", "lightGrey")
               ]
           ]
           [text caption]
@@ -187,7 +210,7 @@ constructModeList menuBoxModel state =
           [ style
             [ ("float", "left")
             , ("padding", vectorToPixels { x = 10, y = 6 })
-            , ("color", state.colorScheme.text.html)
+            , ("color", "lightGrey")
             ]
           ]
           [ text "Mode" ]
@@ -246,7 +269,7 @@ constructColorList menuBoxModel state =
           [ style
             [ ("float", "left")
             , ("padding", vectorToPixels { x = 10, y = 6 })
-            , ("color", state.colorScheme.text.html)
+            , ("color", "lightGrey")
             ]
           ]
           [ text "Color" ]
