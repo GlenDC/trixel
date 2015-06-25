@@ -13647,11 +13647,13 @@ Elm.Trixel.Constants.make = function (_elm) {
    var workspaceOffsetMoveSpeed = 80;
    var footerSize = 10;
    var email = "contact@glendc.com";
-   var githubPage = "https://github.com/GlenDC/trixel";
-   var version = "0.1.2";
+   var newsletterSubscribeURL = "http://eepurl.com/brwmSn";
+   var githubRepositoryURL = "https://github.com/GlenDC/trixel";
+   var version = "0.1.3";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
-                                  ,githubPage: githubPage
+                                  ,githubRepositoryURL: githubRepositoryURL
+                                  ,newsletterSubscribeURL: newsletterSubscribeURL
                                   ,email: email
                                   ,footerSize: footerSize
                                   ,workspaceOffsetMoveSpeed: workspaceOffsetMoveSpeed
@@ -13750,7 +13752,7 @@ Elm.Trixel.Main.make = function (_elm) {
                           ,dimensions: $Trixel$Types$Math.zeroVector
                           ,extraOffset: $Trixel$Types$Math.zeroVector
                           ,height: 0
-                          ,mode: $Trixel$Types$General.Vertical
+                          ,mode: $Trixel$Types$General.ClassicMode
                           ,offset: $Trixel$Types$Math.zeroVector
                           ,scale: 1
                           ,width: 0}
@@ -13823,7 +13825,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                  switch (_v2.ctor)
                  {case "SetCondition":
                     return true;}
-                 return trixelAction._0.active;
+                 return true;
               }();}
          return true;
       }();
@@ -14246,8 +14248,8 @@ Elm.Trixel.Types.General.make = function (_elm) {
              ,scale: f
              ,width: c};
    });
-   var Vertical = {ctor: "Vertical"};
-   var Horizontal = {ctor: "Horizontal"};
+   var IsometricMode = {ctor: "IsometricMode"};
+   var ClassicMode = {ctor: "ClassicMode"};
    var Right = {ctor: "Right"};
    var Left = {ctor: "Left"};
    var Down = {ctor: "Down"};
@@ -14281,8 +14283,8 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,Down: Down
                                       ,Left: Left
                                       ,Right: Right
-                                      ,Horizontal: Horizontal
-                                      ,Vertical: Vertical
+                                      ,ClassicMode: ClassicMode
+                                      ,IsometricMode: IsometricMode
                                       ,TrixelInfo: TrixelInfo
                                       ,EditorBoxModels: EditorBoxModels
                                       ,MouseNone: MouseNone
@@ -15242,15 +15244,15 @@ Elm.Trixel.Update.make = function (_elm) {
       return function () {
          var workState = state.workState;
          var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
-                                           ,_0: state.trixelInfo.width
-                                           ,_1: state.trixelInfo.height
-                                           ,_2: state.trixelInfo.width
-                                           ,_3: state.trixelInfo.height / 2} : {ctor: "_Tuple4"
-                                                                               ,_0: state.trixelInfo.height
-                                                                               ,_1: state.trixelInfo.width
-                                                                               ,_2: state.trixelInfo.height / 2
-                                                                               ,_3: state.trixelInfo.width},
+         $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple4"
+                                              ,_0: state.trixelInfo.width
+                                              ,_1: state.trixelInfo.height
+                                              ,_2: state.trixelInfo.width
+                                              ,_3: state.trixelInfo.height / 2} : {ctor: "_Tuple4"
+                                                                                  ,_0: state.trixelInfo.height
+                                                                                  ,_1: state.trixelInfo.width
+                                                                                  ,_2: state.trixelInfo.height / 2
+                                                                                  ,_3: state.trixelInfo.width},
          triangleWidth = $._0,
          triangleHeight = $._1,
          cursorOffsetX = $._2,
@@ -15366,7 +15368,7 @@ Elm.Trixel.Update.make = function (_elm) {
               }() : state;
             case "MouseNone": return state;}
          _U.badCase($moduleName,
-         "between lines 145 and 198");
+         "between lines 143 and 196");
       }());
    };
    var updateOffset = F2(function (offset,
@@ -15394,8 +15396,6 @@ Elm.Trixel.Update.make = function (_elm) {
          return _U.replace([["trixelInfo"
                             ,_U.replace([["count"
                                          ,{_: {},x: 10,y: 10}]
-                                        ,["mode"
-                                         ,$Trixel$Types$General.Vertical]
                                         ,["scale",1]],
                             trixelInfo)]
                            ,["currentLayer",0]
@@ -15518,8 +15518,17 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                     ,_0: "bottom"
                     ,_1: "0px"}])));
    };
+   var constructURL = F2(function (url,
+   description) {
+      return A2($Html.a,
+      _L.fromArray([$Html$Attributes.href(url)
+                   ,$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                         ,_0: "color"
+                                                         ,_1: "lightGrey"}]))]),
+      _L.fromArray([$Html.text(description)]));
+   });
    var view = function (state) {
-      return A2($Html.div,
+      return A2($Html.footer,
       _L.fromArray([constructMainStyle(state)
                    ,$Html$Attributes.$class("noselect")
                    ,A2($Html$Events.onMouseEnter,
@@ -15547,8 +15556,17 @@ Elm.Trixel.Zones.Footer.make = function (_elm) {
                                                                       ,_1: "left"}
                                                                      ,{ctor: "_Tuple2"
                                                                       ,_0: "cursor"
-                                                                      ,_1: "default"}]))]),
-                   _L.fromArray([$Html.text($Trixel$Types$General.computeConditionString(state.condition))]))]));
+                                                                      ,_1: "default"}
+                                                                     ,{ctor: "_Tuple2"
+                                                                      ,_0: "color"
+                                                                      ,_1: "lightGrey"}]))]),
+                   _L.fromArray([A2(constructURL,
+                                $Trixel$Constants.githubRepositoryURL,
+                                "GitHub Repository")
+                                ,$Html.text(" | ")
+                                ,A2(constructURL,
+                                $Trixel$Constants.newsletterSubscribeURL,
+                                "Subscribe to newsletter")]))]));
    };
    _elm.Trixel.Zones.Footer.values = {_op: _op
                                      ,view: view};
@@ -15649,7 +15667,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                                                                                                 ,y: 6})}
                                                                         ,{ctor: "_Tuple2"
                                                                          ,_0: "color"
-                                                                         ,_1: state.colorScheme.text.html}]))]),
+                                                                         ,_1: "lightGrey"}]))]),
                       _L.fromArray([$Html.text("Color")]))
                       ,A2($Html.select,
                       _L.fromArray([selectStyle
@@ -15716,7 +15734,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
       return function () {
          var selectFunction = function (value) {
             return $Trixel$Types$General.SetMode(_U.eq($Trixel$Types$Math.stringToInt(value),
-            0) ? $Trixel$Types$General.Horizontal : $Trixel$Types$General.Vertical);
+            0) ? $Trixel$Types$General.IsometricMode : $Trixel$Types$General.ClassicMode);
          };
          var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
          var width = A3($Basics.clamp,
@@ -15759,7 +15777,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                                                                                                 ,y: 6})}
                                                                         ,{ctor: "_Tuple2"
                                                                          ,_0: "color"
-                                                                         ,_1: state.colorScheme.text.html}]))]),
+                                                                         ,_1: "lightGrey"}]))]),
                       _L.fromArray([$Html.text("Mode")]))
                       ,A2($Html.select,
                       _L.fromArray([selectStyle
@@ -15771,14 +15789,14 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                    selectFunction)))]),
                       _L.fromArray([A2($Html.option,
                                    _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
-                                                $Trixel$Types$General.Horizontal))
+                                                $Trixel$Types$General.IsometricMode))
                                                 ,$Html$Attributes.value("0")]),
-                                   _L.fromArray([$Html.text("Horizontal")]))
+                                   _L.fromArray([$Html.text("Isometric")]))
                                    ,A2($Html.option,
                                    _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelInfo.mode,
-                                                $Trixel$Types$General.Vertical))
+                                                $Trixel$Types$General.ClassicMode))
                                                 ,$Html$Attributes.value("1")]),
-                                   _L.fromArray([$Html.text("Vertical")]))]))]));
+                                   _L.fromArray([$Html.text("Classic")]))]))]));
       }();
    });
    var constructTextInput = F3(function (action,
@@ -15809,7 +15827,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                          return $Trixel$Types$General.SetScale($Trixel$Types$Math.stringToFloat(s) / 100);
                       }};}
             _U.badCase($moduleName,
-            "between lines 131 and 143");
+            "between lines 154 and 166");
          }(),
          $default = $._0,
          caption = $._1,
@@ -15855,7 +15873,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                                                                                                 ,y: 6})}
                                                                         ,{ctor: "_Tuple2"
                                                                          ,_0: "color"
-                                                                         ,_1: state.colorScheme.text.html}]))]),
+                                                                         ,_1: "lightGrey"}]))]),
                       _L.fromArray([$Html.text(caption)]))
                       ,A2($Html.input,
                       _L.fromArray([$Html$Attributes.value($Basics.toString($default))
@@ -15870,6 +15888,42 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                                    $Trixel$PostOffice.PostCondition($Trixel$Types$General.IdleCondition))
                                    ,inputStyle]),
                       _L.fromArray([]))]));
+      }();
+   });
+   var constructSimpleText = F4(function (string,
+   textAlign,
+   menuBoxModel,
+   state) {
+      return function () {
+         var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
+         var width = A3($Basics.clamp,
+         40,
+         50,
+         menuBoxModel.width * 5.0e-2);
+         var boxModel = A7($Trixel$Types$Html.constructBoxModel,
+         width,
+         height,
+         5,
+         5,
+         2,
+         2,
+         $Trixel$Types$Html.BorderBox);
+         return A2($Html.div,
+         _L.fromArray([$Html$Attributes.style(A2($Basics._op["++"],
+         $Trixel$Types$Html.computeBoxModelCSS(boxModel),
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "color"
+                       ,_1: "lightGrey"}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "text-align"
+                       ,_1: textAlign}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "font-size"
+                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 1.75)}
+                      ,{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "left"}])))]),
+         _L.fromArray([$Html.text(string)]));
       }();
    });
    var constructArithmeticButton = F4(function (string,
@@ -15979,8 +16033,14 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       $Trixel$Types$General.NewDocument,
                       boxModel,
                       state)
-                      ,A3(constructTextInput,
-                      $Trixel$Types$General.GridX,
+                      ,A4(constructSimpleText,
+                      "GridX:",
+                      "right",
+                      boxModel,
+                      state)
+                      ,A4(constructSimpleText,
+                      $Basics.toString(state.trixelInfo.count.x),
+                      "center",
                       boxModel,
                       state)
                       ,A4(constructArithmeticButton,
@@ -15995,8 +16055,14 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       $Trixel$Types$General.SetGridX(state.trixelInfo.count.x + 1),
                       boxModel,
                       state)
-                      ,A3(constructTextInput,
-                      $Trixel$Types$General.GridY,
+                      ,A4(constructSimpleText,
+                      "GridY:",
+                      "right",
+                      boxModel,
+                      state)
+                      ,A4(constructSimpleText,
+                      $Basics.toString(state.trixelInfo.count.y),
+                      "center",
                       boxModel,
                       state)
                       ,A4(constructArithmeticButton,
@@ -16011,8 +16077,16 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       $Trixel$Types$General.SetGridY(state.trixelInfo.count.y + 1),
                       boxModel,
                       state)
-                      ,A3(constructTextInput,
-                      $Trixel$Types$General.Scale,
+                      ,A4(constructSimpleText,
+                      "Scale:",
+                      "right",
+                      boxModel,
+                      state)
+                      ,A4(constructSimpleText,
+                      A2($Basics._op["++"],
+                      $Basics.toString($Basics.round(state.trixelInfo.scale * 100)),
+                      "%"),
+                      "center",
                       boxModel,
                       state)
                       ,A4(constructArithmeticButton,
@@ -16185,8 +16259,8 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
       $Basics.round(x + y),
       2),
       0) ? _U.eq(mode,
-      $Trixel$Types$General.Horizontal) ? $Trixel$Types$General.Left : $Trixel$Types$General.Down : _U.eq(mode,
-      $Trixel$Types$General.Horizontal) ? $Trixel$Types$General.Right : $Trixel$Types$General.Up;
+      $Trixel$Types$General.IsometricMode) ? $Trixel$Types$General.Left : $Trixel$Types$General.Down : _U.eq(mode,
+      $Trixel$Types$General.IsometricMode) ? $Trixel$Types$General.Right : $Trixel$Types$General.Up;
    });
    var renderTriangle = F6(function (x,
    y,
@@ -16309,11 +16383,11 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
       return function () {
          var renderCache = state.renderCache;
          var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
-                                           ,_0: state.trixelInfo.width
-                                           ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
-                                                                           ,_0: state.trixelInfo.height
-                                                                           ,_1: state.trixelInfo.width},
+         $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple2"
+                                              ,_0: state.trixelInfo.width
+                                              ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                              ,_0: state.trixelInfo.height
+                                                                              ,_1: state.trixelInfo.width},
          triangleWidth = $._0,
          triangleHeight = $._1;
          var count = state.trixelInfo.count;
@@ -16341,11 +16415,11 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
             return _U.eq(state.condition,
               $Trixel$Types$General.IdleCondition) ? trixels : function () {
                  var $ = _U.eq(state.trixelInfo.mode,
-                 $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
-                                                   ,_0: state.trixelInfo.width
-                                                   ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
-                                                                                   ,_0: state.trixelInfo.height
-                                                                                   ,_1: state.trixelInfo.width},
+                 $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple2"
+                                                      ,_0: state.trixelInfo.width
+                                                      ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                                      ,_0: state.trixelInfo.height
+                                                                                      ,_1: state.trixelInfo.width},
                  triangleWidth = $._0,
                  triangleHeight = $._1;
                  var x = _v1._0.x * triangleWidth - state.trixelInfo.extraOffset.x;
@@ -16461,11 +16535,11 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
    var renderGridLayers = function (state) {
       return function () {
          var $ = _U.eq(state.trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple2"
-                                           ,_0: state.trixelInfo.width
-                                           ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
-                                                                           ,_0: state.trixelInfo.height
-                                                                           ,_1: state.trixelInfo.width},
+         $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple2"
+                                              ,_0: state.trixelInfo.width
+                                              ,_1: state.trixelInfo.height} : {ctor: "_Tuple2"
+                                                                              ,_0: state.trixelInfo.height
+                                                                              ,_1: state.trixelInfo.width},
          width = $._0,
          height = $._1;
          return A3(renderLayers,
@@ -16509,15 +16583,15 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
          var trixelInfo = state.trixelInfo;
          var workspace = state.boxModels.workspace;
          var $ = _U.eq(trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
-                                           ,_0: workspace.width * trixelInfo.scale
-                                           ,_1: workspace.height * trixelInfo.scale
-                                           ,_2: trixelInfo.count.x
-                                           ,_3: trixelInfo.count.y} : {ctor: "_Tuple4"
-                                                                      ,_0: workspace.height * trixelInfo.scale
-                                                                      ,_1: workspace.width * trixelInfo.scale
-                                                                      ,_2: trixelInfo.count.y
-                                                                      ,_3: trixelInfo.count.x},
+         $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple4"
+                                              ,_0: workspace.width * trixelInfo.scale
+                                              ,_1: workspace.height * trixelInfo.scale
+                                              ,_2: trixelInfo.count.x
+                                              ,_3: trixelInfo.count.y} : {ctor: "_Tuple4"
+                                                                         ,_0: workspace.height * trixelInfo.scale
+                                                                         ,_1: workspace.width * trixelInfo.scale
+                                                                         ,_2: trixelInfo.count.y
+                                                                         ,_3: trixelInfo.count.x},
          scaledWidth = $._0,
          scaledHeight = $._1,
          countX = $._2,
@@ -16536,15 +16610,15 @@ Elm.Trixel.Zones.WorkSpace.Grid.make = function (_elm) {
          width = $._0,
          height = $._1;
          var $ = _U.eq(trixelInfo.mode,
-         $Trixel$Types$General.Vertical) ? {ctor: "_Tuple4"
-                                           ,_0: width / 2
-                                           ,_1: height / 2
-                                           ,_2: width
-                                           ,_3: height} : {ctor: "_Tuple4"
-                                                          ,_0: height / 2
-                                                          ,_1: width / 2
-                                                          ,_2: height
-                                                          ,_3: width},
+         $Trixel$Types$General.ClassicMode) ? {ctor: "_Tuple4"
+                                              ,_0: width / 2
+                                              ,_1: height / 2
+                                              ,_2: width
+                                              ,_3: height} : {ctor: "_Tuple4"
+                                                             ,_0: height / 2
+                                                             ,_1: width / 2
+                                                             ,_2: height
+                                                             ,_3: width},
          triangleOffsetX = $._0,
          triangleOffsetY = $._1,
          maxBoundsX = $._2,
