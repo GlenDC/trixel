@@ -117,7 +117,7 @@ filterPostOfficeSignal trixelAction =
            True
 
          _ ->
-          state.active)
+          True)--state.active)
 
     _ ->
       True
