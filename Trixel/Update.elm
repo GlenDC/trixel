@@ -109,9 +109,9 @@ updateOffset offset state =
           {x, y} =
             trixelInfo.offset
           newOffsetX =
-            x + (offset.x * workspaceOffsetMoveSpeed)
+            x - (offset.x * workspaceOffsetMoveSpeed)
           newOffsetY =
-            y + (offset.y * workspaceOffsetMoveSpeed)
+            y - (offset.y * workspaceOffsetMoveSpeed)
       in
         { state
             | trixelInfo <-
