@@ -6,13 +6,13 @@ import Trixel.Types.Html exposing (..)
 import Trixel.Constants exposing (..)
 import Trixel.PostOffice exposing (..)
 
-import Html exposing (Html, Attribute, div, text)
-import Html.Attributes exposing (style, class)
+import Html exposing (Html, Attribute, div, text, footer, a)
+import Html.Attributes exposing (style, class, href)
 import Html.Events exposing (onMouseEnter)
 
 view : State -> Html
 view state =
-  div
+  footer
     [ constructMainStyle state
     , class "noselect"
     , onMouseEnter postOfficeQuery.address (PostCondition IdleCondition)
@@ -30,9 +30,22 @@ view state =
             [ ("text-align", "left")
             , ("float", "left")
             , ("cursor", "default")
+            , ( "color", "lightGrey")
             ]
         ]
-        [ computeConditionString state.condition |> text ]
+        [ constructURL githubRepositoryURL "GitHub Repository"
+        , text " | "
+        , constructURL newsletterSubscribeURL "Subscribe to newsletter"
+        ]
+    ]
+
+constructURL : String -> String -> Html
+constructURL url description =
+  a
+    [ href url
+    , style [ ( "color", "lightGrey") ]
+    ]
+    [ text description
     ]
 
 

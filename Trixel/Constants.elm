@@ -10,9 +10,14 @@ version =
   "0.1.2"
 
 
-githubPage : String
-githubPage =
+githubRepositoryURL : String
+githubRepositoryURL =
   "https://github.com/GlenDC/trixel"
+
+
+newsletterSubscribeURL : String
+newsletterSubscribeURL =
+  "http://eepurl.com/brwmSn"
 
 
 email : String
