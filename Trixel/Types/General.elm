@@ -11,6 +11,17 @@ import Graphics.Element exposing (..)
 import Color exposing (Color)
 import Signal exposing (Signal, Address, Mailbox, mailbox)
 
+import Set exposing (Set)
+import Keyboard exposing (KeyCode)
+
+
+type alias KeyCodeSet = Set KeyCode
+
+
+isKeyCodeInSet : KeyCode -> KeyCodeSet -> Bool
+isKeyCodeInSet keyCode set =
+  Set.member keyCode set
+
 
 actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
@@ -70,7 +81,7 @@ type WorkspaceCondition
 
 type alias WorkSpaceActions =
   { isBrushActive : Bool
-  , isErasing : Bool
+  , keysDown: KeyCodeSet
   }
 
 
@@ -151,7 +162,7 @@ type TrixelAction
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action
   | BrushSwitch Bool
-  | ErasingSwitch Bool
+  | SetKeyboardKeysDown KeyCodeSet
   | ToggleGridVisibility
 
 

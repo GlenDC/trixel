@@ -17,6 +17,8 @@ import Html.Attributes exposing (style)
 import Signal exposing (..)
 import Color exposing (red)
 
+import Set
+
 import Window
 
 
@@ -68,7 +70,7 @@ constructNewState countX countY =
   , condition = NormalCondition
   , actions =
       { isBrushActive = False
-      , isErasing = False
+      , keysDown = Set.empty
       }
   , workState = cleanWorkState
   , layers = insertNewLayer 0 []

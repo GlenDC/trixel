@@ -5,6 +5,7 @@ import Trixel.Types.General exposing (..)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
 import Trixel.PostOffice exposing (..)
+import Trixel.Constants exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (renderMouse)
 
 import Html exposing (Html, Attribute, div, fromElement)
@@ -43,10 +44,19 @@ constructMainStyle state =
           workspace.padding.x workspace.padding.y
           margin.x margin.y
           workspace.sizing
+
+      cursor =
+        if | state.mouseState == MouseNone ->
+                "default"
+           | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
+                "copy"
+           | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+                "crosshair"
+           | otherwise ->
+                "pointer"
+
   in
-    (if state.mouseState == MouseNone
-      then ("cursor", "default")
-      else ("cursor", "pointer")) :: (computeBoxModelCSS boxModel)
+    ("cursor", cursor) :: (computeBoxModelCSS boxModel)
     |> style
 
 

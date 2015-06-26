@@ -62,8 +62,8 @@ update action state =
       updateBrushAction isActive state
       |> applyBrushAction
 
-    ErasingSwitch isErasing ->
-      updateErasingAction isErasing state
+    SetKeyboardKeysDown keyCodeSet ->
+      updateKeyboardKeysDown keyCodeSet state
       |> applyBrushAction
 
     ToggleGridVisibility ->
@@ -151,48 +151,68 @@ applyBrushAction state =
           let workState =
                 state.workState
           in
-            if state.actions.isErasing
-              then -- Erase
-                if comparePositions
-                      workState.lastErasePosition
-                      position
-                then
-                  state -- same position as last time
-                else
-                  { state
-                      | layers <-
-                          (eraseTrixel
+            if | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
+                    -- ColorPicker Brush
+                    let maybeTrixel =
+                          findTrixel
                             position
                             state.currentLayer
-                            state.layers)
-                      , workState <-
-                          { workState
-                              | lastErasePosition <-
-                                  position
-                          }
-                  }
-              else -- Paint
-                let newTrixel =
-                      constructNewTrixel position state.trixelColor
-                in
-                  if compareTrixels
-                        workState.lastPaintedTrixel
-                        newTrixel
+                            state.layers
+                    in
+                      { state
+                          | trixelColor <-
+                              case maybeTrixel of
+                                Just trixel ->
+                                  trixel.color
+
+                                _ ->
+                                  state.trixelColor
+                      }
+
+               | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+                  -- Erase Brush
+                  if comparePositions
+                      workState.lastErasePosition
+                      position
                   then
                     state -- same position as last time
                   else
                     { state
                         | layers <-
-                            (insertTrixel
-                              (constructNewTrixel position state.trixelColor)
+                            (eraseTrixel
+                              position
                               state.currentLayer
                               state.layers)
                         , workState <-
                             { workState
-                                | lastPaintedTrixel <-
-                                    newTrixel
+                                | lastErasePosition <-
+                                    position
                             }
                     }
+
+                | otherwise ->
+                    -- Paint Brush
+                    let newTrixel =
+                          constructNewTrixel position state.trixelColor
+                    in
+                      if compareTrixels
+                            workState.lastPaintedTrixel
+                            newTrixel
+                      then
+                        state -- same position as last time
+                      else
+                        { state
+                            | layers <-
+                                (insertTrixel
+                                  (constructNewTrixel position state.trixelColor)
+                                  state.currentLayer
+                                  state.layers)
+                            , workState <-
+                                { workState
+                                    | lastPaintedTrixel <-
+                                        newTrixel
+                                }
+                        }
         else
           state)
   |> updateLayers
@@ -225,15 +245,15 @@ toggleGridVisibility state =
     }
 
 
-updateErasingAction : Bool -> State -> State
-updateErasingAction isErasing state =
+updateKeyboardKeysDown : KeyCodeSet -> State -> State
+updateKeyboardKeysDown keyCodeSet state =
   let actions =
         state.actions
   in
     { state
         | actions <-
             { actions
-                | isErasing <- isErasing
+                | keysDown <- keyCodeSet
             }
     }
 

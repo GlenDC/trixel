@@ -7,8 +7,6 @@ import Signal exposing (..)
 import Keyboard
 import Mouse
 
-import Debug
-
 
 moveOffsetSignal : Signal PostOfficeAction
 moveOffsetSignal =
@@ -34,12 +32,12 @@ leftMouseSignal =
     Mouse.isDown
 
 
-ctrlKeyboardSignal : Signal PostOfficeAction
-ctrlKeyboardSignal =
+keyboardSignal : Signal PostOfficeAction
+keyboardSignal =
   Signal.map
-    (\isDown ->
-      PostAction (ErasingSwitch isDown))
-    Keyboard.ctrl
+    (\keyCodeSet ->
+      PostAction (SetKeyboardKeysDown keyCodeSet))
+    Keyboard.keysDown
 
 
 toggleGridVisibilitySignal : Signal PostOfficeAction
@@ -119,7 +117,7 @@ workspaceSignals =
     , moveOffsetSignal
     , moveMouseSignal
     , leftMouseSignal
-    , ctrlKeyboardSignal
+    , keyboardSignal
     , toggleGridVisibilitySignal
     ]
   |> Signal.foldp workspacePostOffice
