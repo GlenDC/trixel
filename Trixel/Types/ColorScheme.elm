@@ -21,9 +21,9 @@ type alias ColorScheme =
   }
 
 
-constructColorInfo: Int -> Int -> Int -> Int -> ColorInfo
+constructColorInfo: Int -> Int -> Int -> Float -> ColorInfo
 constructColorInfo red green blue alpha =
-  { elm = rgba red green blue ((toFloat alpha) / 255)
+  { elm = rgba red green blue alpha
   , html = "rgba("
       ++ (toString red)
       ++ ","
@@ -38,12 +38,12 @@ constructColorInfo red green blue alpha =
 
 zenburnScheme: ColorScheme
 zenburnScheme =
-  { bg = constructColorInfo 64 64 64 255
-  , fg = constructColorInfo 246 243 232 255
-  , subbg = constructColorInfo 40 40 40 255
-  , subfg = constructColorInfo 225 230 210 255
-  , selbg = constructColorInfo 137 137 65 255
-  , selfg = constructColorInfo 0 0 0 255
-  , text = constructColorInfo 204 147 147 255
-  , subText = constructColorInfo 172 193 172 255
+  { bg = constructColorInfo 64 64 64 1
+  , fg = constructColorInfo 246 243 232 1
+  , subbg = constructColorInfo 40 40 40 1
+  , subfg = constructColorInfo 225 230 210 1
+  , selbg = constructColorInfo 137 137 65 1
+  , selfg = constructColorInfo 0 0 0 1
+  , text = constructColorInfo 204 147 147 1
+  , subText = constructColorInfo 172 193 172 1
   }

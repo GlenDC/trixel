@@ -2,6 +2,24 @@ module Trixel.Types.Html where
 
 import Trixel.Types.Math exposing (..)
 
+import Color exposing (toRgb, Color)
+
+
+elmToHtmlColor : Color -> String
+elmToHtmlColor color =
+  let elmColor =
+        toRgb color
+  in
+    "rgba("
+      ++ (toString elmColor.red)
+      ++ ","
+      ++ (toString elmColor.green)
+      ++ ","
+      ++ (toString elmColor.blue)
+      ++ ","
+      ++ (toString elmColor.alpha)
+      ++ ")"
+
 
 zeroBoxModel : BoxModel
 zeroBoxModel =

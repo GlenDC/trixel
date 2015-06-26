@@ -29,27 +29,29 @@ view  state =
 
       , constructSimpleText "GridX:" "right" boxModel state
       , constructSimpleText (toString state.trixelInfo.count.x) "center" boxModel state
-      , (constructArithmeticButton "-"
-          (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state)
-      , (constructArithmeticButton "+"
-          (SetGridX (state.trixelInfo.count.x + 1)) boxModel state)
+      , constructArithmeticButton "-"
+          (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state
+      , constructArithmeticButton "+"
+          (SetGridX (state.trixelInfo.count.x + 1)) boxModel state
 
       , constructSimpleText "GridY:" "right" boxModel state
       , constructSimpleText (toString state.trixelInfo.count.y) "center" boxModel state
-      , (constructArithmeticButton "-"
-          (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state)
-      , (constructArithmeticButton "+"
-          (SetGridY (state.trixelInfo.count.y + 1)) boxModel state)
+      , constructArithmeticButton "-"
+          (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state
+      , constructArithmeticButton "+"
+          (SetGridY (state.trixelInfo.count.y + 1)) boxModel state
 
       , constructSimpleText "Scale:" "right" boxModel state
       , constructSimpleText ((toString (round (state.trixelInfo.scale * 100))) ++ "%") "center" boxModel state
-      , (constructArithmeticButton "-"
-          (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state)
-      , (constructArithmeticButton "+"
-          (SetScale (state.trixelInfo.scale + 0.20)) boxModel state)
+      , constructArithmeticButton "-"
+          (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state
+      , constructArithmeticButton "+"
+          (SetScale (state.trixelInfo.scale + 0.20)) boxModel state
 
-      , (constructModeList boxModel state)
-      , (constructColorList boxModel state)
+      , constructModeList boxModel state
+      , constructColorList boxModel state
+
+      , constructColorPreview boxModel state
       ]
 
 
@@ -84,6 +86,22 @@ constructButton string action menuBoxModel state =
     button
       [ onClick actionQuery.address action, buttonStyle ]
       [ text string ]
+
+
+constructColorPreview : BoxModel -> State -> Html
+constructColorPreview menuBoxModel state =
+   let height =
+         menuBoxModel.height - (menuBoxModel.padding.y * 2)
+
+       boxModel =
+         constructBoxModel height height 5 5 2 2 BorderBox
+  in
+    div
+      [ style ((computeBoxModelCSS boxModel) ++
+          [ ("background-color", elmToHtmlColor state.trixelColor)
+          , ("float", "left")
+          ])
+      ] []
 
 
 constructArithmeticButton : String -> TrixelAction -> BoxModel -> State -> Html
@@ -193,7 +211,7 @@ constructModeList menuBoxModel state =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 2 BorderBox
+        constructBoxModel width height 5 5 2 4 BorderBox
 
       selectStyle =
         style ((computeBoxModelCSS boxModel) ++
@@ -239,7 +257,7 @@ constructModeList menuBoxModel state =
 constructColorList : BoxModel -> State -> Html
 constructColorList menuBoxModel state =
   let width =
-        clamp 125 150 (menuBoxModel.width * 0.095)
+        clamp 60 90 (menuBoxModel.width * 0.05)
       height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
