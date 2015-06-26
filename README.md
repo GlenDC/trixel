@@ -11,6 +11,7 @@ Latest version can be used for free @ [https://glendc.github.io/trixel/](https:/
 As the GUI is still crappy at this point, here are the controls currently functional:
 
 + **Left Mouse Click**: Paint
-+ **Left Mouse Click + LeftCtrl**: Erase
++ **Left Mouse Click + Alt**: Pick Color
++ **Left Mouse Click + Ctrl**: Erase
 + **G**: Toggle Grid
 + **Keyboard Arrows**: Move workspace (only works when zoomed in)
