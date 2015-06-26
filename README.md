@@ -4,7 +4,7 @@
 
 Trixel, make trixel art.
 
-Latest version can be used for free @ [https://glendc.github.io/trixel/](https://glendc.github.io/trixel/).
+Latest version can be used for free @ [http://trixel.it](http://trixel.it).
 
 ## Editor Controls
 
