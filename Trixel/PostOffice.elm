@@ -40,18 +40,6 @@ keyboardSignal =
     Keyboard.keysDown
 
 
-toggleGridVisibilitySignal : Signal PostOfficeAction
-toggleGridVisibilitySignal =
-  Signal.map
-    (\isDown ->
-      PostAction (
-        if isDown
-          then ToggleGridVisibility
-          else None
-          ))
-    (Keyboard.isDown shortcutToggleGridVisibility)
-
-
 postOfficeTrashQuery : Mailbox TrixelAction
 postOfficeTrashQuery = mailbox None
 
@@ -118,7 +106,6 @@ workspaceSignals =
     , moveMouseSignal
     , leftMouseSignal
     , keyboardSignal
-    , toggleGridVisibilitySignal
     ]
   |> Signal.foldp workspacePostOffice
       (SwitchAction

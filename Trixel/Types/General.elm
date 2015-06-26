@@ -23,6 +23,12 @@ isKeyCodeInSet keyCode set =
   Set.member keyCode set
 
 
+isKeyCodeJustInSet : KeyCode -> KeyCodeSet -> KeyCodeSet -> Bool
+isKeyCodeJustInSet keyCode set previousSet =
+  (Set.member keyCode set)
+    && (not (Set.member keyCode previousSet))
+
+
 actionQuery : Mailbox TrixelAction
 actionQuery = mailbox None
 

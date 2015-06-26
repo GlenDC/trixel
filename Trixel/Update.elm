@@ -66,9 +66,6 @@ update action state =
       updateKeyboardKeysDown keyCodeSet state
       |> applyBrushAction
 
-    ToggleGridVisibility ->
-      toggleGridVisibility state
-
     SwitchAction actionState ->
       update actionState.action
         { state
@@ -231,18 +228,25 @@ updateBrushAction isActive state =
     }
 
 
-toggleGridVisibility : State -> State
-toggleGridVisibility state =
-  let userSettings =
+checkForToggleGridShortcut : KeyCodeSet -> State -> State
+checkForToggleGridShortcut previousKeyCodeSet state =
+  if isKeyCodeJustInSet
+        shortcutToggleGridVisibility
+        state.actions.keysDown
+        previousKeyCodeSet
+  then
+    let userSettings =
         state.userSettings
-  in
-    { state
-        | userSettings <-
-          { userSettings
-              | showGrid <-
-                not userSettings.showGrid
-          }
-    }
+    in
+      { state
+          | userSettings <-
+            { userSettings
+                | showGrid <-
+                  not userSettings.showGrid
+            }
+      }
+  else
+    state
 
 
 updateKeyboardKeysDown : KeyCodeSet -> State -> State
@@ -256,6 +260,7 @@ updateKeyboardKeysDown keyCodeSet state =
                 | keysDown <- keyCodeSet
             }
     }
+    |> checkForToggleGridShortcut state.actions.keysDown
 
 
 updateMousePosition : Vector -> State -> State
