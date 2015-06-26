@@ -50,18 +50,13 @@ view  state =
 
       , constructModeList boxModel state
       , constructColorList boxModel state
-
-      , constructColorPreview boxModel state
       ]
 
 
 constructMainStyle : BoxModel -> State -> Attribute
 constructMainStyle boxModel state  =
-  style (
-    (computeBoxModelCSS boxModel) ++
-    [ ("background-color", state.colorScheme.bg.html)
-    , computeDefaultBorderCSS state.colorScheme.fg.html
-    ])
+  style
+    (computeBoxModelCSS boxModel)
 
 
 constructButton : String -> TrixelAction -> BoxModel -> State -> Html
@@ -86,22 +81,6 @@ constructButton string action menuBoxModel state =
     button
       [ onClick actionQuery.address action, buttonStyle ]
       [ text string ]
-
-
-constructColorPreview : BoxModel -> State -> Html
-constructColorPreview menuBoxModel state =
-   let height =
-         menuBoxModel.height - (menuBoxModel.padding.y * 2)
-
-       boxModel =
-         constructBoxModel height height 5 5 2 2 BorderBox
-  in
-    div
-      [ style ((computeBoxModelCSS boxModel) ++
-          [ ("background-color", elmToHtmlColor state.trixelColor)
-          , ("float", "left")
-          ])
-      ] []
 
 
 constructArithmeticButton : String -> TrixelAction -> BoxModel -> State -> Html
@@ -130,13 +109,11 @@ constructArithmeticButton string action menuBoxModel state =
 
 constructSimpleText : String -> String -> BoxModel -> State -> Html
 constructSimpleText string textAlign menuBoxModel state =
-  let width =
-        clamp 40 50 (menuBoxModel.width * 0.05)
-      height =
+  let height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 2 BorderBox
+        constructBoxModel 0 height 5 5 2 2 BorderBox
   in
     div
       [ style ((computeBoxModelCSS boxModel) ++
@@ -152,13 +129,11 @@ constructSimpleText string textAlign menuBoxModel state =
 
 constructTextInput : TrixelActionInput -> BoxModel -> State -> Html
 constructTextInput action menuBoxModel state =
-  let width =
-        clamp 25 60 (menuBoxModel.width * 0.05)
-      height =
+  let height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 2 BorderBox
+        constructBoxModel 0 height 5 5 2 2 BorderBox
 
       inputStyle =
         style ((computeBoxModelCSS boxModel) ++
@@ -205,19 +180,17 @@ constructTextInput action menuBoxModel state =
 
 constructModeList : BoxModel -> State -> Html
 constructModeList menuBoxModel state =
-  let width =
-        clamp 115 130 (menuBoxModel.width * 0.08)
-      height =
+  let height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 4 BorderBox
+        constructBoxModel 0 height 5 5 2 4 BorderBox
 
       selectStyle =
         style ((computeBoxModelCSS boxModel) ++
           [ ("background-color", state.colorScheme.selbg.html)
           , ("color", state.colorScheme.selfg.html)
-          , ("font-size", boxModel.height / 1.85 |> toPixels)
+          , ("font-size", boxModel.height / 2 |> toPixels)
           , ("float", "left")
           , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
@@ -232,6 +205,7 @@ constructModeList menuBoxModel state =
             [ ("float", "left")
             , ("padding", vectorToPixels { x = 10, y = 6 })
             , ("color", "lightGrey")
+            , ("font-size", boxModel.height / 2 |> toPixels)
             ]
           ]
           [ text "Mode" ]
@@ -256,19 +230,17 @@ constructModeList menuBoxModel state =
 
 constructColorList : BoxModel -> State -> Html
 constructColorList menuBoxModel state =
-  let width =
-        clamp 60 90 (menuBoxModel.width * 0.05)
-      height =
+  let height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 2 BorderBox
+        constructBoxModel 0 height 5 5 2 2 BorderBox
 
       selectStyle =
         style ((computeBoxModelCSS boxModel) ++
-          [ ("background-color", state.colorScheme.selbg.html)
-          , ("color", state.colorScheme.selfg.html)
-          , ("font-size", boxModel.height / 1.85 |> toPixels)
+          [ ("background-color", elmToHtmlColor state.trixelColor)
+          , ("color", computeInverseColor state.trixelColor)
+          , ("font-size", boxModel.height / 2 |> toPixels)
           , ("float", "left")
           , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
@@ -293,6 +265,7 @@ constructColorList menuBoxModel state =
           [ style
             [ ("float", "left")
             , ("padding", vectorToPixels { x = 10, y = 6 })
+            , ("font-size", boxModel.height / 2 |> toPixels)
             , ("color", "lightGrey")
             ]
           ]
@@ -324,3 +297,17 @@ constructColorOption state color val description =
     , value (toString val)
     ]
     [ text description ]
+
+
+computeInverseColor : Color -> String
+computeInverseColor color =
+  let rgbaColor =
+        toRgb color
+  in
+    elmToHtmlColor
+      (rgba
+          (255 - rgbaColor.red)
+          (255 - rgbaColor.green)
+          (255 - rgbaColor.blue)
+          rgbaColor.alpha
+      )

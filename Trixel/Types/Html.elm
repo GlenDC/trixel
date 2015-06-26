@@ -57,8 +57,18 @@ vectorToPixels vector =
 
 computeBoxModelCSS : BoxModel -> List CSSProperty
 computeBoxModelCSS boxModel =
-  [ ("width", toPixels boxModel.width)
-  , ("height", toPixels boxModel.height)
+  [ ("width",
+      if boxModel.width == 0
+        then
+          "auto"
+        else
+          toPixels boxModel.width)
+  , ("height",
+      if boxModel.height == 0
+        then
+          "auto"
+        else
+          toPixels boxModel.height)
   , ("margin", vectorToPixels boxModel.margin)
   , ("padding", vectorToPixels boxModel.padding)
   , computeBoxSizingCSS boxModel.sizing
