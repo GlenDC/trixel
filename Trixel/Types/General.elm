@@ -1,7 +1,11 @@
 module Trixel.Types.General where
 
 import Trixel.Types.ColorScheme exposing (ColorScheme)
-import Trixel.Types.Layer exposing (TrixelLayers, LayerPosition)
+import Trixel.Types.Layer exposing
+  ( TrixelLayers
+  , LayerPosition
+  , insertNewLayer
+  )
 import Trixel.Types.Grid exposing (Trixel, defaultTrixel)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
@@ -13,6 +17,10 @@ import Signal exposing (Signal, Address, Mailbox, mailbox)
 
 import Set exposing (Set)
 import Keyboard exposing (KeyCode)
+
+import UndoList exposing (UndoList)
+
+import Debug
 
 
 type alias KeyCodeSet = Set KeyCode
@@ -56,7 +64,6 @@ type alias TrixelInfo =
   , height : Float -- height of a trixel
   , width : Float -- width of a trixel
   , mode : TrixelMode -- mode of trixels, defining the layout
-  , count : Vector -- amount of trixels in the grid
   , scale : Float -- scale of the workspace
   , offset : Vector -- offset of the workspace, not used when .scale <= 1
   , extraOffset : Vector -- extra offset
@@ -137,8 +144,7 @@ type alias State =
   , condition : WorkspaceCondition
   , actions : WorkSpaceActions
   , workState : WorkState
-  , layers : TrixelLayers
-  , currentLayer : LayerPosition
+  , timeState : TimeState
   , userSettings : UserSettings
   }
 
@@ -167,9 +173,12 @@ type TrixelAction
   | MoveMouse Vector -- Moving the cursor
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action
+  | UpdateTimeState
   | BrushSwitch Bool
   | SetKeyboardKeysDown KeyCodeSet
   | ToggleGridVisibility
+  | UndoAction
+  | RedoAction
 
 
 -- Used to create the correct gui-input for a specific TrixelAction
@@ -179,5 +188,93 @@ type TrixelActionInput
   | Scale -- Used to create the scaling input menu
 
 
-type alias ActionAddress = Address TrixelAction
-type alias ActionSignal = Signal TrixelAction
+type alias ActionAddress =
+  Address TrixelAction
+
+
+type alias ActionSignal =
+  Signal TrixelAction
+
+
+type alias TimeState = 
+  UndoList TimeInsentiveState
+
+
+constructFreshTimeState : Float -> Float -> TimeState
+constructFreshTimeState countX countY =
+  UndoList.fresh
+    { layers =
+        insertNewLayer 0 []
+    , currentLayer =
+        0
+    , trixelCount =
+        { x = countX
+        , y = countY
+        }
+    }
+
+
+undoTimeState : State -> State
+undoTimeState state =
+  { state
+      | timeState <-
+          UndoList.undo state.timeState
+  }
+
+
+redoTimeState : State -> State
+redoTimeState state =
+  { state
+      | timeState <-
+          UndoList.redo state.timeState
+  }
+
+
+resetTimeState : State -> State
+resetTimeState state =
+  { state
+      | timeState <-
+          UndoList.reset state.timeState
+  }
+
+
+forgetTimeState : State -> State
+forgetTimeState state =
+  { state
+      | timeState <-
+          UndoList.forget state.timeState
+  }
+
+
+getLayers : State -> TrixelLayers
+getLayers state =
+  state.timeState.present.layers
+
+
+getCurrentLayer : State -> LayerPosition
+getCurrentLayer state =
+  state.timeState.present.currentLayer
+
+
+getTrixelCount : State -> Vector
+getTrixelCount state =
+  state.timeState.present.trixelCount
+
+
+getTimeState : State -> TimeInsentiveState
+getTimeState state =
+  state.timeState.present
+
+
+updateTimeState : TimeInsentiveState -> State -> State
+updateTimeState newTimeState state =
+  { state
+      | timeState <-
+          UndoList.new newTimeState state.timeState
+  }
+
+type alias TimeInsentiveState =
+  { layers : TrixelLayers
+  , currentLayer : LayerPosition
+  , trixelCount : Vector
+  }

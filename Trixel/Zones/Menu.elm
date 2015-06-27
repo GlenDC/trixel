@@ -20,6 +20,8 @@ view : State -> Html
 view  state =
   let boxModel =
         state.boxModels.menu
+      trixelCount =
+        getTrixelCount state
   in
     div
       [ constructMainStyle boxModel state
@@ -28,18 +30,18 @@ view  state =
       [ (constructButton "New" NewDocument boxModel state)
 
       , constructSimpleText "GridX:" "right" boxModel state
-      , constructSimpleText (toString state.trixelInfo.count.x) "center" boxModel state
+      , constructSimpleText (toString trixelCount.x) "center" boxModel state
       , constructArithmeticButton "-"
-          (SetGridX (max 1 (state.trixelInfo.count.x - 1))) boxModel state
+          (SetGridX (max 1 (trixelCount.x - 1))) boxModel state
       , constructArithmeticButton "+"
-          (SetGridX (state.trixelInfo.count.x + 1)) boxModel state
+          (SetGridX (trixelCount.x + 1)) boxModel state
 
       , constructSimpleText "GridY:" "right" boxModel state
-      , constructSimpleText (toString state.trixelInfo.count.y) "center" boxModel state
+      , constructSimpleText (toString trixelCount.y) "center" boxModel state
       , constructArithmeticButton "-"
-          (SetGridY (max 1 (state.trixelInfo.count.y - 1))) boxModel state
+          (SetGridY (max 1 (trixelCount.y - 1))) boxModel state
       , constructArithmeticButton "+"
-          (SetGridY (state.trixelInfo.count.y + 1)) boxModel state
+          (SetGridY (trixelCount.y + 1)) boxModel state
 
       , constructSimpleText "Scale:" "right" boxModel state
       , constructSimpleText ((toString (round (state.trixelInfo.scale * 100))) ++ "%") "center" boxModel state
@@ -144,14 +146,17 @@ constructTextInput action menuBoxModel state =
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
 
+      trixelCount =
+        getTrixelCount state
+
       (default, caption, fn) =
         case action of
           GridX
-            -> (round state.trixelInfo.count.x,
+            -> (round trixelCount.x,
               "X", (\x -> SetGridX (stringToFloat x)))
 
           GridY
-            -> (round state.trixelInfo.count.y,
+            -> (round trixelCount.y,
               "Y", (\y -> SetGridY (stringToFloat y)))
 
           Scale

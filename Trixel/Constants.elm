@@ -45,9 +45,24 @@ maxTrixelRowCount =
   150
 
 
-shortcutToggleGridVisibility : KeyCode
-shortcutToggleGridVisibility =
+shortcutG : KeyCode
+shortcutG =
   Char.toCode 'G'
+
+
+shortcutR : KeyCode
+shortcutR =
+  Char.toCode 'R'
+
+
+shortcutZ : KeyCode
+shortcutZ =
+  Char.toCode 'Z'
+
+
+keyCodeShift : KeyCode
+keyCodeShift =
+  16
 
 
 keyCodeCtrl : KeyCode

@@ -48,7 +48,6 @@ constructNewState countX countY =
       , height = 0
       , width = 0
       , mode = ClassicMode
-      , count = { x = countX, y = countY }
       , scale = 1
       , offset = zeroVector
       , extraOffset = zeroVector
@@ -73,8 +72,7 @@ constructNewState countX countY =
       , keysDown = Set.empty
       }
   , workState = cleanWorkState
-  , layers = insertNewLayer 0 []
-  , currentLayer = 0
+  , timeState = constructFreshTimeState countX countY
   , userSettings = defaultUserSettings
   }
 

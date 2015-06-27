@@ -44,20 +44,22 @@ updateGrid state =
         state.boxModels.workspace
       trixelInfo =
         state.trixelInfo
+      trixelCount =
+        getTrixelCount state
 
       (scaledWidth, scaledHeight, countX, countY) =
         if trixelInfo.mode == ClassicMode
           then
             ( workspace.width * trixelInfo.scale
             , workspace.height * trixelInfo.scale
-            , trixelInfo.count.x
-            , trixelInfo.count.y
+            , trixelCount.x
+            , trixelCount.y
             )
           else
             ( workspace.height * trixelInfo.scale
             , workspace.width * trixelInfo.scale
-            , trixelInfo.count.y
-            , trixelInfo.count.x
+            , trixelCount.y
+            , trixelCount.x
             )
 
       (deltaX, deltaY) =
@@ -212,7 +214,7 @@ renderGrid state countX countY width height trixels =
 generateGrid : State -> State
 generateGrid state =
   let count =
-        state.trixelInfo.count
+        getTrixelCount state
 
       (triangleWidth, triangleHeight) =
         if state.trixelInfo.mode == ClassicMode
@@ -331,9 +333,12 @@ renderGridLayers state =
             (state.trixelInfo.width, state.trixelInfo.height)
           else
             (state.trixelInfo.height, state.trixelInfo.width)
+
+      layers =
+        getLayers state
   in
     renderLayers
-      state.layers
+      layers
       { offset =
           state.trixelInfo.extraOffset
       , dimensions =

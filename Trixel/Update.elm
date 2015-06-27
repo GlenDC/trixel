@@ -73,6 +73,14 @@ update action state =
                 actionState.condition
         }
 
+    UndoAction ->
+      undoTimeState state
+      |> updateGrid
+
+    RedoAction ->
+      redoTimeState state
+      |> updateGrid
+
     None ->
       state
 
@@ -85,16 +93,11 @@ resetState state =
     { state
         | trixelInfo <-
             { trixelInfo
-                | count <-
-                    { x = 10, y = 10 }
-                , scale <-
+                | scale <-
                     1
             }
-        , currentLayer <-
-            0
-        , layers <-
-            insertNewLayer 0 []
     }
+    |> resetTimeState
 
 
 updateOffset : Vector -> State -> State
@@ -138,81 +141,90 @@ compareTrixels trixelA trixelB =
 
 applyBrushAction : State -> State
 applyBrushAction state =
-  (case state.mouseState of
-    MouseNone ->
-      state
+  let timeState =
+        getTimeState state
+  in
+    (case state.mouseState of
+      MouseNone ->
+        state
 
-    MouseHover position ->
-      if state.actions.isBrushActive
-        then
-          let workState =
-                state.workState
-          in
-            if | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
-                    -- ColorPicker Brush
-                    let maybeTrixel =
-                          findTrixel
-                            position
-                            state.currentLayer
-                            state.layers
-                    in
-                      { state
-                          | trixelColor <-
-                              case maybeTrixel of
-                                Just trixel ->
-                                  trixel.color
-
-                                _ ->
-                                  state.trixelColor
-                      }
-
-               | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
-                  -- Erase Brush
-                  if comparePositions
-                      workState.lastErasePosition
-                      position
-                  then
-                    state -- same position as last time
-                  else
-                    { state
-                        | layers <-
-                            (eraseTrixel
+      MouseHover position ->
+        if state.actions.isBrushActive
+          then
+            let workState =
+                  state.workState
+            in
+              if | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
+                      -- ColorPicker Brush
+                      let maybeTrixel =
+                            findTrixel
                               position
-                              state.currentLayer
-                              state.layers)
-                        , workState <-
-                            { workState
-                                | lastErasePosition <-
-                                    position
-                            }
-                    }
-
-                | otherwise ->
-                    -- Paint Brush
-                    let newTrixel =
-                          constructNewTrixel position state.trixelColor
-                    in
-                      if compareTrixels
-                            workState.lastPaintedTrixel
-                            newTrixel
-                      then
-                        state -- same position as last time
-                      else
+                              timeState.currentLayer
+                              timeState.layers
+                      in
                         { state
-                            | layers <-
-                                (insertTrixel
-                                  (constructNewTrixel position state.trixelColor)
-                                  state.currentLayer
-                                  state.layers)
-                            , workState <-
-                                { workState
-                                    | lastPaintedTrixel <-
-                                        newTrixel
-                                }
+                            | trixelColor <-
+                                case maybeTrixel of
+                                  Just trixel ->
+                                    trixel.color
+
+                                  _ ->
+                                    state.trixelColor
                         }
-        else
-          state)
-  |> updateLayers
+
+                 | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+                    -- Erase Brush
+                    if comparePositions
+                        workState.lastErasePosition
+                        position
+                    then
+                      state -- same position as last time
+                    else
+                      { state
+                          | workState <-
+                              { workState
+                                  | lastErasePosition <-
+                                      position
+                              }
+                      }
+                      |> updateTimeState
+                           { timeState
+                              | layers <-
+                                  eraseTrixel
+                                    position
+                                    timeState.currentLayer
+                                    timeState.layers
+                           }
+
+                  | otherwise ->
+                      -- Paint Brush
+                      let newTrixel =
+                            constructNewTrixel position state.trixelColor
+                      in
+                        if compareTrixels
+                              workState.lastPaintedTrixel
+                              newTrixel
+                        then
+                          state -- same position as last time
+                        else
+                          { state
+                              | workState <-
+                                  { workState
+                                      | lastPaintedTrixel <-
+                                          newTrixel
+                                  }
+                          }
+                          |> updateTimeState
+                               { timeState
+                                  | layers <-
+                                      insertTrixel
+                                        (constructNewTrixel position state.trixelColor)
+                                        timeState.currentLayer
+                                        timeState.layers
+                               }
+          else
+            state)
+    |> updateLayers
 
 
 updateBrushAction : Bool -> State -> State
@@ -228,39 +240,54 @@ updateBrushAction isActive state =
     }
 
 
-checkForToggleGridShortcut : KeyCodeSet -> State -> State
-checkForToggleGridShortcut previousKeyCodeSet state =
-  if isKeyCodeJustInSet
-        shortcutToggleGridVisibility
-        state.actions.keysDown
-        previousKeyCodeSet
-  then
-    let userSettings =
-        state.userSettings
-    in
-      { state
-          | userSettings <-
-            { userSettings
-                | showGrid <-
-                  not userSettings.showGrid
+checkForSoloShortcuts : KeyCodeSet -> State -> State
+checkForSoloShortcuts previousKeyCodeSet state =
+  if | isKeyCodeJustInSet shortcutG state.actions.keysDown previousKeyCodeSet ->
+          let userSettings =
+              state.userSettings
+          in
+            { state
+                | userSettings <-
+                    { userSettings
+                        | showGrid <-
+                            not userSettings.showGrid
+                    }
             }
-      }
-  else
-    state
+
+      | otherwise ->
+          state
+
+
+checkForShiftShortcutCombinations : KeyCodeSet -> State -> State
+checkForShiftShortcutCombinations previousKeyCodeSet state =
+   if | isKeyCodeJustInSet shortcutZ state.actions.keysDown previousKeyCodeSet ->
+          update UndoAction state
+
+      | isKeyCodeJustInSet shortcutR state.actions.keysDown previousKeyCodeSet ->
+          update RedoAction state
+
+      | otherwise ->
+          state
 
 
 updateKeyboardKeysDown : KeyCodeSet -> State -> State
 updateKeyboardKeysDown keyCodeSet state =
   let actions =
         state.actions
+
+      newState =
+        { state
+            | actions <-
+                { actions
+                    | keysDown <- keyCodeSet
+                }
+        }
   in
-    { state
-        | actions <-
-            { actions
-                | keysDown <- keyCodeSet
-            }
-    }
-    |> checkForToggleGridShortcut state.actions.keysDown
+    if | isKeyCodeInSet keyCodeShift keyCodeSet ->
+          checkForShiftShortcutCombinations state.actions.keysDown newState
+
+       | otherwise ->
+          checkForSoloShortcuts state.actions.keysDown newState
 
 
 updateMousePosition : Vector -> State -> State
@@ -309,11 +336,14 @@ updateMousePosition point state =
 
       workState =
         state.workState
+
+      trixelCount =
+        getTrixelCount state
   in
     { state
         | mouseState <-
-          if pointX >= 0 && pointX < state.trixelInfo.count.x
-            && pointY >= 0 && pointY < state.trixelInfo.count.y
+          if pointX >= 0 && pointX < trixelCount.x
+            && pointY >= 0 && pointY < trixelCount.y
             then MouseHover { x = pointX, y = pointY}
             else MouseNone
         , workState <-
@@ -379,38 +409,50 @@ updateWindowDimensions dimensions state =
 
 updateGridX : Float -> State -> State
 updateGridX x state =
-  let trixelInfo =
-        state.trixelInfo
+  let timeState =
+        getTimeState state
+
+      newCountX =
+        max 1 x |> min maxTrixelRowCount
   in
-    { state
-        | trixelInfo <-
-            { trixelInfo
-                | count <-
-                    { x =
-                        max 1 x |> min maxTrixelRowCount
-                    , y =
-                        trixelInfo.count.y
-                    }
-            }
-    }
-    |> updateWorkGridColumns
+    updateTimeState
+      { timeState
+          | trixelCount <-
+              { x =
+                  newCountX
+              , y =
+                  timeState.trixelCount.y
+              }
+          , layers <-
+              eraseLayerTrixelByPosition
+                (round newCountX)
+                timeState.layers
+      }
+      state
 
 
 updateGridY : Float -> State -> State
 updateGridY y state =
-  let trixelInfo =
-        state.trixelInfo
+  let timeState =
+        getTimeState state
+
+      newCountY =
+        max 1 y |> min maxTrixelRowCount
   in
-    { state
-        | trixelInfo <-
-            { trixelInfo
-                | count <-
-                    { x = trixelInfo.count.x
-                    , y = max 1 y |> min maxTrixelRowCount
-                    }
-            }
-    }
-    |> updateWorkGridRows
+    updateTimeState
+      { timeState
+          | trixelCount <-
+              { x =
+                  timeState.trixelCount.x
+              , y =
+                  newCountY
+              }
+          , layers <-
+              eraseLayerRowByPosition
+                (round newCountY)
+                timeState.layers
+      }
+      state
 
 
 updateTrixelColor : Color -> State -> State
@@ -419,27 +461,6 @@ updateTrixelColor color state =
       | trixelColor <-
           color
     }
-
-
-
-updateWorkGridRows : State -> State
-updateWorkGridRows state =
-  { state
-      | layers <-
-          (eraseLayerRowByPosition
-            (round state.trixelInfo.count.y)
-            state.layers)
-  }
-
-
-updateWorkGridColumns : State -> State
-updateWorkGridColumns state =
-  { state
-      | layers <-
-          (eraseLayerTrixelByPosition
-            (round state.trixelInfo.count.x)
-            state.layers)
-  }
 
 
 updateMode : TrixelMode -> State -> State
