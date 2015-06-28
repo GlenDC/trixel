@@ -13,5 +13,7 @@ As the GUI is still crappy at this point, here are the controls currently functi
 + **Left Mouse Click**: Paint
 + **Left Mouse Click + Alt**: Pick Color
 + **Left Mouse Click + Ctrl**: Erase
++ **Shift + Z**: Undo
++ **Shift + R**: Redo
 + **G**: Toggle Grid
 + **Keyboard Arrows**: Move workspace (only works when zoomed in)
