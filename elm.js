@@ -13870,37 +13870,37 @@ Elm.Trixel.Main.make = function (_elm) {
    var constructNewState = F2(function (countX,
    countY) {
       return $Trixel$Update.update($Trixel$Types$General.ResizeWindow({_: {}
-                                                                      ,x: 42000
-                                                                      ,y: 42000}))({_: {}
-                                                                                   ,actions: {_: {}
-                                                                                             ,buttonsDown: $Set.empty
-                                                                                             ,keysDown: $Set.empty}
-                                                                                   ,boxModels: {_: {}
-                                                                                               ,footer: $Trixel$Types$Html.zeroBoxModel
-                                                                                               ,menu: $Trixel$Types$Html.zeroBoxModel
-                                                                                               ,workspace: $Trixel$Types$Html.zeroBoxModel}
-                                                                                   ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
-                                                                                   ,condition: $Trixel$Types$General.NormalCondition
-                                                                                   ,mouseState: $Trixel$Types$General.MouseNone
-                                                                                   ,renderCache: {_: {}
-                                                                                                 ,grid: _L.fromArray([])
-                                                                                                 ,layers: _L.fromArray([])}
-                                                                                   ,timeState: A2($Trixel$Types$General.constructFreshTimeState,
-                                                                                   countX,
-                                                                                   countY)
-                                                                                   ,trixelColor: $Color.red
-                                                                                   ,trixelInfo: {_: {}
-                                                                                                ,bounds: $Trixel$Types$Math.zeroBounds
-                                                                                                ,dimensions: $Trixel$Types$Math.zeroVector
-                                                                                                ,extraOffset: $Trixel$Types$Math.zeroVector
-                                                                                                ,height: 0
-                                                                                                ,mode: $Trixel$Types$General.ClassicMode
-                                                                                                ,offset: $Trixel$Types$Math.zeroVector
-                                                                                                ,scale: 1
-                                                                                                ,width: 0}
-                                                                                   ,userSettings: $Trixel$Types$General.defaultUserSettings
-                                                                                   ,windowDimensions: $Trixel$Types$Math.zeroVector
-                                                                                   ,workState: $Trixel$Types$General.cleanWorkState});
+                                                                      ,x: 4200
+                                                                      ,y: 4200}))({_: {}
+                                                                                  ,actions: {_: {}
+                                                                                            ,buttonsDown: $Set.empty
+                                                                                            ,keysDown: $Set.empty}
+                                                                                  ,boxModels: {_: {}
+                                                                                              ,footer: $Trixel$Types$Html.zeroBoxModel
+                                                                                              ,menu: $Trixel$Types$Html.zeroBoxModel
+                                                                                              ,workspace: $Trixel$Types$Html.zeroBoxModel}
+                                                                                  ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
+                                                                                  ,condition: $Trixel$Types$General.NormalCondition
+                                                                                  ,mouseState: $Trixel$Types$General.MouseNone
+                                                                                  ,renderCache: {_: {}
+                                                                                                ,grid: _L.fromArray([])
+                                                                                                ,layers: _L.fromArray([])}
+                                                                                  ,timeState: A2($Trixel$Types$General.constructFreshTimeState,
+                                                                                  countX,
+                                                                                  countY)
+                                                                                  ,trixelColor: $Color.red
+                                                                                  ,trixelInfo: {_: {}
+                                                                                               ,bounds: $Trixel$Types$Math.zeroBounds
+                                                                                               ,dimensions: $Trixel$Types$Math.zeroVector
+                                                                                               ,extraOffset: $Trixel$Types$Math.zeroVector
+                                                                                               ,height: 0
+                                                                                               ,mode: $Trixel$Types$General.ClassicMode
+                                                                                               ,offset: $Trixel$Types$Math.zeroVector
+                                                                                               ,scale: 1
+                                                                                               ,width: 0}
+                                                                                  ,userSettings: $Trixel$Types$General.defaultUserSettings
+                                                                                  ,windowDimensions: $Trixel$Types$Math.zeroVector
+                                                                                  ,workState: $Trixel$Types$General.cleanWorkState});
    });
    var windowDimemensionsSignal = A2($Signal.map,
    function (_v0) {
