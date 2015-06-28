@@ -30,21 +30,6 @@ constructMainStyle state =
   let workspace =
         state.boxModels.workspace
 
-      {x, y} =
-        computeDimensionsFromBounds state.trixelInfo.bounds
-
-      margin =
-        { x = (workspace.width - x) / 2 |> (+) workspace.margin.x
-        , y = (workspace.height - y) / 2 |> (+) workspace.margin.y
-        }
-
-      boxModel =
-        constructBoxModel
-          x y
-          workspace.padding.x workspace.padding.y
-          margin.x margin.y
-          workspace.sizing
-
       cursor =
         case state.mouseState of
           MouseHover _ ->
@@ -59,21 +44,21 @@ constructMainStyle state =
             "default"
 
   in
-    ("cursor", cursor) :: (computeBoxModelCSS boxModel)
+    ("cursor", cursor) :: (computeBoxModelCSS workspace)
     |> style
 
 
 viewWorkSpace : State -> Html
 viewWorkSpace state =
-  let {x, y} =
-        computeDimensionsFromBounds state.trixelInfo.bounds
+  let workspace =
+        state.boxModels.workspace
   in
     state.renderCache.layers ++
-      (renderMouse state x y
+      (renderMouse state workspace.width workspace.height
         ( if state.userSettings.showGrid
           then state.renderCache.grid
           else []
           )
         )
-    |> collage (round x) (round y)
+    |> collage (round workspace.width) (round workspace.height)
     |> fromElement

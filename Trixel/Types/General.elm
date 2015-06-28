@@ -97,7 +97,6 @@ type alias EditorBoxModels =
 type alias MouseDragState =
   { position : Vector
   , difference : Vector
-  , originalOffset : Vector
   }
 
 

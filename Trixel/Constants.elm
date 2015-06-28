@@ -38,7 +38,7 @@ workspaceOffsetMoveSpeed =
 
 workspaceOffsetMouseMoveSpeed : Float
 workspaceOffsetMouseMoveSpeed =
-  50
+  1
 
 
 sqrt3 : Float
