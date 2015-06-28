@@ -46,9 +46,9 @@ view  state =
       , constructSimpleText "Scale:" "right" boxModel state
       , constructSimpleText ((toString (round (state.trixelInfo.scale * 100))) ++ "%") "center" boxModel state
       , constructArithmeticButton "-"
-          (SetScale (max 0.20 (state.trixelInfo.scale - 0.20))) boxModel state
+          (SetScale (max 0.05 (state.trixelInfo.scale - 0.05))) boxModel state
       , constructArithmeticButton "+"
-          (SetScale (state.trixelInfo.scale + 0.20)) boxModel state
+          (SetScale (state.trixelInfo.scale + 0.05)) boxModel state
 
       , constructModeList boxModel state
       , constructColorList boxModel state

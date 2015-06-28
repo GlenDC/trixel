@@ -191,6 +191,7 @@ type TrixelAction
   | UpdateTimeState
   | SetMouseButtonsDown ButtonCodeSet
   | SetKeyboardKeysDown KeyCodeSet
+  | SetMouseWheel Float
   | ToggleGridVisibility
   | UndoAction
   | RedoAction

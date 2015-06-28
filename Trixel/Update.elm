@@ -66,6 +66,9 @@ update action state =
       updateKeyboardKeysDown keyCodeSet state
       |> applyBrushAction
 
+    SetMouseWheel value ->
+      updateMouseWheel value state
+
     SwitchAction actionState ->
       update actionState.action
         { state
@@ -284,6 +287,23 @@ updateMouseButtonsDown buttonCodeSet state =
                 | buttonsDown <- buttonCodeSet
             }
     }
+
+
+updateMouseWheel : Float -> State -> State
+updateMouseWheel delta state =
+  let scale =
+        if | delta < 0 ->
+              state.trixelInfo.scale + 0.05
+
+           | delta > 0 ->
+              state.trixelInfo.scale - 0.05
+
+           | otherwise ->
+              state.trixelInfo.scale
+  in
+    if isKeyCodeInSet keyCodeAlt state.actions.keysDown
+      then update (SetScale scale) state
+      else state
 
 
 updateKeyboardKeysDown : KeyCodeSet -> State -> State

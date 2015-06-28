@@ -42,6 +42,14 @@ keyboardSignal =
     Keyboard.keysDown
 
 
+mouseWheelSignal : Signal PostOfficeAction
+mouseWheelSignal =
+  Signal.map
+    (\(deltaX, deltaY) ->
+      PostAction (SetMouseWheel deltaY))
+    MouseExtra.mouseWheel
+
+
 postOfficeTrashQuery : Mailbox TrixelAction
 postOfficeTrashQuery = mailbox None
 
@@ -107,6 +115,7 @@ workspaceSignals =
     , moveOffsetSignal
     , moveMouseSignal
     , keyboardSignal
+    , mouseWheelSignal
     , mouseButtonSignal
     ]
   |> Signal.foldp workspacePostOffice
