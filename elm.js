@@ -1800,6 +1800,170 @@ Elm.Dict.make = function (_elm) {
                       ,fromList: fromList};
    return _elm.Dict.values;
 };
+Elm.EditorKeyboard = Elm.EditorKeyboard || {};
+Elm.EditorKeyboard.make = function (_elm) {
+   "use strict";
+   _elm.EditorKeyboard = _elm.EditorKeyboard || {};
+   if (_elm.EditorKeyboard.values)
+   return _elm.EditorKeyboard.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "EditorKeyboard",
+   $Basics = Elm.Basics.make(_elm),
+   $Native$EditorKeyboard = Elm.Native.EditorKeyboard.make(_elm),
+   $Set = Elm.Set.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var presses = A2($Signal.map,
+   function (_) {
+      return _.keyCode;
+   },
+   $Native$EditorKeyboard.presses);
+   var toXY = F2(function (_v0,
+   keyCodes) {
+      return function () {
+         return function () {
+            var is = function (keyCode) {
+               return A2($Set.member,
+               keyCode,
+               keyCodes) ? 1 : 0;
+            };
+            return {_: {}
+                   ,x: is(_v0.right) - is(_v0.left)
+                   ,y: is(_v0.up) - is(_v0.down)};
+         }();
+      }();
+   });
+   var Directions = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,down: b
+             ,left: c
+             ,right: d
+             ,up: a};
+   });
+   var dropMap = F2(function (f,
+   signal) {
+      return $Signal.dropRepeats(A2($Signal.map,
+      f,
+      signal));
+   });
+   var EventInfo = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,alt: a
+             ,keyCode: c
+             ,meta: b};
+   });
+   var Blur = {ctor: "Blur"};
+   var Down = function (a) {
+      return {ctor: "Down",_0: a};
+   };
+   var Up = function (a) {
+      return {ctor: "Up",_0: a};
+   };
+   var rawEvents = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
+                                                  Up,
+                                                  $Native$EditorKeyboard.ups)
+                                                  ,A2($Signal.map,
+                                                  Down,
+                                                  $Native$EditorKeyboard.downs)
+                                                  ,A2($Signal.map,
+                                                  $Basics.always(Blur),
+                                                  $Native$EditorKeyboard.blurs)]));
+   var empty = {_: {}
+               ,alt: false
+               ,keyCodes: $Set.empty
+               ,meta: false};
+   var update = F2(function (event,
+   model) {
+      return function () {
+         switch (event.ctor)
+         {case "Blur": return empty;
+            case "Down": return {_: {}
+                                ,alt: event._0.alt
+                                ,keyCodes: A2($Set.insert,
+                                event._0.keyCode,
+                                model.keyCodes)
+                                ,meta: event._0.meta};
+            case "Up": return {_: {}
+                              ,alt: event._0.alt
+                              ,keyCodes: A2($Set.remove,
+                              event._0.keyCode,
+                              model.keyCodes)
+                              ,meta: event._0.meta};}
+         _U.badCase($moduleName,
+         "between lines 62 and 76");
+      }();
+   });
+   var model = A3($Signal.foldp,
+   update,
+   empty,
+   rawEvents);
+   var alt = A2(dropMap,
+   function (_) {
+      return _.alt;
+   },
+   model);
+   var meta = A2(dropMap,
+   function (_) {
+      return _.meta;
+   },
+   model);
+   var keysDown = A2(dropMap,
+   function (_) {
+      return _.keyCodes;
+   },
+   model);
+   var arrows = A2(dropMap,
+   toXY({_: {}
+        ,down: 40
+        ,left: 37
+        ,right: 39
+        ,up: 38}),
+   keysDown);
+   var wasd = A2(dropMap,
+   toXY({_: {}
+        ,down: 83
+        ,left: 65
+        ,right: 68
+        ,up: 87}),
+   keysDown);
+   var isDown = function (keyCode) {
+      return A2(dropMap,
+      $Set.member(keyCode),
+      keysDown);
+   };
+   var ctrl = isDown(17);
+   var shift = isDown(16);
+   var space = isDown(32);
+   var enter = isDown(13);
+   var Model = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,alt: a
+             ,keyCodes: c
+             ,meta: b};
+   });
+   _elm.EditorKeyboard.values = {_op: _op
+                                ,arrows: arrows
+                                ,wasd: wasd
+                                ,enter: enter
+                                ,space: space
+                                ,ctrl: ctrl
+                                ,shift: shift
+                                ,alt: alt
+                                ,meta: meta
+                                ,isDown: isDown
+                                ,keysDown: keysDown
+                                ,presses: presses};
+   return _elm.EditorKeyboard.values;
+};
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -3778,170 +3942,6 @@ Elm.Json.Encode.make = function (_elm) {
                              ,Value: Value};
    return _elm.Json.Encode.values;
 };
-Elm.Keyboard = Elm.Keyboard || {};
-Elm.Keyboard.make = function (_elm) {
-   "use strict";
-   _elm.Keyboard = _elm.Keyboard || {};
-   if (_elm.Keyboard.values)
-   return _elm.Keyboard.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Keyboard",
-   $Basics = Elm.Basics.make(_elm),
-   $Native$Keyboard = Elm.Native.Keyboard.make(_elm),
-   $Set = Elm.Set.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var presses = A2($Signal.map,
-   function (_) {
-      return _.keyCode;
-   },
-   $Native$Keyboard.presses);
-   var toXY = F2(function (_v0,
-   keyCodes) {
-      return function () {
-         return function () {
-            var is = function (keyCode) {
-               return A2($Set.member,
-               keyCode,
-               keyCodes) ? 1 : 0;
-            };
-            return {_: {}
-                   ,x: is(_v0.right) - is(_v0.left)
-                   ,y: is(_v0.up) - is(_v0.down)};
-         }();
-      }();
-   });
-   var Directions = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,down: b
-             ,left: c
-             ,right: d
-             ,up: a};
-   });
-   var dropMap = F2(function (f,
-   signal) {
-      return $Signal.dropRepeats(A2($Signal.map,
-      f,
-      signal));
-   });
-   var EventInfo = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,alt: a
-             ,keyCode: c
-             ,meta: b};
-   });
-   var Blur = {ctor: "Blur"};
-   var Down = function (a) {
-      return {ctor: "Down",_0: a};
-   };
-   var Up = function (a) {
-      return {ctor: "Up",_0: a};
-   };
-   var rawEvents = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
-                                                  Up,
-                                                  $Native$Keyboard.ups)
-                                                  ,A2($Signal.map,
-                                                  Down,
-                                                  $Native$Keyboard.downs)
-                                                  ,A2($Signal.map,
-                                                  $Basics.always(Blur),
-                                                  $Native$Keyboard.blurs)]));
-   var empty = {_: {}
-               ,alt: false
-               ,keyCodes: $Set.empty
-               ,meta: false};
-   var update = F2(function (event,
-   model) {
-      return function () {
-         switch (event.ctor)
-         {case "Blur": return empty;
-            case "Down": return {_: {}
-                                ,alt: event._0.alt
-                                ,keyCodes: A2($Set.insert,
-                                event._0.keyCode,
-                                model.keyCodes)
-                                ,meta: event._0.meta};
-            case "Up": return {_: {}
-                              ,alt: event._0.alt
-                              ,keyCodes: A2($Set.remove,
-                              event._0.keyCode,
-                              model.keyCodes)
-                              ,meta: event._0.meta};}
-         _U.badCase($moduleName,
-         "between lines 68 and 82");
-      }();
-   });
-   var model = A3($Signal.foldp,
-   update,
-   empty,
-   rawEvents);
-   var alt = A2(dropMap,
-   function (_) {
-      return _.alt;
-   },
-   model);
-   var meta = A2(dropMap,
-   function (_) {
-      return _.meta;
-   },
-   model);
-   var keysDown = A2(dropMap,
-   function (_) {
-      return _.keyCodes;
-   },
-   model);
-   var arrows = A2(dropMap,
-   toXY({_: {}
-        ,down: 40
-        ,left: 37
-        ,right: 39
-        ,up: 38}),
-   keysDown);
-   var wasd = A2(dropMap,
-   toXY({_: {}
-        ,down: 83
-        ,left: 65
-        ,right: 68
-        ,up: 87}),
-   keysDown);
-   var isDown = function (keyCode) {
-      return A2(dropMap,
-      $Set.member(keyCode),
-      keysDown);
-   };
-   var ctrl = isDown(17);
-   var shift = isDown(16);
-   var space = isDown(32);
-   var enter = isDown(13);
-   var Model = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,alt: a
-             ,keyCodes: c
-             ,meta: b};
-   });
-   _elm.Keyboard.values = {_op: _op
-                          ,arrows: arrows
-                          ,wasd: wasd
-                          ,enter: enter
-                          ,space: space
-                          ,ctrl: ctrl
-                          ,shift: shift
-                          ,alt: alt
-                          ,meta: meta
-                          ,isDown: isDown
-                          ,keysDown: keysDown
-                          ,presses: presses};
-   return _elm.Keyboard.values;
-};
 Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
    "use strict";
@@ -4435,7 +4435,7 @@ Elm.MouseExtra.make = function (_elm) {
                               event._0.buttonCode,
                               model.buttonCodes)};}
          _U.badCase($moduleName,
-         "between lines 37 and 44");
+         "between lines 48 and 55");
       }();
    });
    var ButtonEventInfo = function (a) {
@@ -5722,6 +5722,58 @@ Elm.Native.Debug.make = function(localRuntime) {
 	};
 };
 
+Elm.Native.EditorKeyboard = {};
+Elm.Native.EditorKeyboard.make = function(localRuntime) {
+
+  localRuntime.Native = localRuntime.Native || {};
+  localRuntime.Native.EditorKeyboard = localRuntime.Native.EditorKeyboard || {};
+  if (localRuntime.Native.EditorKeyboard.values)
+  {
+    return localRuntime.Native.EditorKeyboard.values;
+  }
+
+  var NS = Elm.Native.Signal.make(localRuntime);
+
+
+  function keyEvent(event)
+  {
+    event.preventDefault();
+    event.stopPropagation();
+
+    return {
+      _: {},
+      alt: event.altKey,
+      meta: event.metaKey,
+      keyCode: event.keyCode
+    };
+  }
+
+
+  function keyStream(node, eventName, handler)
+  {
+    var stream = NS.input(eventName, '\0');
+
+    localRuntime.addListener([stream.id], node, eventName, function(e) {
+      localRuntime.notify(stream.id, handler(e));
+    });
+
+    return stream;
+  }
+
+  var downs = keyStream(document, 'keydown', keyEvent);
+  var ups = keyStream(document, 'keyup', keyEvent);
+  var presses = keyStream(document, 'keypress', keyEvent);
+  var blurs = keyStream(window, 'blur', function() { return null; });
+
+
+  return localRuntime.Native.EditorKeyboard.values = {
+    downs: downs,
+    ups: ups,
+    blurs: blurs,
+    presses: presses
+  };
+
+};
 
 // setup
 Elm.Native = Elm.Native || {};
@@ -7586,56 +7638,6 @@ Elm.Native.Json.make = function(localRuntime) {
 
 };
 
-Elm.Native.Keyboard = {};
-Elm.Native.Keyboard.make = function(localRuntime) {
-
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Keyboard = localRuntime.Native.Keyboard || {};
-	if (localRuntime.Native.Keyboard.values)
-	{
-		return localRuntime.Native.Keyboard.values;
-	}
-
-	var NS = Elm.Native.Signal.make(localRuntime);
-
-
-	function keyEvent(event)
-	{
-		return {
-			_: {},
-			alt: event.altKey,
-			meta: event.metaKey,
-			keyCode: event.keyCode
-		};
-	}
-
-
-	function keyStream(node, eventName, handler)
-	{
-		var stream = NS.input(eventName, '\0');
-
-		localRuntime.addListener([stream.id], node, eventName, function(e) {
-			localRuntime.notify(stream.id, handler(e));
-		});
-
-		return stream;
-	}
-
-	var downs = keyStream(document, 'keydown', keyEvent);
-	var ups = keyStream(document, 'keyup', keyEvent);
-	var presses = keyStream(document, 'keypress', keyEvent);
-	var blurs = keyStream(window, 'blur', function() { return null; });
-
-
-	return localRuntime.Native.Keyboard.values = {
-		downs: downs,
-		ups: ups,
-		blurs: blurs,
-		presses: presses
-	};
-
-};
-
 Elm.Native.List = {};
 Elm.Native.List.make = function(localRuntime) {
 	localRuntime.Native = localRuntime.Native || {};
@@ -7930,6 +7932,8 @@ Elm.Native.MouseExtra.make = function(localRuntime) {
   }
 
   function mouseWheelEvent(event) {
+    event.preventDefault();
+
     return Utils.Tuple2(
       event.deltaX,
       event.deltaY
@@ -13771,7 +13775,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    $moduleName = "Trixel.Constants",
    $Basics = Elm.Basics.make(_elm),
    $Char = Elm.Char.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
+   $EditorKeyboard = Elm.EditorKeyboard.make(_elm),
    $MouseExtra = Elm.MouseExtra.make(_elm);
    var buttonCodeRight = 2;
    var buttonCodeMiddle = 1;
@@ -13780,6 +13784,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var keyCodeCtrl = 17;
    var keyCodeShift = 16;
    var shortcutZ = $Char.toCode(_U.chr("Z"));
+   var shortcutY = $Char.toCode(_U.chr("Y"));
    var shortcutR = $Char.toCode(_U.chr("R"));
    var shortcutG = $Char.toCode(_U.chr("G"));
    var maxTrixelRowCount = 150;
@@ -13789,7 +13794,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var email = "contact@glendc.com";
    var newsletterSubscribeURL = "http://eepurl.com/brwmSn";
    var githubRepositoryURL = "https://github.com/GlenDC/trixel";
-   var version = "0.1.7";
+   var version = "0.1.8";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubRepositoryURL: githubRepositoryURL
@@ -13801,6 +13806,7 @@ Elm.Trixel.Constants.make = function (_elm) {
                                   ,maxTrixelRowCount: maxTrixelRowCount
                                   ,shortcutG: shortcutG
                                   ,shortcutR: shortcutR
+                                  ,shortcutY: shortcutY
                                   ,shortcutZ: shortcutZ
                                   ,keyCodeShift: keyCodeShift
                                   ,keyCodeCtrl: keyCodeCtrl
@@ -13944,7 +13950,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Trixel.PostOffice",
    $Basics = Elm.Basics.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
+   $EditorKeyboard = Elm.EditorKeyboard.make(_elm),
    $Mouse = Elm.Mouse.make(_elm),
    $MouseExtra = Elm.MouseExtra.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -14028,7 +14034,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    function (keyCodeSet) {
       return PostAction($Trixel$Types$General.SetKeyboardKeysDown(keyCodeSet));
    },
-   $Keyboard.keysDown);
+   $EditorKeyboard.keysDown);
    var mouseButtonSignal = A2($Signal.map,
    function (buttonCodeSet) {
       return PostAction($Trixel$Types$General.SetMouseButtonsDown(buttonCodeSet));
@@ -14055,7 +14061,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                                                             ,y: $Basics.toFloat(_v14.y)}));
       }();
    },
-   $Keyboard.arrows);
+   $EditorKeyboard.arrows);
    var workspaceSignals = A2($Signal.foldp,
    workspacePostOffice,
    $Trixel$Types$General.SwitchAction({_: {}
@@ -14224,8 +14230,8 @@ Elm.Trixel.Types.General.make = function (_elm) {
    $moduleName = "Trixel.Types.General",
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
+   $EditorKeyboard = Elm.EditorKeyboard.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
    $MouseExtra = Elm.MouseExtra.make(_elm),
    $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -15766,26 +15772,34 @@ Elm.Trixel.Update.make = function (_elm) {
                                     actions)]],
          state);
          return A2($Trixel$Types$General.isKeyCodeInSet,
+         $Trixel$Constants.keyCodeCtrl,
+         keyCodeSet) ? A2($Trixel$Types$General.isKeyCodeInSet,
          $Trixel$Constants.keyCodeShift,
-         keyCodeSet) ? A2(checkForShiftShortcutCombinations,
+         keyCodeSet) ? A2(checkForCtrlShiftShortcutCombinations,
+         state.actions.keysDown,
+         newState) : A2(checkForCtrlShortcutCombinations,
          state.actions.keysDown,
          newState) : A2(checkForSoloShortcuts,
          state.actions.keysDown,
          newState);
       }();
    });
-   var checkForShiftShortcutCombinations = F2(function (previousKeyCodeSet,
+   var checkForCtrlShiftShortcutCombinations = F2(function (previousKeyCodeSet,
+   state) {
+      return A3($Trixel$Types$General.isKeyCodeJustInSet,
+      $Trixel$Constants.shortcutZ,
+      state.actions.keysDown,
+      previousKeyCodeSet) ? A2(update,
+      $Trixel$Types$General.RedoAction,
+      state) : state;
+   });
+   var checkForCtrlShortcutCombinations = F2(function (previousKeyCodeSet,
    state) {
       return A3($Trixel$Types$General.isKeyCodeJustInSet,
       $Trixel$Constants.shortcutZ,
       state.actions.keysDown,
       previousKeyCodeSet) ? A2(update,
       $Trixel$Types$General.UndoAction,
-      state) : A3($Trixel$Types$General.isKeyCodeJustInSet,
-      $Trixel$Constants.shortcutR,
-      state.actions.keysDown,
-      previousKeyCodeSet) ? A2(update,
-      $Trixel$Types$General.RedoAction,
       state) : state;
    });
    var updateMouseWheel = F2(function (delta,
@@ -15795,7 +15809,7 @@ Elm.Trixel.Update.make = function (_elm) {
          0) < 0 ? state.trixelInfo.scale + 5.0e-2 : _U.cmp(delta,
          0) > 0 ? state.trixelInfo.scale - 5.0e-2 : state.trixelInfo.scale;
          return A2($Trixel$Types$General.isKeyCodeInSet,
-         $Trixel$Constants.keyCodeAlt,
+         $Trixel$Constants.keyCodeCtrl,
          state.actions.keysDown) ? A2(update,
          $Trixel$Types$General.SetScale(scale),
          state) : state;
