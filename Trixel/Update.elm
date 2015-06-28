@@ -264,12 +264,18 @@ checkForSoloShortcuts previousKeyCodeSet state =
           state
 
 
-checkForShiftShortcutCombinations : KeyCodeSet -> State -> State
-checkForShiftShortcutCombinations previousKeyCodeSet state =
+checkForCtrlShortcutCombinations : KeyCodeSet -> State -> State
+checkForCtrlShortcutCombinations previousKeyCodeSet state =
    if | isKeyCodeJustInSet shortcutZ state.actions.keysDown previousKeyCodeSet ->
           update UndoAction state
 
-      | isKeyCodeJustInSet shortcutR state.actions.keysDown previousKeyCodeSet ->
+      | otherwise ->
+          state
+
+
+checkForCtrlShiftShortcutCombinations : KeyCodeSet -> State -> State
+checkForCtrlShiftShortcutCombinations previousKeyCodeSet state =
+   if | isKeyCodeJustInSet shortcutZ state.actions.keysDown previousKeyCodeSet ->
           update RedoAction state
 
       | otherwise ->
@@ -301,7 +307,7 @@ updateMouseWheel delta state =
            | otherwise ->
               state.trixelInfo.scale
   in
-    if isKeyCodeInSet keyCodeAlt state.actions.keysDown
+    if isKeyCodeInSet keyCodeCtrl state.actions.keysDown
       then update (SetScale scale) state
       else state
 
@@ -319,8 +325,12 @@ updateKeyboardKeysDown keyCodeSet state =
                 }
         }
   in
-    if | isKeyCodeInSet keyCodeShift keyCodeSet ->
-          checkForShiftShortcutCombinations state.actions.keysDown newState
+    if | isKeyCodeInSet keyCodeCtrl keyCodeSet ->
+          if isKeyCodeInSet keyCodeShift keyCodeSet
+            then
+              checkForCtrlShiftShortcutCombinations state.actions.keysDown newState
+            else
+              checkForCtrlShortcutCombinations state.actions.keysDown newState
 
        | otherwise ->
           checkForSoloShortcuts state.actions.keysDown newState

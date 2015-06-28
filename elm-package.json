@@ -12,6 +12,7 @@
         , "evancz/elm-html": "3.0.0 <= v < 4.0.0"
         , "TheSeamau5/elm-undo-redo": "2.0.0 <= v < 3.0.0"
         , "GlenDC/elm-mouse-extra": "1.0.0 <= v < 2.0.0"
+        , "GlenDC/elm-editor-keyboard": "1.0.0 <= v < 2.0.0"
     },
     "elm-version": "0.15.0 <= v < 0.16.0"
 }

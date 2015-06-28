@@ -1,6 +1,6 @@
 module Trixel.Constants where
 
-import Keyboard exposing (KeyCode)
+import EditorKeyboard exposing (KeyCode)
 import MouseExtra exposing (ButtonCode)
 
 import Char
@@ -54,6 +54,11 @@ shortcutG =
 shortcutR : KeyCode
 shortcutR =
   Char.toCode 'R'
+
+
+shortcutY : KeyCode
+shortcutY =
+  Char.toCode 'Y'
 
 
 shortcutZ : KeyCode

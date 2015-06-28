@@ -4,7 +4,7 @@ import Trixel.Types.General exposing (..)
 import Trixel.Constants exposing (..)
 
 import Signal exposing (..)
-import Keyboard
+import EditorKeyboard
 import Mouse
 
 import MouseExtra
@@ -15,7 +15,7 @@ moveOffsetSignal =
   Signal.map
     (\{x, y} ->
       PostAction (MoveOffset { x = toFloat x, y = toFloat y }))
-    Keyboard.arrows
+    EditorKeyboard.arrows
 
 
 moveMouseSignal : Signal PostOfficeAction
@@ -39,7 +39,7 @@ keyboardSignal =
   Signal.map
     (\keyCodeSet ->
       PostAction (SetKeyboardKeysDown keyCodeSet))
-    Keyboard.keysDown
+    EditorKeyboard.keysDown
 
 
 mouseWheelSignal : Signal PostOfficeAction

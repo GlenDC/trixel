@@ -16,7 +16,7 @@ import Color exposing (Color)
 import Signal exposing (Signal, Address, Mailbox, mailbox)
 
 import Set exposing (Set)
-import Keyboard exposing (KeyCode)
+import EditorKeyboard exposing (KeyCode)
 import MouseExtra exposing (ButtonCode)
 
 import UndoList exposing (UndoList)
