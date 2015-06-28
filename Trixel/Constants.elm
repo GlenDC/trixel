@@ -36,6 +36,11 @@ workspaceOffsetMoveSpeed =
   80
 
 
+workspaceOffsetMouseMoveSpeed : Float
+workspaceOffsetMouseMoveSpeed =
+  50
+
+
 sqrt3 : Float
 sqrt3 =
   sqrt 3
@@ -74,6 +79,11 @@ keyCodeShift =
 keyCodeCtrl : KeyCode
 keyCodeCtrl =
   17
+
+
+keyCodeSpace : KeyCode
+keyCodeSpace =
+  32
 
 
 keyCodeAlt : KeyCode

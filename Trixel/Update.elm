@@ -37,8 +37,8 @@ update action state =
       updateWindowDimensions dimensions state
       |> updateGrid
 
-    MoveOffset point ->
-      updateOffset point state
+    MoveOffset (direction, speed) ->
+      updateOffset direction speed state
       |> updateGrid
       |> update (MoveMouse state.workState.lastMousePosition)
 
@@ -98,13 +98,15 @@ resetState state =
             { trixelInfo
                 | scale <-
                     1
+                , offset <-
+                    zeroVector
             }
     }
     |> resetTimeState
 
 
-updateOffset : Vector -> State -> State
-updateOffset offset state =
+updateOffset : Vector -> Float -> State -> State
+updateOffset offset speed state =
   if state.trixelInfo.scale <= 1
     then state
     else
@@ -112,10 +114,12 @@ updateOffset offset state =
             state.trixelInfo
           {x, y} =
             trixelInfo.offset
+          relativeSpeed =
+            speed * trixelInfo.scale
           newOffsetX =
-            x - (offset.x * workspaceOffsetMoveSpeed)
+            x + (offset.x * relativeSpeed)
           newOffsetY =
-            y - (offset.y * workspaceOffsetMoveSpeed)
+            y + (offset.y * relativeSpeed)
       in
         { state
             | trixelInfo <-
@@ -235,7 +239,7 @@ applyBrushAction state =
       state
 
     MouseHover position ->
-      if | isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown ->
+      (if | isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown ->
             applyLeftButtonAction position state
 
          | isButtonCodeInSet buttonCodeRight state.actions.buttonsDown ->
@@ -243,6 +247,19 @@ applyBrushAction state =
 
          | otherwise ->
             state -- nothng to do...
+      )
+
+    MouseDrag mouseDragState ->
+       (if isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown
+          then
+             (updateOffset
+                mouseDragState.difference
+                workspaceOffsetMouseMoveSpeed
+                state
+             |> updateGrid)
+          else
+             state -- nothng to do...
+        )
   ) |> updateLayers
 
 
@@ -351,12 +368,20 @@ updateMousePosition point state =
       (menuOffsetX, menuOffsetY) =
         computeDimensionsFromBoxModel state.boxModels.menu
 
+      trixelOffset =
+        case state.mouseState of
+          MouseDrag mouseDragState ->
+            mouseDragState.originalOffset
+
+          _ ->
+            state.trixelInfo.offset
+
       cursorX =
-        point.x - padding.x - margin.x - offsetX - state.trixelInfo.offset.x
+        point.x - padding.x - margin.x - offsetX - trixelOffset.x
       cursorY =
         state.trixelInfo.dimensions.y
           - (point.y - padding.y - margin.y - menuOffsetY - offsetY)
-          - state.trixelInfo.offset.y
+          - trixelOffset.y
 
       (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
         if state.trixelInfo.mode == ClassicMode
@@ -385,12 +410,43 @@ updateMousePosition point state =
 
       trixelCount =
         getTrixelCount state
+
+      (mousePointDifference, originalOffset, mouseBoundCheckSkip) =
+        case state.mouseState of
+          MouseDrag mouseDragState ->
+            ( { x = pointX - mouseDragState.position.x
+              , y = pointY - mouseDragState.position.y
+              }
+            , mouseDragState.originalOffset
+            , True
+            )
+
+          _ ->
+            (zeroVector, state.trixelInfo.offset, False)
   in
     { state
         | mouseState <-
-          if pointX >= 0 && pointX < trixelCount.x
-            && pointY >= 0 && pointY < trixelCount.y
-            then MouseHover { x = pointX, y = pointY}
+          if mouseBoundCheckSkip ||
+              (pointX >= 0 && pointX < trixelCount.x
+                && pointY >= 0 && pointY < trixelCount.y)
+            then
+              (if isKeyCodeInSet keyCodeSpace state.actions.keysDown
+                then
+                  MouseDrag
+                    { position =
+                        { x = pointX
+                        , y = pointY
+                        }
+                    , difference =
+                        mousePointDifference
+                    , originalOffset =
+                        originalOffset
+                    }
+                else
+                  MouseHover
+                    { x = pointX
+                    , y = pointY
+                    })
             else MouseNone
         , workState <-
             { workState

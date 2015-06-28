@@ -94,12 +94,19 @@ type alias EditorBoxModels =
   }
 
 
+type alias MouseDragState =
+  { position : Vector
+  , difference : Vector
+  , originalOffset : Vector
+  }
+
+
 -- Current Mouse State defines wether or not we
 -- have to draw a mouse-action-preview within the workspace
 type MouseState
   = MouseNone
   | MouseHover Vector
-
+  | MouseDrag MouseDragState
 
 -- Defining the current condition of the workspace
 type WorkspaceCondition
@@ -186,7 +193,7 @@ type TrixelAction
   | SetGridY Float -- Set the y-count for the grid of the workspace
   | SetColor Color -- Set the drawing color
   | MoveMouse Vector -- Moving the cursor
-  | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
+  | MoveOffset (Vector, Float) -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action
   | UpdateTimeState
   | SetMouseButtonsDown ButtonCodeSet

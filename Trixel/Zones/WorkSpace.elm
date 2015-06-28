@@ -46,12 +46,17 @@ constructMainStyle state =
           workspace.sizing
 
       cursor =
-        if | state.mouseState == MouseNone ->
-                "default"
-           | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
-                "copy"
-           | otherwise ->
-                "pointer"
+        case state.mouseState of
+          MouseHover _ ->
+            if isKeyCodeInSet keyCodeCtrl state.actions.keysDown
+              then "copy"
+              else "pointer"
+
+          MouseDrag _ ->
+            "move"
+
+          _ ->
+            "default"
 
   in
     ("cursor", cursor) :: (computeBoxModelCSS boxModel)

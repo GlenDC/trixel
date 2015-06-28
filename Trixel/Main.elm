@@ -96,12 +96,21 @@ view state =
 
 constructMainStyle: State -> Attribute
 constructMainStyle state  =
-  style
-    [ ("width", "100%")
-    , ("height", "100%")
-    , ("padding", "0 0")
-    , ("margin", "0 0")
-    , ("background-color", state.colorScheme.subbg.html)
-    , ("position", "absolute")
-    , computeBoxSizingCSS BorderBox
-    ]
+  let cursor =
+        case state.mouseState of
+          MouseDrag _ ->
+            "move"
+
+          _ ->
+            "default"
+  in
+    style
+      [ ("width", "100%")
+      , ("height", "100%")
+      , ("padding", "0 0")
+      , ("margin", "0 0")
+      , ("background-color", state.colorScheme.subbg.html)
+      , ("position", "absolute")
+      , ("cursor", cursor)
+      , computeBoxSizingCSS BorderBox
+      ]

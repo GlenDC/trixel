@@ -237,9 +237,6 @@ generateGrid state =
 renderMouse : State -> Float -> Float -> List Form -> List Form
 renderMouse state width height trixels =
   case state.mouseState of
-    MouseNone ->
-      trixels
-
     MouseHover position -> 
       if state.condition /= NormalCondition
         then trixels
@@ -262,6 +259,9 @@ renderMouse state width height trixels =
               state.trixelInfo.height
               (\s -> filled (getHoverColor state) s)
             ) :: trixels
+
+    _ ->
+      trixels
 
 
 type alias StaticTrixelRenderInfo =

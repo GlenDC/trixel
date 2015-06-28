@@ -14,7 +14,7 @@ moveOffsetSignal : Signal PostOfficeAction
 moveOffsetSignal =
   Signal.map
     (\{x, y} ->
-      PostAction (MoveOffset { x = toFloat x, y = toFloat y }))
+      PostAction (MoveOffset ({ x = toFloat x, y = toFloat y }, workspaceOffsetMoveSpeed)))
     EditorKeyboard.arrows
 
 
