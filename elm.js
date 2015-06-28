@@ -4415,13 +4415,14 @@ Elm.MouseExtra.make = function (_elm) {
    $Native$MouseExtra = Elm.Native.MouseExtra.make(_elm),
    $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var mouseWheel = $Native$MouseExtra.wheel;
    var dropMap = F2(function (f,
    signal) {
       return $Signal.dropRepeats(A2($Signal.map,
       f,
       signal));
    });
-   var update = F2(function (event,
+   var buttonUpdate = F2(function (event,
    model) {
       return function () {
          switch (event.ctor)
@@ -4434,10 +4435,10 @@ Elm.MouseExtra.make = function (_elm) {
                               event._0.buttonCode,
                               model.buttonCodes)};}
          _U.badCase($moduleName,
-         "between lines 36 and 43");
+         "between lines 37 and 44");
       }();
    });
-   var EventInfo = function (a) {
+   var ButtonEventInfo = function (a) {
       return {_: {},buttonCode: a};
    };
    var Down = function (a) {
@@ -4446,29 +4447,30 @@ Elm.MouseExtra.make = function (_elm) {
    var Up = function (a) {
       return {ctor: "Up",_0: a};
    };
-   var rawEvents = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
-                                                  Up,
-                                                  $Native$MouseExtra.ups)
-                                                  ,A2($Signal.map,
-                                                  Down,
-                                                  $Native$MouseExtra.downs)]));
-   var empty = {_: {}
-               ,buttonCodes: $Set.empty};
-   var model = A3($Signal.foldp,
-   update,
-   empty,
-   rawEvents);
+   var rawButtonEvents = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
+                                                        Up,
+                                                        $Native$MouseExtra.ups)
+                                                        ,A2($Signal.map,
+                                                        Down,
+                                                        $Native$MouseExtra.downs)]));
+   var emptyButtonModel = {_: {}
+                          ,buttonCodes: $Set.empty};
+   var buttonModel = A3($Signal.foldp,
+   buttonUpdate,
+   emptyButtonModel,
+   rawButtonEvents);
    var buttonsDown = A2(dropMap,
    function (_) {
       return _.buttonCodes;
    },
-   model);
-   var Model = function (a) {
+   buttonModel);
+   var ButtonModel = function (a) {
       return {_: {}
              ,buttonCodes: a};
    };
    _elm.MouseExtra.values = {_op: _op
-                            ,buttonsDown: buttonsDown};
+                            ,buttonsDown: buttonsDown
+                            ,mouseWheel: mouseWheel};
    return _elm.MouseExtra.values;
 };
 Elm.Native.Array = {};
@@ -7927,6 +7929,13 @@ Elm.Native.MouseExtra.make = function(localRuntime) {
       };
   }
 
+  function mouseWheelEvent(event) {
+    return Utils.Tuple2(
+      event.deltaX,
+      event.deltaY
+      );
+  }
+
   function mouseKeyStream(eventName, handler) {
     var stream = NS.input(eventName, '\0');
 
@@ -7938,18 +7947,22 @@ Elm.Native.MouseExtra.make = function(localRuntime) {
   }
 
   // Disabling Context Menu (as it interferes with right click)
-  var contextMenu = NS.input('contextmenu', false);
-  localRuntime.addListener([contextMenu.id], node, 'contextmenu', function(e) {
-    e.preventDefault();
-  });
+  node.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+  }, false);
 
   var downs = mouseKeyStream('mousedown', mouseKeyEvent);
   var ups = mouseKeyStream('mouseup', mouseKeyEvent)
 
+  var wheel = NS.input('wheel', Utils.Tuple2(0,0));
+  localRuntime.addListener([wheel.id], node, 'wheel', function (e) {
+    localRuntime.notify(wheel.id, mouseWheelEvent(e));
+  });
+
   return localRuntime.Native.MouseExtra.values = {
     downs: downs,
     ups: ups,
-    contextMenu: contextMenu,
+    wheel: wheel,
   };
 };
 Elm.Native.Port = {};
@@ -13776,7 +13789,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var email = "contact@glendc.com";
    var newsletterSubscribeURL = "http://eepurl.com/brwmSn";
    var githubRepositoryURL = "https://github.com/GlenDC/trixel";
-   var version = "0.1.6";
+   var version = "0.1.7";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubRepositoryURL: githubRepositoryURL
@@ -13984,7 +13997,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
             case "PostNoAction":
             return $Trixel$Types$General.SwitchAction(state);}
          _U.badCase($moduleName,
-         "between lines 55 and 90");
+         "between lines 63 and 98");
       }();
    });
    var workspacePostOffice = F2(function (action,
@@ -14000,6 +14013,17 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    });
    var postOfficeQuery = $Signal.mailbox(PostNoAction);
    var postOfficeTrashQuery = $Signal.mailbox($Trixel$Types$General.None);
+   var mouseWheelSignal = A2($Signal.map,
+   function (_v6) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple2":
+            return PostAction($Trixel$Types$General.SetMouseWheel(_v6._1));}
+         _U.badCase($moduleName,
+         "on line 49, column 7 to 39");
+      }();
+   },
+   $MouseExtra.mouseWheel);
    var keyboardSignal = A2($Signal.map,
    function (keyCodeSet) {
       return PostAction($Trixel$Types$General.SetKeyboardKeysDown(keyCodeSet));
@@ -14011,24 +14035,24 @@ Elm.Trixel.PostOffice.make = function (_elm) {
    },
    $MouseExtra.buttonsDown);
    var moveMouseSignal = A2($Signal.map,
-   function (_v6) {
+   function (_v10) {
       return function () {
-         switch (_v6.ctor)
+         switch (_v10.ctor)
          {case "_Tuple2":
             return PostAction($Trixel$Types$General.MoveMouse({_: {}
-                                                              ,x: $Basics.toFloat(_v6._0)
-                                                              ,y: $Basics.toFloat(_v6._1)}));}
+                                                              ,x: $Basics.toFloat(_v10._0)
+                                                              ,y: $Basics.toFloat(_v10._1)}));}
          _U.badCase($moduleName,
          "on line 25, column 7 to 59");
       }();
    },
    $Mouse.position);
    var moveOffsetSignal = A2($Signal.map,
-   function (_v10) {
+   function (_v14) {
       return function () {
          return PostAction($Trixel$Types$General.MoveOffset({_: {}
-                                                            ,x: $Basics.toFloat(_v10.x)
-                                                            ,y: $Basics.toFloat(_v10.y)}));
+                                                            ,x: $Basics.toFloat(_v14.x)
+                                                            ,y: $Basics.toFloat(_v14.y)}));
       }();
    },
    $Keyboard.arrows);
@@ -14040,6 +14064,8 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                                       ,inputsActive: 0}))($Signal.mergeMany(_L.fromArray([postOfficeQuery.signal
                                                                                          ,moveOffsetSignal
                                                                                          ,moveMouseSignal
+                                                                                         ,keyboardSignal
+                                                                                         ,mouseWheelSignal
                                                                                          ,mouseButtonSignal])));
    var postOfficeSignal = A3($Signal.filter,
    filterPostOfficeSignal,
@@ -14050,6 +14076,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                                    ,moveMouseSignal: moveMouseSignal
                                    ,mouseButtonSignal: mouseButtonSignal
                                    ,keyboardSignal: keyboardSignal
+                                   ,mouseWheelSignal: mouseWheelSignal
                                    ,postOfficeTrashQuery: postOfficeTrashQuery
                                    ,postOfficeQuery: postOfficeQuery
                                    ,handlePostedAction: handlePostedAction
@@ -14273,6 +14300,10 @@ Elm.Trixel.Types.General.make = function (_elm) {
    var RedoAction = {ctor: "RedoAction"};
    var UndoAction = {ctor: "UndoAction"};
    var ToggleGridVisibility = {ctor: "ToggleGridVisibility"};
+   var SetMouseWheel = function (a) {
+      return {ctor: "SetMouseWheel"
+             ,_0: a};
+   };
    var SetKeyboardKeysDown = function (a) {
       return {ctor: "SetKeyboardKeysDown"
              ,_0: a};
@@ -14508,6 +14539,7 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                       ,UpdateTimeState: UpdateTimeState
                                       ,SetMouseButtonsDown: SetMouseButtonsDown
                                       ,SetKeyboardKeysDown: SetKeyboardKeysDown
+                                      ,SetMouseWheel: SetMouseWheel
                                       ,ToggleGridVisibility: ToggleGridVisibility
                                       ,UndoAction: UndoAction
                                       ,RedoAction: RedoAction
@@ -15619,7 +15651,7 @@ Elm.Trixel.Update.make = function (_elm) {
               state) : state;
             case "MouseNone": return state;}
          _U.badCase($moduleName,
-         "between lines 230 and 243");
+         "between lines 233 and 246");
       }());
    };
    var updateOffset = F2(function (offset,
@@ -15704,6 +15736,10 @@ Elm.Trixel.Update.make = function (_elm) {
             return applyBrushAction(A2(updateMouseButtonsDown,
               action._0,
               state));
+            case "SetMouseWheel":
+            return A2(updateMouseWheel,
+              action._0,
+              state);
             case "SetScale":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(updateScale,
               action._0,
@@ -15717,7 +15753,7 @@ Elm.Trixel.Update.make = function (_elm) {
             case "UndoAction":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid($Trixel$Types$General.undoTimeState(state));}
          _U.badCase($moduleName,
-         "between lines 16 and 85");
+         "between lines 16 and 88");
       }();
    });
    var updateKeyboardKeysDown = F2(function (keyCodeSet,
@@ -15751,6 +15787,19 @@ Elm.Trixel.Update.make = function (_elm) {
       previousKeyCodeSet) ? A2(update,
       $Trixel$Types$General.RedoAction,
       state) : state;
+   });
+   var updateMouseWheel = F2(function (delta,
+   state) {
+      return function () {
+         var scale = _U.cmp(delta,
+         0) < 0 ? state.trixelInfo.scale + 5.0e-2 : _U.cmp(delta,
+         0) > 0 ? state.trixelInfo.scale - 5.0e-2 : state.trixelInfo.scale;
+         return A2($Trixel$Types$General.isKeyCodeInSet,
+         $Trixel$Constants.keyCodeAlt,
+         state.actions.keysDown) ? A2(update,
+         $Trixel$Types$General.SetScale(scale),
+         state) : state;
+      }();
    });
    _elm.Trixel.Update.values = {_op: _op
                                ,update: update};
@@ -16385,13 +16434,13 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       ,A4(constructArithmeticButton,
                       "-",
                       $Trixel$Types$General.SetScale(A2($Basics.max,
-                      0.2,
-                      state.trixelInfo.scale - 0.2)),
+                      5.0e-2,
+                      state.trixelInfo.scale - 5.0e-2)),
                       boxModel,
                       state)
                       ,A4(constructArithmeticButton,
                       "+",
-                      $Trixel$Types$General.SetScale(state.trixelInfo.scale + 0.2),
+                      $Trixel$Types$General.SetScale(state.trixelInfo.scale + 5.0e-2),
                       boxModel,
                       state)
                       ,A2(constructModeList,
@@ -16451,10 +16500,8 @@ Elm.Trixel.Zones.WorkSpace.make = function (_elm) {
       return function () {
          var cursor = _U.eq(state.mouseState,
          $Trixel$Types$General.MouseNone) ? "default" : A2($Trixel$Types$General.isKeyCodeInSet,
-         $Trixel$Constants.keyCodeAlt,
-         state.actions.keysDown) ? "copy" : A2($Trixel$Types$General.isKeyCodeInSet,
          $Trixel$Constants.keyCodeCtrl,
-         state.actions.keysDown) ? "crosshair" : "pointer";
+         state.actions.keysDown) ? "copy" : "pointer";
          var $ = $Trixel$Types$Math.computeDimensionsFromBounds(state.trixelInfo.bounds),
          x = $.x,
          y = $.y;
