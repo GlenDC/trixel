@@ -1,6 +1,7 @@
 module Trixel.Constants where
 
 import Keyboard exposing (KeyCode)
+import MouseExtra exposing (ButtonCode)
 
 import Char
 
@@ -73,3 +74,17 @@ keyCodeCtrl =
 keyCodeAlt : KeyCode
 keyCodeAlt =
   18
+
+
+buttonCodeLeft : ButtonCode
+buttonCodeLeft =
+  0
+
+
+buttonCodeMiddle : ButtonCode
+buttonCodeMiddle =
+  1
+
+buttonCodeRight : ButtonCode
+buttonCodeRight =
+  2

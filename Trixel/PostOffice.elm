@@ -7,6 +7,8 @@ import Signal exposing (..)
 import Keyboard
 import Mouse
 
+import MouseExtra
+
 
 moveOffsetSignal : Signal PostOfficeAction
 moveOffsetSignal =
@@ -24,12 +26,12 @@ moveMouseSignal =
     Mouse.position
 
 
-leftMouseSignal : Signal PostOfficeAction
-leftMouseSignal =
+mouseButtonSignal : Signal PostOfficeAction
+mouseButtonSignal =
   Signal.map
-    (\isDown ->
-      PostAction (BrushSwitch isDown))
-    Mouse.isDown
+    (\buttonCodeSet ->
+      PostAction (SetMouseButtonsDown buttonCodeSet))
+    MouseExtra.buttonsDown
 
 
 keyboardSignal : Signal PostOfficeAction
@@ -104,8 +106,7 @@ workspaceSignals =
     [ postOfficeQuery.signal
     , moveOffsetSignal
     , moveMouseSignal
-    , leftMouseSignal
-    , keyboardSignal
+    , mouseButtonSignal
     ]
   |> Signal.foldp workspacePostOffice
       (SwitchAction

@@ -68,8 +68,10 @@ constructNewState countX countY =
       }
   , condition = NormalCondition
   , actions =
-      { isBrushActive = False
-      , keysDown = Set.empty
+      { buttonsDown =
+          Set.empty
+      , keysDown =
+          Set.empty
       }
   , workState = cleanWorkState
   , timeState = constructFreshTimeState countX countY

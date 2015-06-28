@@ -58,8 +58,8 @@ update action state =
       (Debug.log "todo, SaveDoc..." state)
       |> updateGrid
 
-    BrushSwitch isActive ->
-      updateBrushAction isActive state
+    SetMouseButtonsDown buttonCodeSet ->
+      updateMouseButtonsDown buttonCodeSet state
       |> applyBrushAction
 
     SetKeyboardKeysDown keyCodeSet ->
@@ -139,105 +139,108 @@ compareTrixels trixelA trixelB =
   && (trixelA.color == trixelB.color)
 
 
-applyBrushAction : State -> State
-applyBrushAction state =
+applyLeftButtonAction : Vector -> State -> State
+applyLeftButtonAction position state =
   let timeState =
         getTimeState state
+
+      workState =
+          state.workState
   in
-    (case state.mouseState of
-      MouseNone ->
-        state
+    if | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+          -- ColorPicker Brush
+          let maybeTrixel =
+                findTrixel
+                  position
+                  timeState.currentLayer
+                  timeState.layers
+          in
+            { state
+                | trixelColor <-
+                    case maybeTrixel of
+                      Just trixel ->
+                        trixel.color
 
-      MouseHover position ->
-        if state.actions.isBrushActive
-          then
-            let workState =
-                  state.workState
-            in
-              if | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
-                      -- ColorPicker Brush
-                      let maybeTrixel =
-                            findTrixel
-                              position
-                              timeState.currentLayer
-                              timeState.layers
-                      in
-                        { state
-                            | trixelColor <-
-                                case maybeTrixel of
-                                  Just trixel ->
-                                    trixel.color
-
-                                  _ ->
-                                    state.trixelColor
-                        }
-
-                 | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
-                    -- Erase Brush
-                    if comparePositions
-                        workState.lastErasePosition
-                        position
-                    then
-                      state -- same position as last time
-                    else
-                      { state
-                          | workState <-
-                              { workState
-                                  | lastErasePosition <-
-                                      position
-                              }
-                      }
-                      |> updateTimeState
-                           { timeState
-                              | layers <-
-                                  eraseTrixel
-                                    position
-                                    timeState.currentLayer
-                                    timeState.layers
-                           }
-
-                  | otherwise ->
-                      -- Paint Brush
-                      let newTrixel =
-                            constructNewTrixel position state.trixelColor
-                      in
-                        if compareTrixels
-                              workState.lastPaintedTrixel
-                              newTrixel
-                        then
-                          state -- same position as last time
-                        else
-                          { state
-                              | workState <-
-                                  { workState
-                                      | lastPaintedTrixel <-
-                                          newTrixel
-                                  }
-                          }
-                          |> updateTimeState
-                               { timeState
-                                  | layers <-
-                                      insertTrixel
-                                        (constructNewTrixel position state.trixelColor)
-                                        timeState.currentLayer
-                                        timeState.layers
-                               }
-          else
-            state)
-    |> updateLayers
-
-
-updateBrushAction : Bool -> State -> State
-updateBrushAction isActive state =
-  let actions =
-        state.actions
-  in
-    { state
-        | actions <-
-            { actions
-                | isBrushActive <- isActive
+                      _ ->
+                        state.trixelColor
             }
-    }
+
+      | otherwise ->
+        -- Paint Brush
+        let newTrixel =
+              constructNewTrixel position state.trixelColor
+        in
+          if compareTrixels
+                workState.lastPaintedTrixel
+                newTrixel
+          then
+            state -- same position as last time
+          else
+            { state
+                | workState <-
+                    { workState
+                        | lastPaintedTrixel <-
+                            newTrixel
+                    }
+            }
+            |> updateTimeState
+                 { timeState
+                    | layers <-
+                        insertTrixel
+                          (constructNewTrixel position state.trixelColor)
+                          timeState.currentLayer
+                          timeState.layers
+                 }
+
+
+applyRightButtonAction : Vector -> State -> State
+applyRightButtonAction position state =
+  let timeState =
+        getTimeState state
+
+      workState =
+          state.workState
+  in
+    -- Erase Brush
+    if comparePositions
+        workState.lastErasePosition
+        position
+    then
+      state -- same position as last time
+    else
+      { state
+          | workState <-
+              { workState
+                  | lastErasePosition <-
+                      position
+              }
+      }
+      |> updateTimeState
+           { timeState
+              | layers <-
+                  eraseTrixel
+                    position
+                    timeState.currentLayer
+                    timeState.layers
+           }
+
+
+applyBrushAction : State -> State
+applyBrushAction state =
+  (case state.mouseState of
+    MouseNone ->
+      state
+
+    MouseHover position ->
+      if | isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown ->
+            applyLeftButtonAction position state
+
+         | isButtonCodeInSet buttonCodeRight state.actions.buttonsDown ->
+            applyRightButtonAction position state
+
+         | otherwise ->
+            state -- nothng to do...
+  ) |> updateLayers
 
 
 checkForSoloShortcuts : KeyCodeSet -> State -> State
@@ -268,6 +271,19 @@ checkForShiftShortcutCombinations previousKeyCodeSet state =
 
       | otherwise ->
           state
+
+
+updateMouseButtonsDown : ButtonCodeSet -> State -> State
+updateMouseButtonsDown buttonCodeSet state =
+  let actions =
+        state.actions
+  in
+    { state
+        | actions <-
+            { actions
+                | buttonsDown <- buttonCodeSet
+            }
+    }
 
 
 updateKeyboardKeysDown : KeyCodeSet -> State -> State

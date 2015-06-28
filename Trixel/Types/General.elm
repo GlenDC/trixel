@@ -17,6 +17,7 @@ import Signal exposing (Signal, Address, Mailbox, mailbox)
 
 import Set exposing (Set)
 import Keyboard exposing (KeyCode)
+import MouseExtra exposing (ButtonCode)
 
 import UndoList exposing (UndoList)
 
@@ -35,6 +36,20 @@ isKeyCodeJustInSet : KeyCode -> KeyCodeSet -> KeyCodeSet -> Bool
 isKeyCodeJustInSet keyCode set previousSet =
   (Set.member keyCode set)
     && (not (Set.member keyCode previousSet))
+
+
+type alias ButtonCodeSet = Set ButtonCode
+
+
+isButtonCodeInSet : ButtonCode -> ButtonCodeSet -> Bool
+isButtonCodeInSet buttonCode set =
+  Set.member buttonCode set
+
+
+isButtonCodeJustInSet : ButtonCode -> ButtonCodeSet -> ButtonCodeSet -> Bool
+isButtonCodeJustInSet buttonCode set previousSet =
+  (Set.member buttonCode set)
+    && (not (Set.member buttonCode previousSet))
 
 
 actionQuery : Mailbox TrixelAction
@@ -93,8 +108,8 @@ type WorkspaceCondition
 
 
 type alias WorkSpaceActions =
-  { isBrushActive : Bool
-  , keysDown: KeyCodeSet
+  { keysDown: KeyCodeSet
+  , buttonsDown: ButtonCodeSet
   }
 
 
@@ -174,7 +189,7 @@ type TrixelAction
   | MoveOffset Vector -- Moving the offset of the workspace (only possible when zoomed-in)
   | SwitchAction PostOfficeState -- used for a filtered post-office action
   | UpdateTimeState
-  | BrushSwitch Bool
+  | SetMouseButtonsDown ButtonCodeSet
   | SetKeyboardKeysDown KeyCodeSet
   | ToggleGridVisibility
   | UndoAction
