@@ -79,7 +79,7 @@ constructNewState countX countY =
   }
   |> update
       ( ResizeWindow
-         { x = 42000, y = 42000 }
+         { x = 4200, y = 4200 }
       )
 
 
