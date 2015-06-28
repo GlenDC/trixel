@@ -106,6 +106,7 @@ workspaceSignals =
     [ postOfficeQuery.signal
     , moveOffsetSignal
     , moveMouseSignal
+    , keyboardSignal
     , mouseButtonSignal
     ]
   |> Signal.foldp workspacePostOffice

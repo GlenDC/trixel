@@ -48,10 +48,8 @@ constructMainStyle state =
       cursor =
         if | state.mouseState == MouseNone ->
                 "default"
-           | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
-                "copy"
            | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
-                "crosshair"
+                "copy"
            | otherwise ->
                 "pointer"
 
