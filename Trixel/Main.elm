@@ -75,6 +75,10 @@ constructNewState countX countY =
   , timeState = constructFreshTimeState countX countY
   , userSettings = defaultUserSettings
   }
+  |> update
+      ( ResizeWindow
+         { x = 42000, y = 42000 }
+      )
 
 
 view : State -> Html
