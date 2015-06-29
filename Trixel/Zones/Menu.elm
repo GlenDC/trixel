@@ -27,7 +27,7 @@ view  state =
       [ constructMainStyle boxModel state
       , class "noselect"
       ]
-      [ (constructButton "New" NewDocument boxModel state)
+      [ (constructButton "Clear All" ClearState boxModel state)
 
       , (constructButton "Reset View" ResetOffset boxModel state)
 

@@ -46,8 +46,12 @@ update action state =
       updateMousePosition point state
       |> applyBrushAction
 
+    ClearState ->
+      clearState state
+      |> updateGrid
+
     NewDocument ->
-      resetState state
+      (Debug.log "todo, NewDoc..." state)
       |> updateGrid
 
     OpenDocument ->
@@ -92,21 +96,11 @@ update action state =
       state
 
 
-resetState : State -> State
-resetState state =
-  let trixelInfo =
-        state.trixelInfo
-  in
-    { state
-        | trixelInfo <-
-            { trixelInfo
-                | scale <-
-                    1
-                , offset <-
-                    zeroVector
-            }
-    }
-    |> resetTimeState
+clearState : State -> State
+clearState state =
+  update (SetScale 1) state
+  |> update ResetOffset
+  |> resetTimeState
 
 
 updateOffset : Vector -> Float -> State -> State

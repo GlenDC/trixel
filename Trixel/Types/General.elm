@@ -222,6 +222,7 @@ type TrixelAction
   | UndoAction
   | RedoAction
   | ResetOffset
+  | ClearState
 
 
 -- Used to create the correct gui-input for a specific TrixelAction
