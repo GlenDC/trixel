@@ -107,31 +107,28 @@ resetState state =
 
 updateOffset : Vector -> Float -> State -> State
 updateOffset offset speed state =
-  if state.trixelInfo.scale <= 1
-    then state
-    else
-      let trixelInfo =
-            state.trixelInfo
-          {x, y} =
-            trixelInfo.offset
-          relativeSpeed =
-            speed * trixelInfo.scale
-          newOffsetX =
-            x + (offset.x * relativeSpeed)
-          newOffsetY =
-            y + (offset.y * relativeSpeed)
-      in
-        { state
-            | trixelInfo <-
-                { trixelInfo |
-                    offset <-
-                      { x =
-                          newOffsetX
-                      , y =
-                          newOffsetY
-                      }
-                }
-        }
+  let trixelInfo =
+        state.trixelInfo
+      {x, y} =
+        trixelInfo.offset
+      relativeSpeed =
+        speed * trixelInfo.scale
+      newOffsetX =
+        x + (offset.x * relativeSpeed)
+      newOffsetY =
+        y + (offset.y * relativeSpeed)
+  in
+    { state
+        | trixelInfo <-
+            { trixelInfo |
+                offset <-
+                  { x =
+                      newOffsetX
+                  , y =
+                      newOffsetY
+                  }
+            }
+    }
 
 
 comparePositions : Vector -> Vector -> Bool
@@ -503,10 +500,7 @@ updateScale scale state =
             { trixelInfo
                 | scale <-
                     max 0.05 scale
-                , offset <-
-                    if scale <= 1
-                      then zeroVector
-                      else trixelInfo.offset
+                    |> min 2
             }
     }
 
