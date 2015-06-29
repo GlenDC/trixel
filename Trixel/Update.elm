@@ -164,7 +164,7 @@ applyLeftButtonDownAction position state =
                         trixel.color
 
                       _ ->
-                        state.trixelColor
+                        state.colorScheme.workbg.elm
             }
 
       | otherwise ->

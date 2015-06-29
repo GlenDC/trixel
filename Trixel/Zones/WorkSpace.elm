@@ -44,7 +44,9 @@ constructMainStyle state =
             "default"
 
   in
-    ("cursor", cursor) :: (computeBoxModelCSS workspace)
+    ("cursor", cursor) ::
+      ("background", state.colorScheme.workbg.html) ::
+      (computeBoxModelCSS workspace)
     |> style
 
 

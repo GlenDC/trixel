@@ -264,6 +264,7 @@ constructColorList menuBoxModel state =
             7 -> white
             8 -> grey
             9 -> black
+            10 -> state.colorScheme.workbg.elm
             _ -> red)
   in
     div []
@@ -292,6 +293,7 @@ constructColorList menuBoxModel state =
           , constructColorOption state white 7 "white"
           , constructColorOption state grey 8 "grey"
           , constructColorOption state black 9 "black"
+          , constructColorOption state state.colorScheme.workbg.elm 10 "background"
           ]
       ]
 

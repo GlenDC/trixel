@@ -18,6 +18,7 @@ type alias ColorScheme =
   , selfg : ColorInfo
   , text : ColorInfo
   , subText : ColorInfo
+  , workbg : ColorInfo
   }
 
 
@@ -46,4 +47,5 @@ zenburnScheme =
   , selfg = constructColorInfo 0 0 0 1
   , text = constructColorInfo 204 147 147 1
   , subText = constructColorInfo 172 193 172 1
+  , workbg = constructColorInfo 40 40 40 1
   }
