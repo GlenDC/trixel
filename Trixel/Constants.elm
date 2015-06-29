@@ -71,6 +71,16 @@ shortcutZ =
   Char.toCode 'Z'
 
 
+shortcutEqual : KeyCode
+shortcutEqual =
+  187
+
+
+shortcutMinus : KeyCode
+shortcutMinus =
+  189
+
+
 keyCodeShift : KeyCode
 keyCodeShift =
   16

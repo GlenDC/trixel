@@ -357,6 +357,23 @@ checkForCtrlShiftShortcutCombinations previousKeyCodeSet state =
           state
 
 
+checkForCtrlAltShortcutCombinations : KeyCodeSet -> State -> State
+checkForCtrlAltShortcutCombinations previousKeyCodeSet state =
+   if | isKeyCodeJustInSet shortcutMinus state.actions.keysDown previousKeyCodeSet ->
+          update
+            (SetScale (max 0.05 (state.trixelInfo.scale - 0.1)))
+            state
+
+      | isKeyCodeJustInSet shortcutEqual state.actions.keysDown previousKeyCodeSet ->
+          update
+            (SetScale (state.trixelInfo.scale + 0.1))
+            state
+
+
+      | otherwise ->
+          state
+
+
 updateMouseButtonsDown : ButtonCodeSet -> State -> State
 updateMouseButtonsDown buttonCodeSet state =
   let actions =
@@ -406,7 +423,11 @@ updateKeyboardKeysDown keyCodeSet state =
             then
               checkForCtrlShiftShortcutCombinations state.actions.keysDown newState
             else
-              checkForCtrlShortcutCombinations state.actions.keysDown newState
+              if isKeyCodeInSet keyCodeAlt keyCodeSet
+                then
+                  checkForCtrlAltShortcutCombinations state.actions.keysDown newState
+                else
+                  checkForCtrlShortcutCombinations state.actions.keysDown newState
 
        | otherwise ->
           checkForSoloShortcuts state.actions.keysDown newState
