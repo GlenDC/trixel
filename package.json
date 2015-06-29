@@ -1,0 +1,24 @@
+{
+  "name": "trixel",
+  "version": "0.1.9",
+  "description": "A free trixel art web-editor.",
+  "main": "elm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GlenDC/trixel.git"
+  },
+  "author": "Glen De Cauwsemaecker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GlenDC/trixel/issues"
+  },
+  "homepage": "http://trixel.it",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-shell": "^1.1.2"
+  }
+}
