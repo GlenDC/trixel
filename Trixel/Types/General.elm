@@ -221,6 +221,7 @@ type TrixelAction
   | ToggleGridVisibility
   | UndoAction
   | RedoAction
+  | ResetOffset
 
 
 -- Used to create the correct gui-input for a specific TrixelAction

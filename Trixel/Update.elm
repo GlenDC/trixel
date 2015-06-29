@@ -84,6 +84,10 @@ update action state =
       redoTimeState state
       |> updateGrid
 
+    ResetOffset ->
+      resetOffset state
+      |> updateGrid
+
     None ->
       state
 
@@ -307,6 +311,19 @@ applyBrushAction state =
   ) |> updateLayers
 
 
+resetOffset : State -> State
+resetOffset state =
+  let trixelInfo =
+        state.trixelInfo
+  in
+    { state
+        | trixelInfo <-
+            { trixelInfo
+                | offset <- zeroVector
+            }
+    }
+
+
 checkForSoloShortcuts : KeyCodeSet -> State -> State
 checkForSoloShortcuts previousKeyCodeSet state =
   if | isKeyCodeJustInSet shortcutG state.actions.keysDown previousKeyCodeSet ->
@@ -320,6 +337,9 @@ checkForSoloShortcuts previousKeyCodeSet state =
                             not userSettings.showGrid
                     }
             }
+
+      | isKeyCodeJustInSet shortcutR state.actions.keysDown previousKeyCodeSet ->
+          update ResetOffset state
 
       | otherwise ->
           state

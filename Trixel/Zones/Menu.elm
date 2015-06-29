@@ -29,6 +29,8 @@ view  state =
       ]
       [ (constructButton "New" NewDocument boxModel state)
 
+      , (constructButton "Reset View" ResetOffset boxModel state)
+
       , constructSimpleText "GridX:" "right" boxModel state
       , constructSimpleText (toString trixelCount.x) "center" boxModel state
       , constructArithmeticButton "-"
@@ -63,13 +65,11 @@ constructMainStyle boxModel state  =
 
 constructButton : String -> TrixelAction -> BoxModel -> State -> Html
 constructButton string action menuBoxModel state =
-  let width =
-        clamp 50 80 (menuBoxModel.width * 0.075)
-      height =
+  let height =
         menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
       boxModel =
-        constructBoxModel width height 5 5 2 2 BorderBox
+        constructBoxModel 0 height 5 5 2 2 BorderBox
 
       buttonStyle =
         style ((computeBoxModelCSS boxModel) ++
@@ -77,6 +77,7 @@ constructButton string action menuBoxModel state =
           , ("color", state.colorScheme.selfg.html)
           , ("font-size", (toPixels (boxModel.height / 1.75)))
           , ("float", "left")
+          , ("cursor", "pointer")
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
   in
