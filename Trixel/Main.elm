@@ -29,6 +29,14 @@ windowDimemensionsSignal =
       ResizeWindow { x = toFloat x, y = toFloat y })
     Window.dimensions
 
+port startEditor : Signal Vector
+
+startEditorSignal: ActionSignal
+startEditorSignal = 
+  Signal.map
+    (\dimensions ->
+      ResizeWindow dimensions)
+    startEditor
 
 main : Signal Html
 main =
@@ -36,6 +44,7 @@ main =
     [ actionQuery.signal
     , postOfficeSignal
     , windowDimemensionsSignal
+    , startEditorSignal
     ]
   |> Signal.foldp update (constructNewState 10 10)
   |> Signal.map view
@@ -83,10 +92,6 @@ constructNewState countX countY =
     , cachedTimeState = freshTimeState.present
     , userSettings = defaultUserSettings
     }
-    |> update
-        ( ResizeWindow
-           { x = 4200, y = 4200 }
-        )
 
 
 view : State -> Html
@@ -94,10 +99,15 @@ view state =
   div
     [ constructMainStyle state
     ]
-    [ (Trixel.Zones.Menu.view state)
-    , (Trixel.Zones.Footer.view state)
-    , (Trixel.Zones.WorkSpace.view state)
-    ]
+    (if state.windowDimensions.x == 0
+      then
+        [div [] []]
+      else
+        [ (Trixel.Zones.Menu.view state)
+        , (Trixel.Zones.Footer.view state)
+        , (Trixel.Zones.WorkSpace.view state)
+        ]
+    )
 
 
 constructMainStyle: State -> Attribute
