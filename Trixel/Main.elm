@@ -43,44 +43,50 @@ main =
 
 constructNewState : Float -> Float -> State
 constructNewState countX countY =
-  { trixelInfo =
-      { bounds = zeroBounds
-      , height = 0
-      , width = 0
-      , mode = ClassicMode
-      , scale = 1
-      , offset = zeroVector
-      , extraOffset = zeroVector
-      , dimensions = zeroVector
-      }
-  , trixelColor = red
-  , colorScheme = zenburnScheme
-  , boxModels =
-      { menu = zeroBoxModel
-      , footer = zeroBoxModel
-      , workspace = zeroBoxModel
-      }
-  , windowDimensions = zeroVector
-  , mouseState = MouseNone
-  , renderCache =
-      { grid = []
-      , layers = []
-      }
-  , condition = NormalCondition
-  , actions =
-      { buttonsDown =
-          Set.empty
-      , keysDown =
-          Set.empty
-      }
-  , workState = cleanWorkState
-  , timeState = constructFreshTimeState countX countY
-  , userSettings = defaultUserSettings
-  }
-  |> update
-      ( ResizeWindow
-         { x = 4200, y = 4200 }
-      )
+  let freshTimeState =
+        constructFreshTimeState countX countY
+  in
+    { trixelInfo =
+        { bounds = zeroBounds
+        , height = 0
+        , width = 0
+        , mode = ClassicMode
+        , scale = 1
+        , offset = zeroVector
+        , extraOffset = zeroVector
+        , dimensions = zeroVector
+        }
+    , trixelColor = red
+    , colorScheme = zenburnScheme
+    , boxModels =
+        { menu = zeroBoxModel
+        , footer = zeroBoxModel
+        , workspace = zeroBoxModel
+        }
+    , windowDimensions = zeroVector
+    , mouseState = MouseNone
+    , renderCache =
+        { grid = []
+        , layers = []
+        }
+    , condition = NormalCondition
+    , actions =
+        { buttonsDown =
+            Set.empty
+        , keysDown =
+            Set.empty
+        , previousButtonsDown =
+            Set.empty
+        }
+    , workState = cleanWorkState
+    , timeState = freshTimeState
+    , cachedTimeState = freshTimeState.present
+    , userSettings = defaultUserSettings
+    }
+    |> update
+        ( ResizeWindow
+           { x = 4200, y = 4200 }
+        )
 
 
 view : State -> Html

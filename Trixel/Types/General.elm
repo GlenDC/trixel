@@ -24,6 +24,12 @@ import UndoList exposing (UndoList)
 import Debug
 
 
+type ButtonState
+  = ButtonIdle
+  | ButtonDown
+  | ButtonPressed
+
+
 type alias KeyCodeSet = Set KeyCode
 
 
@@ -34,8 +40,8 @@ isKeyCodeInSet keyCode set =
 
 isKeyCodeJustInSet : KeyCode -> KeyCodeSet -> KeyCodeSet -> Bool
 isKeyCodeJustInSet keyCode set previousSet =
-  (Set.member keyCode set)
-    && (not (Set.member keyCode previousSet))
+  (isKeyCodeInSet keyCode set)
+    && (not (isKeyCodeInSet keyCode previousSet))
 
 
 type alias ButtonCodeSet = Set ButtonCode
@@ -48,8 +54,20 @@ isButtonCodeInSet buttonCode set =
 
 isButtonCodeJustInSet : ButtonCode -> ButtonCodeSet -> ButtonCodeSet -> Bool
 isButtonCodeJustInSet buttonCode set previousSet =
-  (Set.member buttonCode set)
-    && (not (Set.member buttonCode previousSet))
+  (isButtonCodeInSet buttonCode set)
+    && (not (isButtonCodeInSet buttonCode previousSet))
+
+
+computeButtonState : ButtonCode -> ButtonCodeSet -> ButtonCodeSet -> ButtonState
+computeButtonState buttonCode set previousSet =
+  if | isButtonCodeInSet buttonCode set ->
+          ButtonDown
+
+     | isButtonCodeInSet buttonCode previousSet ->
+          ButtonPressed
+
+     | otherwise ->
+          ButtonIdle
 
 
 actionQuery : Mailbox TrixelAction
@@ -116,6 +134,7 @@ type WorkspaceCondition
 type alias WorkSpaceActions =
   { keysDown: KeyCodeSet
   , buttonsDown: ButtonCodeSet
+  , previousButtonsDown: ButtonCodeSet
   }
 
 
@@ -166,6 +185,7 @@ type alias State =
   , actions : WorkSpaceActions
   , workState : WorkState
   , timeState : TimeState
+  , cachedTimeState : TimeInsentiveState
   , userSettings : UserSettings
   }
 
@@ -238,62 +258,83 @@ constructFreshTimeState countX countY =
 
 undoTimeState : State -> State
 undoTimeState state =
-  { state
-      | timeState <-
-          UndoList.undo state.timeState
-  }
+  updateUndoState
+    (UndoList.undo state.timeState)
+    state
 
 
 redoTimeState : State -> State
 redoTimeState state =
-  { state
-      | timeState <-
-          UndoList.redo state.timeState
-  }
+  updateUndoState
+    (UndoList.redo state.timeState)
+    state
 
 
 resetTimeState : State -> State
 resetTimeState state =
-  { state
-      | timeState <-
-          UndoList.reset state.timeState
-  }
+  updateUndoState
+    (UndoList.reset state.timeState)
+    state
 
 
 forgetTimeState : State -> State
 forgetTimeState state =
-  { state
-      | timeState <-
-          UndoList.forget state.timeState
-  }
+  updateUndoState
+    (UndoList.forget state.timeState)
+    state
 
 
 getLayers : State -> TrixelLayers
 getLayers state =
-  state.timeState.present.layers
+  state.cachedTimeState.layers
 
 
 getCurrentLayer : State -> LayerPosition
 getCurrentLayer state =
-  state.timeState.present.currentLayer
+  state.cachedTimeState.currentLayer
 
 
 getTrixelCount : State -> Vector
 getTrixelCount state =
-  state.timeState.present.trixelCount
+  state.cachedTimeState.trixelCount
 
 
 getTimeState : State -> TimeInsentiveState
 getTimeState state =
-  state.timeState.present
+  state.cachedTimeState
 
 
 updateTimeState : TimeInsentiveState -> State -> State
 updateTimeState newTimeState state =
+  updateUndoState
+    (UndoList.new newTimeState state.timeState)
+    state
+
+
+applyCachedTimeState : State -> State
+applyCachedTimeState state =
+  updateTimeState
+    state.cachedTimeState
+    state
+
+
+updateUndoState : TimeState -> State -> State
+updateUndoState timeState state =
   { state
       | timeState <-
-          UndoList.new newTimeState state.timeState
+          timeState
+      , cachedTimeState <-
+          timeState.present
   }
+
+
+updateCachedTimeState : TimeInsentiveState -> State -> State
+updateCachedTimeState newTimeState state =
+  { state
+      | cachedTimeState <-
+          newTimeState
+  }
+
 
 type alias TimeInsentiveState =
   { layers : TrixelLayers

@@ -146,8 +146,8 @@ compareTrixels trixelA trixelB =
   && (trixelA.color == trixelB.color)
 
 
-applyLeftButtonAction : Vector -> State -> State
-applyLeftButtonAction position state =
+applyLeftButtonDownAction : Vector -> State -> State
+applyLeftButtonDownAction position state =
   let timeState =
         getTimeState state
 
@@ -190,7 +190,7 @@ applyLeftButtonAction position state =
                             newTrixel
                     }
             }
-            |> updateTimeState
+            |> updateCachedTimeState
                  { timeState
                     | layers <-
                         insertTrixel
@@ -200,8 +200,15 @@ applyLeftButtonAction position state =
                  }
 
 
-applyRightButtonAction : Vector -> State -> State
-applyRightButtonAction position state =
+applyLeftButtonPressedAction : Vector -> State -> State
+applyLeftButtonPressedAction position state =
+  applyCachedTimeState
+    state
+  |> updatePreviousButtonsDown
+
+
+applyRightButtonDownAction : Vector -> State -> State
+applyRightButtonDownAction position state =
   let timeState =
         getTimeState state
 
@@ -222,7 +229,7 @@ applyRightButtonAction position state =
                       position
               }
       }
-      |> updateTimeState
+      |> updateCachedTimeState
            { timeState
               | layers <-
                   eraseTrixel
@@ -232,6 +239,54 @@ applyRightButtonAction position state =
            }
 
 
+applyRightButtonPressedAction : Vector -> State -> State
+applyRightButtonPressedAction position state =
+  applyCachedTimeState
+    state
+  |> updatePreviousButtonsDown
+
+
+updatePreviousButtonsDown : State -> State
+updatePreviousButtonsDown state =
+  let actions =
+        state.actions
+  in
+    { state
+        | actions <-
+            { actions
+                | previousButtonsDown <- actions.buttonsDown
+            }
+    }
+
+applyButtonsAction : Vector -> State -> State
+applyButtonsAction position state =
+  let count =
+        getTrixelCount state
+  in
+    if position.x >= 0 && position.x < count.x
+         && position.y >= 0 && position.y < count.y
+      then
+        case computeButtonState buttonCodeLeft state.actions.buttonsDown state.actions.previousButtonsDown of
+          ButtonDown ->
+            applyLeftButtonDownAction position state
+
+          ButtonPressed ->
+            applyLeftButtonPressedAction position state
+
+          _ ->
+            case computeButtonState buttonCodeRight state.actions.buttonsDown state.actions.previousButtonsDown of
+              ButtonDown ->
+                applyRightButtonDownAction position state
+
+              ButtonPressed ->
+                applyRightButtonPressedAction position state
+
+              _ ->
+                state  -- nothng to do...
+        else
+          state
+
+
 applyBrushAction : State -> State
 applyBrushAction state =
   (case state.mouseState of
@@ -239,24 +294,7 @@ applyBrushAction state =
       state
 
     MouseHover position ->
-      let count =
-            getTrixelCount state
-      in
-        if ( position.x >= 0 && position.x < count.x
-              && position.y >= 0 && position.y < count.y
-            )
-          then
-            (if | isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown ->
-                  applyLeftButtonAction position state
-
-               | isButtonCodeInSet buttonCodeRight state.actions.buttonsDown ->
-                  applyRightButtonAction position state
-
-               | otherwise ->
-                  state -- nothng to do...
-            )
-          else
-            state -- nothng to do...
+      applyButtonsAction position state
 
     MouseDrag mouseDragState ->
        (if isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown
@@ -317,6 +355,7 @@ updateMouseButtonsDown buttonCodeSet state =
         | actions <-
             { actions
                 | buttonsDown <- buttonCodeSet
+                , previousButtonsDown <- actions.buttonsDown
             }
     }
 
