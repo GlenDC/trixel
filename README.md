@@ -17,5 +17,9 @@ As the GUI is still crappy at this point, here are the controls currently functi
 + **Ctrl + Mouse Wheel**: Zoom In/Out
 + **Ctrl + Z**: Undo
 + **Ctrl + Shift + R**: Redo
++ **Ctrl + Alt + =**: Zoom In
++ **Ctrl + Alt + -**: Zoom Out
++ **Ctrl + Space + Left Mouse Drag**: Zoom In/Out
 + **G**: Toggle Grid
++ **R**: Reset View
 + **Keyboard Arrows**: Move workspace (only works when zoomed in)
