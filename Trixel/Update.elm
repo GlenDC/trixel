@@ -281,6 +281,19 @@ applyButtonsAction position state =
         else
           state
 
+applyMouseDragAction : MouseDragState -> State -> State
+applyMouseDragAction mouseDragState state =
+  if | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+         updateScale
+           (state.trixelInfo.scale + (0.0025 * mouseDragState.difference.y))
+           state
+
+     | otherwise ->
+         updateOffset
+           mouseDragState.difference
+           workspaceOffsetMouseMoveSpeed
+           state
+
 
 applyBrushAction : State -> State
 applyBrushAction state =
@@ -294,11 +307,8 @@ applyBrushAction state =
     MouseDrag mouseDragState ->
        (if isButtonCodeInSet buttonCodeLeft state.actions.buttonsDown
           then
-             (updateOffset
-                mouseDragState.difference
-                workspaceOffsetMouseMoveSpeed
-                state
-             |> updateGrid)
+             applyMouseDragAction mouseDragState state
+             |> updateGrid
           else
              state -- nothng to do...
         )
@@ -361,7 +371,7 @@ checkForCtrlAltShortcutCombinations : KeyCodeSet -> State -> State
 checkForCtrlAltShortcutCombinations previousKeyCodeSet state =
    if | isKeyCodeJustInSet shortcutMinus state.actions.keysDown previousKeyCodeSet ->
           update
-            (SetScale (max 0.05 (state.trixelInfo.scale - 0.1)))
+            (SetScale (state.trixelInfo.scale - 0.1))
             state
 
       | isKeyCodeJustInSet shortcutEqual state.actions.keysDown previousKeyCodeSet ->
