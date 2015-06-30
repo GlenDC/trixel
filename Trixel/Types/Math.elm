@@ -109,7 +109,7 @@ computeAlphaBlend a b =
         let valueA = toFloat valueA'
             valueB = toFloat valueB'
         in
-          ((resultAlpha * valueB) + ((1 - resultAlpha) * valueA))
+          ((colorB.alpha * valueB) + ((1 - colorB.alpha) * valueA))
           |> round
   in
     rgba
