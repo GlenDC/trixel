@@ -9,7 +9,7 @@ import Trixel.Types.Html exposing (..)
 import Trixel.Zones.WorkSpace.Grid exposing (updateGrid, updateLayers)
 import Trixel.Constants exposing (..)
 
-import Color exposing (Color)
+import Color exposing (Color, rgba)
 
 import Debug
 
@@ -139,7 +139,7 @@ comparePositions a b =
 compareTrixels : Trixel -> Trixel -> Bool
 compareTrixels trixelA trixelB =
   (comparePositions trixelA.position trixelB.position)
-  && (trixelA.color == trixelB.color)
+    && compareColors trixelA.color trixelB.color
 
 
 applyLeftButtonDownAction : Vector -> State -> State
@@ -170,30 +170,47 @@ applyLeftButtonDownAction position state =
 
       | otherwise ->
         -- Paint Brush
-        let newTrixel =
-              constructNewTrixel position state.trixelColor
+        let maybeTrixel =
+              findTrixel
+                position
+                timeState.currentLayer
+                timeState.layers
+
+            currentTrixel =
+              case maybeTrixel of
+                Just trixel ->
+                  trixel
+
+                _ ->
+                  constructNewTrixel
+                    { x = 2 + position.x
+                    , y = 0
+                    }
+                    (rgba 0 0 0 0)
+
+            blendedColor =
+              computeAlphaBlend currentTrixel.color state.trixelColor
+
+            newTrixel =
+              constructNewTrixel
+                position
+                blendedColor
         in
           if compareTrixels
-                workState.lastPaintedTrixel
+                currentTrixel
                 newTrixel
           then
             state -- same position as last time
           else
-            { state
-                | workState <-
-                    { workState
-                        | lastPaintedTrixel <-
-                            newTrixel
-                    }
-            }
-            |> updateCachedTimeState
-                 { timeState
-                    | layers <-
-                        insertTrixel
-                          (constructNewTrixel position state.trixelColor)
-                          timeState.currentLayer
-                          timeState.layers
-                 }
+            updateCachedTimeState
+               { timeState
+                  | layers <-
+                      insertTrixel
+                        newTrixel
+                        timeState.currentLayer
+                        timeState.layers
+               }
+               state
 
 
 applyLeftButtonPressedAction : Vector -> State -> State

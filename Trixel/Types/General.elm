@@ -148,7 +148,6 @@ type alias RenderCache =
 type alias WorkState =
   { lastMousePosition : Vector
   , lastErasePosition : Vector
-  , lastPaintedTrixel : Trixel
   }
 
 
@@ -156,7 +155,6 @@ cleanWorkState : WorkState
 cleanWorkState =
   { lastMousePosition = negativeUnitVector
   , lastErasePosition = negativeUnitVector
-  , lastPaintedTrixel = defaultTrixel
   }
 
 

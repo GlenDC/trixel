@@ -2,6 +2,8 @@ module Trixel.Types.Math where
 
 import String
 
+import Color exposing (Color, toRgb, rgba)
+
 
 zeroVector : Vector
 zeroVector =
@@ -91,3 +93,52 @@ stringToFloat string =
   case (String.toFloat string) of
     Ok value -> value
     Err error -> 0
+
+
+computeAlphaBlend : Color -> Color -> Color
+computeAlphaBlend a b =
+  let colorA =
+        toRgb a
+      colorB =
+        toRgb b
+
+      resultAlpha =
+        colorA.alpha + (1 - colorA.alpha) * colorB.alpha
+
+      alphaBlendValue valueA' valueB' =
+        let valueA = toFloat valueA'
+            valueB = toFloat valueB'
+        in
+          ((resultAlpha * valueB) + ((1 - resultAlpha) * valueA))
+          |> round
+  in
+    rgba
+      (alphaBlendValue colorA.red colorB.red)
+      (alphaBlendValue colorA.green colorB.green)
+      (alphaBlendValue colorA.blue colorB.blue)
+      (resultAlpha)
+
+
+compareColors: Color -> Color -> Bool
+compareColors a b =
+  let colorA =
+        toRgb a
+      colorB =
+        toRgb b
+  in
+    colorA.red == colorB.red
+      && colorA.green == colorB.green
+      && colorA.blue == colorB.blue
+      && abs colorA.alpha - colorB.alpha < 0.01
+
+
+computeOffsetColor: Int -> Int -> Int -> Float -> Color -> Color
+computeOffsetColor red green blue alpha color =
+  let rgbaColor =
+        toRgb color
+  in
+    rgba
+      (rgbaColor.red + red)
+      (rgbaColor.green + green)
+      (rgbaColor.blue + blue)
+      (rgbaColor.alpha + alpha)
