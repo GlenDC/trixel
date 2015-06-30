@@ -108,25 +108,6 @@ workspacePostOffice action cachedAction =
       cachedAction
 
 
-workspaceSignals : Signal TrixelAction
-workspaceSignals =
-  mergeMany
-    [ postOfficeQuery.signal
-    , moveOffsetSignal
-    , moveMouseSignal
-    , keyboardSignal
-    , mouseWheelSignal
-    , mouseButtonSignal
-    ]
-  |> Signal.foldp workspacePostOffice
-      (SwitchAction
-        { action = None
-        , condition = NormalCondition
-        , inputsActive = 0
-        }
-      )
-
-
 filterPostOfficeSignal : TrixelAction -> Bool
 filterPostOfficeSignal trixelAction =
   case trixelAction of
@@ -135,13 +116,6 @@ filterPostOfficeSignal trixelAction =
 
     _ ->
       True
-
-postOfficeSignal : Signal TrixelAction
-postOfficeSignal =
-  filter
-    filterPostOfficeSignal
-    None
-    workspaceSignals
 
 
 -- Different actions for the workspace 'post-office'

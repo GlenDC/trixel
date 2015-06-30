@@ -1,6 +1,7 @@
 module Trixel.Update (update) where
 
 import Trixel.Types.General exposing (..)
+import Trixel.Types.JSGlue exposing (..)
 import Trixel.Types.Layer exposing (..)
 import Trixel.Types.Grid exposing (..)
 import Trixel.Types.Math exposing (..)
@@ -635,9 +636,17 @@ updateGridY y state =
 
 updateTrixelColor : Color -> State -> State
 updateTrixelColor color state =
-   { state
+  let glueState =
+        state.glueState
+  in
+    { state
       | trixelColor <-
           color
+      , glueState <-
+          { glueState
+              | trixelColor <-
+                  elmToHtmlColor color
+          }
     }
 
 

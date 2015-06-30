@@ -19,6 +19,8 @@
       var onLoad = function() {
         var trixelEditor = Elm.fullscreen(Elm.Trixel.Main, {
           startEditor: { x: 0, y: 0 },
+          triggerJSInput : false,
+          setTrixelColor : { red: 0, green: 0, blue: 0, alpha: 0 },
         });
 
         trixelEditor.ports.startEditor.send({x: window.innerWidth, y: window.innerHeight});
@@ -28,7 +30,25 @@
           // showing colorPicker
           var colorPickerClass = "." + glueState.cssInfo.colorPicker;
           $(colorPickerClass).spectrum({
-              showAlpha: true
+              showAlpha: true,
+              showButtons: false,
+              preferredFormat: "rgb",
+              showInitial: true,
+              color: glueState.trixelColor,
+              show: function(tinycolor) {
+                trixelEditor.ports.triggerJSInput.send(true);
+              },
+              hide : function(tinycolor) {
+                trixelEditor.ports.triggerJSInput.send(false);
+              },
+              change: function(color) {
+                trixelEditor.ports.setTrixelColor.send(
+                  { red: color._r
+                  , green: color._g
+                  , blue: color._b
+                  , alpha: color._a
+                  });
+              }
           });
         });
       };

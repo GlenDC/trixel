@@ -16,7 +16,7 @@ import Trixel.Zones.Menu
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
 import Signal exposing (..)
-import Color exposing (red)
+import Color exposing (red, rgba)
 
 import Set
 
@@ -36,6 +36,33 @@ windowDimemensionsSignal =
 -- ingoing port that gets called with the initial window inner-dimensions
 port startEditor : Signal Vector
 
+
+-- ingoing port that gets called when color changes
+port setTrixelColor : Signal JSColor
+
+setTrixelcolorSignalJS : ActionSignal
+setTrixelcolorSignalJS =
+  Signal.map
+    (\color ->
+      SetColor
+        (computeColorFromJSColor color))
+    setTrixelColor
+
+
+-- ingoing ports for adding and removing active input
+-- adding input will block/freeze editor input
+port triggerJSInput : Signal Bool
+
+triggerJSInputSignal : Signal PostOfficeAction
+triggerJSInputSignal =
+  Signal.map
+    (\active ->
+      if active
+        then EnteringHTMLInput
+        else LeavingHTMLInput
+    )
+    triggerJSInput
+
 -- outgoing port that sends the newest glueState so that
 -- our javascript can react appropriate on it
 port updateStateSignalPort : Signal GlueState
@@ -53,6 +80,33 @@ startEditorSignal =
     startEditor
 
 
+workspaceSignals : Signal TrixelAction
+workspaceSignals =
+  mergeMany
+    [ postOfficeQuery.signal
+    , moveOffsetSignal
+    , moveMouseSignal
+    , keyboardSignal
+    , mouseWheelSignal
+    , mouseButtonSignal
+    , triggerJSInputSignal
+    ]
+  |> Signal.foldp workspacePostOffice
+      (SwitchAction
+        { action = None
+        , condition = NormalCondition
+        , inputsActive = 0
+        }
+      )
+
+postOfficeSignal : Signal TrixelAction
+postOfficeSignal =
+  filter
+    filterPostOfficeSignal
+    None
+    workspaceSignals
+
+
 updateStateSignal : Signal State
 updateStateSignal =
   mergeMany
@@ -60,6 +114,7 @@ updateStateSignal =
     , postOfficeSignal
     , windowDimemensionsSignal
     , startEditorSignal
+    , setTrixelcolorSignalJS
     ]
   |> Signal.foldp update (constructNewState 10 10)
 
