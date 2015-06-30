@@ -246,6 +246,7 @@ constructColorTool menuBoxModel state =
           style ((computeBoxModelCSS boxModel) ++
             [ ("float", "right")
             , ("background-color", elmToHtmlColor state.trixelColor)
+            , ("cursor", "pointer")
             ])
   in
     div
