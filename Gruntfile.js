@@ -30,4 +30,5 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['shell']);
 
+  grunt.task.run(['shell'])
 };
