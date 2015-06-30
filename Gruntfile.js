@@ -6,7 +6,11 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: ['Trixel/**/*.elm'],
+        files: [
+          'Trixel/**/*.elm',
+          'index.html',
+          'stylesheet.css'
+          ],
         tasks: ['shell'],
         options: {
           spawn: true,
