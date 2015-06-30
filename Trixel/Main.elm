@@ -3,6 +3,7 @@ module Trixel.Main where
 import Trixel.Types.ColorScheme exposing (ColorScheme, zenburnScheme)
 import Trixel.Update exposing (update)
 import Trixel.Types.General exposing (..)
+import Trixel.Types.JSGlue exposing (..)
 import Trixel.Types.Layer exposing (TrixelLayers, insertNewLayer)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
@@ -21,6 +22,8 @@ import Set
 
 import Window
 
+import Debug
+
 
 windowDimemensionsSignal : ActionSignal
 windowDimemensionsSignal =
@@ -29,7 +32,18 @@ windowDimemensionsSignal =
       ResizeWindow { x = toFloat x, y = toFloat y })
     Window.dimensions
 
+
+-- ingoing port that gets called with the initial window inner-dimensions
 port startEditor : Signal Vector
+
+-- outgoing port that sends the newest glueState so that
+-- our javascript can react appropriate on it
+port updateStateSignalPort : Signal GlueState
+port updateStateSignalPort =
+  Signal.map
+    (\state ->
+      state.glueState)
+    updateStateSignal
 
 startEditorSignal: ActionSignal
 startEditorSignal = 
@@ -38,8 +52,9 @@ startEditorSignal =
       ResizeWindow dimensions)
     startEditor
 
-main : Signal Html
-main =
+
+updateStateSignal : Signal State
+updateStateSignal =
   mergeMany
     [ actionQuery.signal
     , postOfficeSignal
@@ -47,7 +62,11 @@ main =
     , startEditorSignal
     ]
   |> Signal.foldp update (constructNewState 10 10)
-  |> Signal.map view
+
+
+main : Signal Html
+main =
+  Signal.map view updateStateSignal
 
 
 constructNewState : Float -> Float -> State
@@ -91,6 +110,7 @@ constructNewState countX countY =
     , timeState = freshTimeState
     , cachedTimeState = freshTimeState.present
     , userSettings = defaultUserSettings
+    , glueState = emptyGlueState
     }
 
 

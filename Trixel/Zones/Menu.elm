@@ -53,7 +53,7 @@ view  state =
           (SetScale (state.trixelInfo.scale + 0.05)) boxModel state
 
       , constructModeList boxModel state
-      , constructColorList boxModel state
+      , constructColorTool boxModel state
       ]
 
 
@@ -234,88 +234,21 @@ constructModeList menuBoxModel state =
           ]
       ]
 
-constructColorList : BoxModel -> State -> Html
-constructColorList menuBoxModel state =
-  let height =
-        menuBoxModel.height - (menuBoxModel.padding.y * 2)
+constructColorTool : BoxModel -> State -> Html
+constructColorTool menuBoxModel state =
+   let  height =
+          menuBoxModel.height - (menuBoxModel.padding.y * 2)
 
-      boxModel =
-        constructBoxModel 0 height 5 5 2 2 BorderBox
+        boxModel =
+          constructBoxModel (height * 1.5) height 5 5 2 4 BorderBox
 
-      selectStyle =
-        style ((computeBoxModelCSS boxModel) ++
-          [ ("background-color", elmToHtmlColor state.trixelColor)
-          , ("color", computeInverseColor state.trixelColor)
-          , ("font-size", boxModel.height / 2 |> toPixels)
-          , ("float", "left")
-          , ("cursor", "pointer")
-          , computeDefaultBorderCSS state.colorScheme.fg.html
-          ])
-
-      selectFunction value =
-        SetColor (
-          case (stringToInt value) of
-            1 -> orange
-            2 -> yellow
-            3 -> green
-            4 -> blue
-            5 -> purple
-            6 -> brown
-            7 -> white
-            8 -> grey
-            9 -> black
-            10 -> state.colorScheme.workbg.elm
-            _ -> red)
+        colorDivStyle =
+          style ((computeBoxModelCSS boxModel) ++
+            [ ("float", "right")
+            , ("background-color", elmToHtmlColor state.trixelColor)
+            ])
   in
-    div []
-      [ label
-          [ style
-            [ ("float", "left")
-            , ("padding", vectorToPixels { x = 10, y = 6 })
-            , ("font-size", boxModel.height / 2 |> toPixels)
-            , ("color", "lightGrey")
-            ]
-          ]
-          [ text "Color" ]
-      , select
-          [ selectStyle
-          , on "change" targetValue (Signal.message (forwardTo actionQuery.address selectFunction))
-          , onFocus postOfficeQuery.address EnteringHTMLInput
-          , onBlur postOfficeQuery.address LeavingHTMLInput
-          ]
-          [ constructColorOption state red 0 "red"
-          , constructColorOption state orange 1 "orange"
-          , constructColorOption state yellow 2 "yellow"
-          , constructColorOption state green 3 "green"
-          , constructColorOption state blue 4 "blue"
-          , constructColorOption state purple 5 "purple"
-          , constructColorOption state brown 6 "brown"
-          , constructColorOption state white 7 "white"
-          , constructColorOption state grey 8 "grey"
-          , constructColorOption state black 9 "black"
-          , constructColorOption state state.colorScheme.workbg.elm 10 "background"
-          ]
-      ]
-
-
-constructColorOption : State -> Color -> Int -> String -> Html
-constructColorOption state color val description =
-  option
-    [ selected (state.trixelColor == color)
-    , value (toString val)
-    ]
-    [ text description ]
-
-
-computeInverseColor : Color -> String
-computeInverseColor color =
-  let rgbaColor =
-        toRgb color
-  in
-    elmToHtmlColor
-      (rgba
-          (255 - rgbaColor.red)
-          (255 - rgbaColor.green)
-          (255 - rgbaColor.blue)
-          rgbaColor.alpha
-      )
+    div
+      [ colorDivStyle
+      , class state.glueState.cssInfo.colorPicker ]
+      []

@@ -11,13 +11,26 @@
       body { font-family: calibri, helvetica, arial, sans-serif; }
     </style>
     <script src="elm.js"></script>
+    <script src='thirdparty/jquery-1.11.3.min.js'></script>
+    <script src='thirdparty/spectrum.js'></script>
+    <link rel='stylesheet' href='thirdparty/spectrum.css' />
     <script>
+      // Called When Trixel Loads
       var onLoad = function() {
         var trixelEditor = Elm.fullscreen(Elm.Trixel.Main, {
           startEditor: { x: 0, y: 0 },
         });
 
         trixelEditor.ports.startEditor.send({x: window.innerWidth, y: window.innerHeight});
+
+        // Called when glueState is changed
+        trixelEditor.ports.updateStateSignalPort.subscribe(function(glueState) {
+          // showing colorPicker
+          var colorPickerClass = "." + glueState.cssInfo.colorPicker;
+          $(colorPickerClass).spectrum({
+              showAlpha: true
+          });
+        });
       };
     </script>
     <link rel="shortcut icon" href="trixel.ico" />

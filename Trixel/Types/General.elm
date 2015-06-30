@@ -9,6 +9,7 @@ import Trixel.Types.Layer exposing
 import Trixel.Types.Grid exposing (Trixel, defaultTrixel)
 import Trixel.Types.Math exposing (..)
 import Trixel.Types.Html exposing (..)
+import Trixel.Types.JSGlue exposing (..)
 
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
@@ -187,6 +188,7 @@ type alias State =
   , timeState : TimeState
   , cachedTimeState : TimeInsentiveState
   , userSettings : UserSettings
+  , glueState : GlueState
   }
 
 
