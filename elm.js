@@ -13798,7 +13798,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var email = "contact@glendc.com";
    var newsletterSubscribeURL = "http://eepurl.com/brwmSn";
    var githubRepositoryURL = "https://github.com/GlenDC/trixel";
-   var version = "0.1.10";
+   var version = "0.1.11";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubRepositoryURL: githubRepositoryURL
@@ -13847,6 +13847,7 @@ Elm.Trixel.Main.make = function (_elm) {
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$JSGlue = Elm.Trixel.Types.JSGlue.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
    $Trixel$Update = Elm.Trixel.Update.make(_elm),
    $Trixel$Zones$Footer = Elm.Trixel.Zones.Footer.make(_elm),
@@ -13914,6 +13915,8 @@ Elm.Trixel.Main.make = function (_elm) {
                 ,cachedTimeState: freshTimeState.present
                 ,colorScheme: $Trixel$Types$ColorScheme.zenburnScheme
                 ,condition: $Trixel$Types$General.NormalCondition
+                ,glueState: $Trixel$Types$JSGlue.emptyGlueState
+                ,hasUserUpdatedTimeState: false
                 ,mouseState: $Trixel$Types$General.MouseNone
                 ,renderCache: {_: {}
                               ,grid: _L.fromArray([])
@@ -13934,6 +13937,52 @@ Elm.Trixel.Main.make = function (_elm) {
                 ,workState: $Trixel$Types$General.cleanWorkState};
       }();
    });
+   var triggerJSInput = Elm.Native.Port.make(_elm).inboundSignal("triggerJSInput",
+   "Bool",
+   function (v) {
+      return typeof v === "boolean" ? v : _U.badPort("a boolean (true or false)",
+      v);
+   });
+   var triggerJSInputSignal = A2($Signal.map,
+   function (active) {
+      return active ? $Trixel$PostOffice.EnteringHTMLInput : $Trixel$PostOffice.LeavingHTMLInput;
+   },
+   triggerJSInput);
+   var workspaceSignals = A2($Signal.foldp,
+   $Trixel$PostOffice.workspacePostOffice,
+   $Trixel$Types$General.SwitchAction({_: {}
+                                      ,action: $Trixel$Types$General.None
+                                      ,condition: $Trixel$Types$General.NormalCondition
+                                      ,inputsActive: 0}))($Signal.mergeMany(_L.fromArray([$Trixel$PostOffice.postOfficeQuery.signal
+                                                                                         ,$Trixel$PostOffice.moveOffsetSignal
+                                                                                         ,$Trixel$PostOffice.moveMouseSignal
+                                                                                         ,$Trixel$PostOffice.keyboardSignal
+                                                                                         ,$Trixel$PostOffice.mouseWheelSignal
+                                                                                         ,$Trixel$PostOffice.mouseButtonSignal
+                                                                                         ,triggerJSInputSignal])));
+   var postOfficeSignal = A3($Signal.filter,
+   $Trixel$PostOffice.filterPostOfficeSignal,
+   $Trixel$Types$General.None,
+   workspaceSignals);
+   var setTrixelColor = Elm.Native.Port.make(_elm).inboundSignal("setTrixelColor",
+   "Trixel.Types.JSGlue.JSColor",
+   function (v) {
+      return typeof v === "object" && "red" in v && "green" in v && "blue" in v && "alpha" in v ? {_: {}
+                                                                                                  ,red: typeof v.red === "number" ? v.red : _U.badPort("a number",
+                                                                                                  v.red)
+                                                                                                  ,green: typeof v.green === "number" ? v.green : _U.badPort("a number",
+                                                                                                  v.green)
+                                                                                                  ,blue: typeof v.blue === "number" ? v.blue : _U.badPort("a number",
+                                                                                                  v.blue)
+                                                                                                  ,alpha: typeof v.alpha === "number" ? v.alpha : _U.badPort("a number",
+                                                                                                  v.alpha)} : _U.badPort("an object with fields \'red\', \'green\', \'blue\', \'alpha\'",
+      v);
+   });
+   var setTrixelcolorSignalJS = A2($Signal.map,
+   function (color) {
+      return $Trixel$Types$General.SetColor($Trixel$Types$JSGlue.computeColorFromJSColor(color));
+   },
+   setTrixelColor);
    var startEditor = Elm.Native.Port.make(_elm).inboundSignal("startEditor",
    "Trixel.Types.Math.Vector",
    function (v) {
@@ -13958,21 +14007,40 @@ Elm.Trixel.Main.make = function (_elm) {
                                                       ,x: $Basics.toFloat(_v2._0)
                                                       ,y: $Basics.toFloat(_v2._1)});}
          _U.badCase($moduleName,
-         "on line 29, column 7 to 50");
+         "on line 32, column 7 to 50");
       }();
    },
    $Window.dimensions);
-   var main = $Signal.map(view)(A2($Signal.foldp,
+   var updateStateSignal = A2($Signal.foldp,
    $Trixel$Update.update,
    A2(constructNewState,
    10,
    10))($Signal.mergeMany(_L.fromArray([$Trixel$Types$General.actionQuery.signal
-                                       ,$Trixel$PostOffice.postOfficeSignal
+                                       ,postOfficeSignal
                                        ,windowDimemensionsSignal
-                                       ,startEditorSignal]))));
+                                       ,startEditorSignal
+                                       ,setTrixelcolorSignalJS])));
+   var updateStateSignalPort = Elm.Native.Port.make(_elm).outboundSignal("updateStateSignalPort",
+   function (v) {
+      return {cssInfo: {colorPicker: v.cssInfo.colorPicker}
+             ,trixelColor: v.trixelColor};
+   },
+   A2($Signal.map,
+   function (state) {
+      return state.glueState;
+   },
+   updateStateSignal));
+   var main = A2($Signal.map,
+   view,
+   updateStateSignal);
    _elm.Trixel.Main.values = {_op: _op
                              ,windowDimemensionsSignal: windowDimemensionsSignal
+                             ,setTrixelcolorSignalJS: setTrixelcolorSignalJS
+                             ,triggerJSInputSignal: triggerJSInputSignal
                              ,startEditorSignal: startEditorSignal
+                             ,workspaceSignals: workspaceSignals
+                             ,postOfficeSignal: postOfficeSignal
+                             ,updateStateSignal: updateStateSignal
                              ,main: main
                              ,constructNewState: constructNewState
                              ,view: view
@@ -14108,21 +14176,6 @@ Elm.Trixel.PostOffice.make = function (_elm) {
       }();
    },
    $EditorKeyboard.arrows);
-   var workspaceSignals = A2($Signal.foldp,
-   workspacePostOffice,
-   $Trixel$Types$General.SwitchAction({_: {}
-                                      ,action: $Trixel$Types$General.None
-                                      ,condition: $Trixel$Types$General.NormalCondition
-                                      ,inputsActive: 0}))($Signal.mergeMany(_L.fromArray([postOfficeQuery.signal
-                                                                                         ,moveOffsetSignal
-                                                                                         ,moveMouseSignal
-                                                                                         ,keyboardSignal
-                                                                                         ,mouseWheelSignal
-                                                                                         ,mouseButtonSignal])));
-   var postOfficeSignal = A3($Signal.filter,
-   filterPostOfficeSignal,
-   $Trixel$Types$General.None,
-   workspaceSignals);
    _elm.Trixel.PostOffice.values = {_op: _op
                                    ,moveOffsetSignal: moveOffsetSignal
                                    ,moveMouseSignal: moveMouseSignal
@@ -14133,9 +14186,7 @@ Elm.Trixel.PostOffice.make = function (_elm) {
                                    ,postOfficeQuery: postOfficeQuery
                                    ,handlePostedAction: handlePostedAction
                                    ,workspacePostOffice: workspacePostOffice
-                                   ,workspaceSignals: workspaceSignals
                                    ,filterPostOfficeSignal: filterPostOfficeSignal
-                                   ,postOfficeSignal: postOfficeSignal
                                    ,PostNoAction: PostNoAction
                                    ,PostAction: PostAction
                                    ,EnteringHTMLInput: EnteringHTMLInput
@@ -14289,8 +14340,8 @@ Elm.Trixel.Types.General.make = function (_elm) {
    $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Trixel$Types$ColorScheme = Elm.Trixel.Types.ColorScheme.make(_elm),
-   $Trixel$Types$Grid = Elm.Trixel.Types.Grid.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
+   $Trixel$Types$JSGlue = Elm.Trixel.Types.JSGlue.make(_elm),
    $Trixel$Types$Layer = Elm.Trixel.Types.Layer.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm),
    $UndoList = Elm.UndoList.make(_elm);
@@ -14305,7 +14356,9 @@ Elm.Trixel.Types.General.make = function (_elm) {
    var updateCachedTimeState = F2(function (newTimeState,
    state) {
       return _U.replace([["cachedTimeState"
-                         ,newTimeState]],
+                         ,newTimeState]
+                        ,["hasUserUpdatedTimeState"
+                         ,true]],
       state);
    });
    var updateUndoState = F2(function (timeState,
@@ -14325,9 +14378,14 @@ Elm.Trixel.Types.General.make = function (_elm) {
       state);
    });
    var applyCachedTimeState = function (state) {
-      return A2(updateTimeState,
-      state.cachedTimeState,
-      state);
+      return state.hasUserUpdatedTimeState ? function () {
+         var newState = A2(updateTimeState,
+         state.cachedTimeState,
+         state);
+         return _U.replace([["hasUserUpdatedTimeState"
+                            ,false]],
+         newState);
+      }() : state;
    };
    var getTimeState = function (state) {
       return state.cachedTimeState;
@@ -14454,20 +14512,26 @@ Elm.Trixel.Types.General.make = function (_elm) {
                                  return function (k) {
                                     return function (l) {
                                        return function (m) {
-                                          return {_: {}
-                                                 ,actions: i
-                                                 ,boxModels: d
-                                                 ,cachedTimeState: l
-                                                 ,colorScheme: c
-                                                 ,condition: h
-                                                 ,mouseState: f
-                                                 ,renderCache: g
-                                                 ,timeState: k
-                                                 ,trixelColor: b
-                                                 ,trixelInfo: a
-                                                 ,userSettings: m
-                                                 ,windowDimensions: e
-                                                 ,workState: j};
+                                          return function (n) {
+                                             return function (o) {
+                                                return {_: {}
+                                                       ,actions: i
+                                                       ,boxModels: d
+                                                       ,cachedTimeState: m
+                                                       ,colorScheme: c
+                                                       ,condition: h
+                                                       ,glueState: o
+                                                       ,hasUserUpdatedTimeState: l
+                                                       ,mouseState: f
+                                                       ,renderCache: g
+                                                       ,timeState: k
+                                                       ,trixelColor: b
+                                                       ,trixelInfo: a
+                                                       ,userSettings: n
+                                                       ,windowDimensions: e
+                                                       ,workState: j};
+                                             };
+                                          };
                                        };
                                     };
                                  };
@@ -14487,17 +14551,11 @@ Elm.Trixel.Types.General.make = function (_elm) {
       return {_: {},showGrid: a};
    };
    var cleanWorkState = {_: {}
-                        ,lastErasePosition: $Trixel$Types$Math.negativeUnitVector
-                        ,lastMousePosition: $Trixel$Types$Math.negativeUnitVector
-                        ,lastPaintedTrixel: $Trixel$Types$Grid.defaultTrixel};
-   var WorkState = F3(function (a,
-   b,
-   c) {
+                        ,lastMousePosition: $Trixel$Types$Math.negativeUnitVector};
+   var WorkState = function (a) {
       return {_: {}
-             ,lastErasePosition: b
-             ,lastMousePosition: a
-             ,lastPaintedTrixel: c};
-   });
+             ,lastMousePosition: a};
+   };
    var RenderCache = F2(function (a,
    b) {
       return {_: {}
@@ -15158,6 +15216,81 @@ Elm.Trixel.Types.Html.make = function (_elm) {
 };
 Elm.Trixel = Elm.Trixel || {};
 Elm.Trixel.Types = Elm.Trixel.Types || {};
+Elm.Trixel.Types.JSGlue = Elm.Trixel.Types.JSGlue || {};
+Elm.Trixel.Types.JSGlue.make = function (_elm) {
+   "use strict";
+   _elm.Trixel = _elm.Trixel || {};
+   _elm.Trixel.Types = _elm.Trixel.Types || {};
+   _elm.Trixel.Types.JSGlue = _elm.Trixel.Types.JSGlue || {};
+   if (_elm.Trixel.Types.JSGlue.values)
+   return _elm.Trixel.Types.JSGlue.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trixel.Types.JSGlue",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm);
+   var JSColor = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,alpha: d
+             ,blue: c
+             ,green: b
+             ,red: a};
+   });
+   var emptyJSColor = {_: {}
+                      ,alpha: 255
+                      ,blue: 0
+                      ,green: 0
+                      ,red: 255};
+   var computeJSColorFromColor = function (color) {
+      return function () {
+         var rgbaColor = $Color.toRgb(color);
+         return {_: {}
+                ,alpha: rgbaColor.alpha
+                ,blue: $Basics.toFloat(rgbaColor.blue)
+                ,green: $Basics.toFloat(rgbaColor.green)
+                ,red: $Basics.toFloat(rgbaColor.red)};
+      }();
+   };
+   var computeColorFromJSColor = function (jscolor) {
+      return A4($Color.rgba,
+      $Basics.round(jscolor.red),
+      $Basics.round(jscolor.green),
+      $Basics.round(jscolor.blue),
+      jscolor.alpha);
+   };
+   var emptyCSSInfo = {_: {}
+                      ,colorPicker: "ColorPicker"};
+   var CSSInfo = function (a) {
+      return {_: {}
+             ,colorPicker: a};
+   };
+   var emptyGlueState = {_: {}
+                        ,cssInfo: emptyCSSInfo
+                        ,trixelColor: "rgb(255,0,0)"};
+   var GlueState = F2(function (a,
+   b) {
+      return {_: {}
+             ,cssInfo: a
+             ,trixelColor: b};
+   });
+   _elm.Trixel.Types.JSGlue.values = {_op: _op
+                                     ,GlueState: GlueState
+                                     ,emptyGlueState: emptyGlueState
+                                     ,CSSInfo: CSSInfo
+                                     ,emptyCSSInfo: emptyCSSInfo
+                                     ,computeColorFromJSColor: computeColorFromJSColor
+                                     ,computeJSColorFromColor: computeJSColorFromColor
+                                     ,emptyJSColor: emptyJSColor
+                                     ,JSColor: JSColor};
+   return _elm.Trixel.Types.JSGlue.values;
+};
+Elm.Trixel = Elm.Trixel || {};
+Elm.Trixel.Types = Elm.Trixel.Types || {};
 Elm.Trixel.Types.Layer = Elm.Trixel.Types.Layer || {};
 Elm.Trixel.Types.Layer.make = function (_elm) {
    "use strict";
@@ -15366,8 +15499,62 @@ Elm.Trixel.Types.Math.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Trixel.Types.Math",
    $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
    $Result = Elm.Result.make(_elm),
    $String = Elm.String.make(_elm);
+   var computeOffsetColor = F5(function (red,
+   green,
+   blue,
+   alpha,
+   color) {
+      return function () {
+         var rgbaColor = $Color.toRgb(color);
+         return A4($Color.rgba,
+         rgbaColor.red + red,
+         rgbaColor.green + green,
+         rgbaColor.blue + blue,
+         rgbaColor.alpha + alpha);
+      }();
+   });
+   var compareColors = F2(function (a,
+   b) {
+      return function () {
+         var colorB = $Color.toRgb(b);
+         var colorA = $Color.toRgb(a);
+         return _U.eq(colorA.red,
+         colorB.red) && (_U.eq(colorA.green,
+         colorB.green) && (_U.eq(colorA.blue,
+         colorB.blue) && _U.cmp($Basics.abs(colorA.alpha) - colorB.alpha,
+         1.0e-2) < 0));
+      }();
+   });
+   var computeAlphaBlend = F2(function (a,
+   b) {
+      return function () {
+         var colorB = $Color.toRgb(b);
+         var colorA = $Color.toRgb(a);
+         var resultAlpha = colorA.alpha + (1 - colorA.alpha) * colorB.alpha;
+         var alphaBlendValue = F2(function (valueA$,
+         valueB$) {
+            return function () {
+               var valueB = $Basics.toFloat(valueB$);
+               var valueA = $Basics.toFloat(valueA$);
+               return $Basics.round(resultAlpha * valueB + (1 - resultAlpha) * valueA);
+            }();
+         });
+         return A4($Color.rgba,
+         A2(alphaBlendValue,
+         colorA.red,
+         colorB.red),
+         A2(alphaBlendValue,
+         colorA.green,
+         colorB.green),
+         A2(alphaBlendValue,
+         colorA.blue,
+         colorB.blue),
+         resultAlpha);
+      }();
+   });
    var stringToFloat = function (string) {
       return function () {
          var _v0 = $String.toFloat(string);
@@ -15375,7 +15562,7 @@ Elm.Trixel.Types.Math.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v0._0;}
          _U.badCase($moduleName,
-         "between lines 91 and 93");
+         "between lines 93 and 95");
       }();
    };
    var stringToInt = function (string) {
@@ -15385,7 +15572,7 @@ Elm.Trixel.Types.Math.make = function (_elm) {
          {case "Err": return 0;
             case "Ok": return _v3._0;}
          _U.badCase($moduleName,
-         "between lines 84 and 86");
+         "between lines 86 and 88");
       }();
    };
    var computeDimensionsFromBounds = function (bounds) {
@@ -15473,7 +15660,10 @@ Elm.Trixel.Types.Math.make = function (_elm) {
                                    ,Bounds: Bounds
                                    ,computeDimensionsFromBounds: computeDimensionsFromBounds
                                    ,stringToInt: stringToInt
-                                   ,stringToFloat: stringToFloat};
+                                   ,stringToFloat: stringToFloat
+                                   ,computeAlphaBlend: computeAlphaBlend
+                                   ,compareColors: compareColors
+                                   ,computeOffsetColor: computeOffsetColor};
    return _elm.Trixel.Types.Math.values;
 };
 Elm.Trixel = Elm.Trixel || {};
@@ -15512,9 +15702,16 @@ Elm.Trixel.Update.make = function (_elm) {
    });
    var updateTrixelColor = F2(function (color,
    state) {
-      return _U.replace([["trixelColor"
-                         ,color]],
-      state);
+      return function () {
+         var glueState = state.glueState;
+         return _U.replace([["trixelColor"
+                            ,color]
+                           ,["glueState"
+                            ,_U.replace([["trixelColor"
+                                         ,$Trixel$Types$Html.elmToHtmlColor(color)]],
+                            glueState)]],
+         state);
+      }();
    });
    var updateGridY = F2(function (y,
    state) {
@@ -15708,6 +15905,30 @@ Elm.Trixel.Update.make = function (_elm) {
    state) {
       return updatePreviousButtonsDown($Trixel$Types$General.applyCachedTimeState(state));
    });
+   var applyRightButtonDownAction = F2(function (position,
+   state) {
+      return function () {
+         var workState = state.workState;
+         var timeState = $Trixel$Types$General.getTimeState(state);
+         var maybeTrixel = A3($Trixel$Types$Layer.findTrixel,
+         position,
+         timeState.currentLayer,
+         timeState.layers);
+         return function () {
+            switch (maybeTrixel.ctor)
+            {case "Just":
+               return A2($Trixel$Types$General.updateCachedTimeState,
+                 _U.replace([["layers"
+                             ,A3($Trixel$Types$Layer.eraseTrixel,
+                             position,
+                             timeState.currentLayer,
+                             timeState.layers)]],
+                 timeState),
+                 state);}
+            return state;
+         }();
+      }();
+   });
    var applyLeftButtonPressedAction = F2(function (position,
    state) {
       return updatePreviousButtonsDown($Trixel$Types$General.applyCachedTimeState(state));
@@ -15722,7 +15943,8 @@ Elm.Trixel.Update.make = function (_elm) {
    trixelB) {
       return A2(comparePositions,
       trixelA.position,
-      trixelB.position) && _U.eq(trixelA.color,
+      trixelB.position) && A2($Trixel$Types$Math.compareColors,
+      trixelA.color,
       trixelB.color);
    });
    var applyLeftButtonDownAction = F2(function (position,
@@ -15746,43 +15968,35 @@ Elm.Trixel.Update.make = function (_elm) {
                                }()]],
             state);
          }() : function () {
+            var maybeTrixel = A3($Trixel$Types$Layer.findTrixel,
+            position,
+            timeState.currentLayer,
+            timeState.layers);
+            var currentTrixel = function () {
+               switch (maybeTrixel.ctor)
+               {case "Just":
+                  return maybeTrixel._0;}
+               return A2($Trixel$Types$Grid.constructNewTrixel,
+               {_: {},x: 2 + position.x,y: 0},
+               A4($Color.rgba,0,0,0,0));
+            }();
+            var blendedColor = A2($Trixel$Types$Math.computeAlphaBlend,
+            currentTrixel.color,
+            state.trixelColor);
             var newTrixel = A2($Trixel$Types$Grid.constructNewTrixel,
             position,
-            state.trixelColor);
+            blendedColor);
             return A2(compareTrixels,
-            workState.lastPaintedTrixel,
-            newTrixel) ? state : $Trixel$Types$General.updateCachedTimeState(_U.replace([["layers"
-                                                                                         ,A3($Trixel$Types$Layer.insertTrixel,
-                                                                                         A2($Trixel$Types$Grid.constructNewTrixel,
-                                                                                         position,
-                                                                                         state.trixelColor),
-                                                                                         timeState.currentLayer,
-                                                                                         timeState.layers)]],
-            timeState))(_U.replace([["workState"
-                                    ,_U.replace([["lastPaintedTrixel"
-                                                 ,newTrixel]],
-                                    workState)]],
-            state));
+            currentTrixel,
+            newTrixel) ? state : A2($Trixel$Types$General.updateCachedTimeState,
+            _U.replace([["layers"
+                        ,A3($Trixel$Types$Layer.insertTrixel,
+                        newTrixel,
+                        timeState.currentLayer,
+                        timeState.layers)]],
+            timeState),
+            state);
          }();
-      }();
-   });
-   var applyRightButtonDownAction = F2(function (position,
-   state) {
-      return function () {
-         var workState = state.workState;
-         var timeState = $Trixel$Types$General.getTimeState(state);
-         return A2(comparePositions,
-         workState.lastErasePosition,
-         position) ? state : $Trixel$Types$General.updateCachedTimeState(_U.replace([["layers"
-                                                                                     ,A3($Trixel$Types$Layer.eraseTrixel,
-                                                                                     position,
-                                                                                     timeState.currentLayer,
-                                                                                     timeState.layers)]],
-         timeState))(_U.replace([["workState"
-                                 ,_U.replace([["lastErasePosition"
-                                              ,position]],
-                                 workState)]],
-         state));
       }();
    });
    var applyButtonsAction = F2(function (position,
@@ -15794,11 +16008,11 @@ Elm.Trixel.Update.make = function (_elm) {
          count.x) < 0 && (_U.cmp(position.y,
          0) > -1 && _U.cmp(position.y,
          count.y) < 0)) ? function () {
-            var _v4 = A3($Trixel$Types$General.computeButtonState,
+            var _v8 = A3($Trixel$Types$General.computeButtonState,
             $Trixel$Constants.buttonCodeLeft,
             state.actions.buttonsDown,
             state.actions.previousButtonsDown);
-            switch (_v4.ctor)
+            switch (_v8.ctor)
             {case "ButtonDown":
                return A2(applyLeftButtonDownAction,
                  position,
@@ -15808,11 +16022,11 @@ Elm.Trixel.Update.make = function (_elm) {
                  position,
                  state);}
             return function () {
-               var _v5 = A3($Trixel$Types$General.computeButtonState,
+               var _v9 = A3($Trixel$Types$General.computeButtonState,
                $Trixel$Constants.buttonCodeRight,
                state.actions.buttonsDown,
                state.actions.previousButtonsDown);
-               switch (_v5.ctor)
+               switch (_v9.ctor)
                {case "ButtonDown":
                   return A2(applyRightButtonDownAction,
                     position,
@@ -15859,21 +16073,21 @@ Elm.Trixel.Update.make = function (_elm) {
    });
    var applyBrushAction = function (state) {
       return $Trixel$Zones$WorkSpace$Grid.updateLayers(function () {
-         var _v6 = state.mouseState;
-         switch (_v6.ctor)
+         var _v10 = state.mouseState;
+         switch (_v10.ctor)
          {case "MouseDrag":
             return A2($Trixel$Types$General.isButtonCodeInSet,
               $Trixel$Constants.buttonCodeLeft,
               state.actions.buttonsDown) ? $Trixel$Zones$WorkSpace$Grid.updateGrid(A2(applyMouseDragAction,
-              _v6._0,
+              _v10._0,
               state)) : state;
             case "MouseHover":
             return A2(applyButtonsAction,
-              _v6._0,
+              _v10._0,
               state);
             case "MouseNone": return state;}
          _U.badCase($moduleName,
-         "between lines 300 and 315");
+         "between lines 317 and 332");
       }());
    };
    var update = F2(function (action,
@@ -15956,7 +16170,7 @@ Elm.Trixel.Update.make = function (_elm) {
             case "UndoAction":
             return $Trixel$Zones$WorkSpace$Grid.updateGrid($Trixel$Types$General.undoTimeState(state));}
          _U.badCase($moduleName,
-         "between lines 16 and 96");
+         "between lines 17 and 97");
       }();
    });
    var clearState = function (state) {
@@ -16162,7 +16376,6 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Trixel.Zones.Menu",
    $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -16171,161 +16384,33 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
    $Trixel$Types$General = Elm.Trixel.Types.General.make(_elm),
    $Trixel$Types$Html = Elm.Trixel.Types.Html.make(_elm),
    $Trixel$Types$Math = Elm.Trixel.Types.Math.make(_elm);
-   var computeInverseColor = function (color) {
-      return function () {
-         var rgbaColor = $Color.toRgb(color);
-         return $Trixel$Types$Html.elmToHtmlColor(A4($Color.rgba,
-         255 - rgbaColor.red,
-         255 - rgbaColor.green,
-         255 - rgbaColor.blue,
-         rgbaColor.alpha));
-      }();
-   };
-   var constructColorOption = F4(function (state,
-   color,
-   val,
-   description) {
-      return A2($Html.option,
-      _L.fromArray([$Html$Attributes.selected(_U.eq(state.trixelColor,
-                   color))
-                   ,$Html$Attributes.value($Basics.toString(val))]),
-      _L.fromArray([$Html.text(description)]));
-   });
-   var constructColorList = F2(function (menuBoxModel,
+   var constructColorTool = F2(function (menuBoxModel,
    state) {
       return function () {
-         var selectFunction = function (value) {
-            return $Trixel$Types$General.SetColor(function () {
-               var _v0 = $Trixel$Types$Math.stringToInt(value);
-               switch (_v0)
-               {case 1: return $Color.orange;
-                  case 2: return $Color.yellow;
-                  case 3: return $Color.green;
-                  case 4: return $Color.blue;
-                  case 5: return $Color.purple;
-                  case 6: return $Color.brown;
-                  case 7: return $Color.white;
-                  case 8: return $Color.grey;
-                  case 9: return $Color.black;
-                  case 10:
-                  return state.colorScheme.workbg.elm;}
-               return $Color.red;
-            }());
-         };
          var height = menuBoxModel.height - menuBoxModel.padding.y * 2;
          var boxModel = A7($Trixel$Types$Html.constructBoxModel,
-         0,
+         height * 1.5,
          height,
          5,
          5,
          2,
-         2,
+         4,
          $Trixel$Types$Html.BorderBox);
-         var selectStyle = $Html$Attributes.style(A2($Basics._op["++"],
+         var colorDivStyle = $Html$Attributes.style(A2($Basics._op["++"],
          $Trixel$Types$Html.computeBoxModelCSS(boxModel),
          _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: "float"
+                       ,_1: "right"}
+                      ,{ctor: "_Tuple2"
                        ,_0: "background-color"
                        ,_1: $Trixel$Types$Html.elmToHtmlColor(state.trixelColor)}
                       ,{ctor: "_Tuple2"
-                       ,_0: "color"
-                       ,_1: computeInverseColor(state.trixelColor)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "font-size"
-                       ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 2)}
-                      ,{ctor: "_Tuple2"
-                       ,_0: "float"
-                       ,_1: "left"}
-                      ,{ctor: "_Tuple2"
                        ,_0: "cursor"
-                       ,_1: "pointer"}
-                      ,$Trixel$Types$Html.computeDefaultBorderCSS(state.colorScheme.fg.html)])));
+                       ,_1: "pointer"}])));
          return A2($Html.div,
-         _L.fromArray([]),
-         _L.fromArray([A2($Html.label,
-                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
-                                                                         ,_0: "float"
-                                                                         ,_1: "left"}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "padding"
-                                                                         ,_1: $Trixel$Types$Html.vectorToPixels({_: {}
-                                                                                                                ,x: 10
-                                                                                                                ,y: 6})}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "font-size"
-                                                                         ,_1: $Trixel$Types$Html.toPixels(boxModel.height / 2)}
-                                                                        ,{ctor: "_Tuple2"
-                                                                         ,_0: "color"
-                                                                         ,_1: "lightGrey"}]))]),
-                      _L.fromArray([$Html.text("Color")]))
-                      ,A2($Html.select,
-                      _L.fromArray([selectStyle
-                                   ,A3($Html$Events.on,
-                                   "change",
-                                   $Html$Events.targetValue,
-                                   $Signal.message(A2($Signal.forwardTo,
-                                   $Trixel$Types$General.actionQuery.address,
-                                   selectFunction)))
-                                   ,A2($Html$Events.onFocus,
-                                   $Trixel$PostOffice.postOfficeQuery.address,
-                                   $Trixel$PostOffice.EnteringHTMLInput)
-                                   ,A2($Html$Events.onBlur,
-                                   $Trixel$PostOffice.postOfficeQuery.address,
-                                   $Trixel$PostOffice.LeavingHTMLInput)]),
-                      _L.fromArray([A4(constructColorOption,
-                                   state,
-                                   $Color.red,
-                                   0,
-                                   "red")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.orange,
-                                   1,
-                                   "orange")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.yellow,
-                                   2,
-                                   "yellow")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.green,
-                                   3,
-                                   "green")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.blue,
-                                   4,
-                                   "blue")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.purple,
-                                   5,
-                                   "purple")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.brown,
-                                   6,
-                                   "brown")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.white,
-                                   7,
-                                   "white")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.grey,
-                                   8,
-                                   "grey")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   $Color.black,
-                                   9,
-                                   "black")
-                                   ,A4(constructColorOption,
-                                   state,
-                                   state.colorScheme.workbg.elm,
-                                   10,
-                                   "background")]))]));
+         _L.fromArray([colorDivStyle
+                      ,$Html$Attributes.$class(state.glueState.cssInfo.colorPicker)]),
+         _L.fromArray([]));
       }();
    });
    var constructModeList = F2(function (menuBoxModel,
@@ -16710,7 +16795,7 @@ Elm.Trixel.Zones.Menu.make = function (_elm) {
                       ,A2(constructModeList,
                       boxModel,
                       state)
-                      ,A2(constructColorList,
+                      ,A2(constructColorTool,
                       boxModel,
                       state)]));
       }();
