@@ -163,6 +163,7 @@ constructNewState countX countY =
         }
     , workState = cleanWorkState
     , timeState = freshTimeState
+    , hasUserUpdatedTimeState = False
     , cachedTimeState = freshTimeState.present
     , userSettings = defaultUserSettings
     , glueState = emptyGlueState

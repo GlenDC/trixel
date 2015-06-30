@@ -147,14 +147,12 @@ type alias RenderCache =
 
 type alias WorkState =
   { lastMousePosition : Vector
-  , lastErasePosition : Vector
   }
 
 
 cleanWorkState : WorkState
 cleanWorkState =
   { lastMousePosition = negativeUnitVector
-  , lastErasePosition = negativeUnitVector
   }
 
 
@@ -184,6 +182,7 @@ type alias State =
   , actions : WorkSpaceActions
   , workState : WorkState
   , timeState : TimeState
+  , hasUserUpdatedTimeState : Bool
   , cachedTimeState : TimeInsentiveState
   , userSettings : UserSettings
   , glueState : GlueState
@@ -315,9 +314,19 @@ updateTimeState newTimeState state =
 
 applyCachedTimeState : State -> State
 applyCachedTimeState state =
-  updateTimeState
-    state.cachedTimeState
-    state
+  if state.hasUserUpdatedTimeState
+    then
+      let newState =
+            updateTimeState
+              state.cachedTimeState
+              state
+      in
+        { newState |
+            hasUserUpdatedTimeState <-
+              False
+        }
+    else
+      state
 
 
 updateUndoState : TimeState -> State -> State
@@ -335,6 +344,8 @@ updateCachedTimeState newTimeState state =
   { state
       | cachedTimeState <-
           newTimeState
+      , hasUserUpdatedTimeState <-
+          True
   }
 
 

@@ -227,22 +227,17 @@ applyRightButtonDownAction position state =
 
       workState =
           state.workState
+
+      maybeTrixel =
+        findTrixel
+          position
+          timeState.currentLayer
+          timeState.layers
   in
     -- Erase Brush
-    if comparePositions
-        workState.lastErasePosition
-        position
-    then
-      state -- same position as last time
-    else
-      { state
-          | workState <-
-              { workState
-                  | lastErasePosition <-
-                      position
-              }
-      }
-      |> updateCachedTimeState
+    case maybeTrixel of
+      Just _ ->
+        updateCachedTimeState
            { timeState
               | layers <-
                   eraseTrixel
@@ -250,6 +245,10 @@ applyRightButtonDownAction position state =
                     timeState.currentLayer
                     timeState.layers
            }
+           state
+
+      _ ->
+        state
 
 
 applyRightButtonPressedAction : Vector -> State -> State
