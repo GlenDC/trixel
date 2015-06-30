@@ -15532,16 +15532,16 @@ Elm.Trixel.Types.Math.make = function (_elm) {
    b) {
       return function () {
          var colorB = $Color.toRgb(b);
-         var colorA = $Color.toRgb(a);
-         var resultAlpha = colorA.alpha + (1 - colorA.alpha) * colorB.alpha;
          var alphaBlendValue = F2(function (valueA$,
          valueB$) {
             return function () {
                var valueB = $Basics.toFloat(valueB$);
                var valueA = $Basics.toFloat(valueA$);
-               return $Basics.round(resultAlpha * valueB + (1 - resultAlpha) * valueA);
+               return $Basics.round(colorB.alpha * valueB + (1 - colorB.alpha) * valueA);
             }();
          });
+         var colorA = $Color.toRgb(a);
+         var resultAlpha = colorA.alpha + (1 - colorA.alpha) * colorB.alpha;
          return A4($Color.rgba,
          A2(alphaBlendValue,
          colorA.red,
