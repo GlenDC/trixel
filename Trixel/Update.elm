@@ -547,7 +547,6 @@ updateScale scale state =
             { trixelInfo
                 | scale <-
                     max 0.05 scale
-                    |> min 2
             }
     }
 
