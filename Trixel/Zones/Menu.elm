@@ -20,8 +20,6 @@ view : State -> Html
 view  state =
   let boxModel =
         state.boxModels.menu
-      trixelCount =
-        getTrixelCount state
   in
     div
       [ constructMainStyle boxModel state
@@ -30,20 +28,6 @@ view  state =
       [ (constructButton "Clear All" ClearState boxModel state)
 
       , (constructButton "Reset View" ResetOffset boxModel state)
-
-      , constructSimpleText "GridX:" "right" boxModel state
-      , constructSimpleText (toString trixelCount.x) "center" boxModel state
-      , constructArithmeticButton "-"
-          (SetGridX (max 1 (trixelCount.x - 1))) boxModel state
-      , constructArithmeticButton "+"
-          (SetGridX (trixelCount.x + 1)) boxModel state
-
-      , constructSimpleText "GridY:" "right" boxModel state
-      , constructSimpleText (toString trixelCount.y) "center" boxModel state
-      , constructArithmeticButton "-"
-          (SetGridY (max 1 (trixelCount.y - 1))) boxModel state
-      , constructArithmeticButton "+"
-          (SetGridY (trixelCount.y + 1)) boxModel state
 
       , constructSimpleText "Scale:" "right" boxModel state
       , constructSimpleText ((toString (round (state.trixelInfo.scale * 100))) ++ "%") "center" boxModel state
@@ -147,19 +131,8 @@ constructTextInput action menuBoxModel state =
           , computeDefaultBorderCSS state.colorScheme.fg.html
           ])
 
-      trixelCount =
-        getTrixelCount state
-
       (default, caption, fn) =
         case action of
-          GridX
-            -> (round trixelCount.x,
-              "X", (\x -> SetGridX (stringToFloat x)))
-
-          GridY
-            -> (round trixelCount.y,
-              "Y", (\y -> SetGridY (stringToFloat y)))
-
           Scale
             -> (round (state.trixelInfo.scale * 100),
               "Scale (%)", (\s -> SetScale ((stringToFloat s) / 100)))
@@ -247,6 +220,7 @@ constructColorTool menuBoxModel state =
             [ ("float", "right")
             , ("background-color", elmToHtmlColor state.trixelColor)
             , ("cursor", "pointer")
+            , computeDefaultBorderCSS state.colorScheme.fg.html
             ])
   in
     div

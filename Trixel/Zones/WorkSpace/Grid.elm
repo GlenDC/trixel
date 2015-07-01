@@ -44,39 +44,15 @@ updateGrid state =
         state.boxModels.workspace
       trixelInfo =
         state.trixelInfo
-      trixelCount =
-        getTrixelCount state
 
-      (scaledWidth, scaledHeight, countX, countY) =
-        if trixelInfo.mode == ClassicMode
-          then
-            ( workspace.width * trixelInfo.scale
-            , workspace.height * trixelInfo.scale
-            , trixelCount.x
-            , trixelCount.y
-            )
-          else
-            ( workspace.height * trixelInfo.scale
-            , workspace.width * trixelInfo.scale
-            , trixelCount.y
-            , trixelCount.x
-            )
+      baseSize =
+        (min state.windowDimensions.x state.windowDimensions.y) / 20
 
-      (deltaX, deltaY) =
-        (countX + 1, sqrt3 * countY)
+      triangleWidth =
+        baseSize * trixelInfo.scale
+      triangleHeight =
+        sqrt3 * baseSize * trixelInfo.scale
 
-      scale =
-        min (scaledWidth / deltaX) (scaledHeight / deltaY)
-
-      (width, height) =
-        (scale * deltaX, scale * deltaY)
-      (triangleWidth, triangleHeight) =
-        (width / deltaX, height / countY)
-
-      (triangleOffsetX, triangleOffsetY, maxBoundsX, maxBoundsY) =
-        if trixelInfo.mode == ClassicMode
-          then (width / 2, height / 2, width, height)
-          else (height / 2, width / 2, height, width)
   in
     { state
         | trixelInfo <-
@@ -85,22 +61,9 @@ updateGrid state =
                     triangleWidth
                 , height <-
                     triangleHeight
-                , extraOffset <-
-                    { x =
-                        triangleOffsetX - trixelInfo.offset.x
-                    , y =
-                        triangleOffsetY - trixelInfo.offset.y
-                    }
-                , bounds <-
-                    { min = zeroVector
-                    , max =
-                        { x = min workspace.width maxBoundsX
-                        , y = min workspace.height maxBoundsY
-                        }
-                    }
                 , dimensions <-
-                    { x = maxBoundsX
-                    , y = maxBoundsY
+                    { x = workspace.width
+                    , y = workspace.height
                     }
             }
     }
@@ -195,9 +158,9 @@ renderMouse state width height trixels =
                     else
                       (state.trixelInfo.height, state.trixelInfo.width)
               x =
-                (position.x * triangleWidth) - state.trixelInfo.extraOffset.x
+                (position.x * triangleWidth) - state.trixelInfo.offset.x
               y =
-                (position.y * triangleHeight) - state.trixelInfo.extraOffset.y
+                (position.y * triangleHeight) - state.trixelInfo.offset.y
           in 
             (renderTrixel
               (getTrixelOrientation position.x position.y state.trixelInfo.mode)
@@ -287,7 +250,7 @@ renderGridLayers state =
     renderLayers
       layers
       { offset =
-          state.trixelInfo.extraOffset
+          state.trixelInfo.offset
       , dimensions =
           { x = state.trixelInfo.width
           , y = state.trixelInfo.height

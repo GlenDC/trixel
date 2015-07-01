@@ -130,13 +130,11 @@ constructNewState countX countY =
         constructFreshTimeState countX countY
   in
     { trixelInfo =
-        { bounds = zeroBounds
-        , height = 0
+        { height = 0
         , width = 0
         , mode = ClassicMode
         , scale = 1
         , offset = zeroVector
-        , extraOffset = zeroVector
         , dimensions = zeroVector
         }
     , trixelColor = red

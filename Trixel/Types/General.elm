@@ -94,13 +94,11 @@ type TrixelMode
 -- All info needed to draw the trixel-workspace
 -- is stored within this rcord
 type alias TrixelInfo =
-  { bounds : Bounds -- bounds of workspace
-  , height : Float -- height of a trixel
+  { height : Float -- height of a trixel
   , width : Float -- width of a trixel
   , mode : TrixelMode -- mode of trixels, defining the layout
   , scale : Float -- scale of the workspace
-  , offset : Vector -- offset of the workspace, not used when .scale <= 1
-  , extraOffset : Vector -- extra offset
+  , offset : Vector -- offset of the workspace
   , dimensions : Vector -- dimensions of the grid
   }
 
@@ -194,8 +192,6 @@ type TrixelAction
   | OpenDocument -- Start of the process to open an existing document
   | SaveDocument -- Start of the process to save the current document
   | SetScale Float -- setting the scale of the workspace
-  | SetGridX Float -- Set the x-count for the grid of the workspace
-  | SetGridY Float -- Set the y-count for the grid of the workspace
   | SetColor Color -- Set the drawing color
   | MoveMouse Vector -- Moving the cursor
   | MoveOffset (Vector, Float) -- Moving the offset of the workspace (only possible when zoomed-in)
@@ -213,9 +209,7 @@ type TrixelAction
 
 -- Used to create the correct gui-input for a specific TrixelAction
 type TrixelActionInput
-  = GridX -- Used to create the input that sets the Grid on the x-axis
-  | GridY -- Used to create the input that sets the Grid on the y-axis
-  | Scale -- Used to create the scaling input menu
+  = Scale -- Used to create the scaling input menu
 
 
 type alias ActionAddress =
@@ -237,10 +231,6 @@ constructFreshTimeState countX countY =
         insertNewLayer 0 []
     , currentLayer =
         0
-    , trixelCount =
-        { x = countX
-        , y = countY
-        }
     }
 
 
@@ -280,11 +270,6 @@ getLayers state =
 getCurrentLayer : State -> LayerPosition
 getCurrentLayer state =
   state.cachedTimeState.currentLayer
-
-
-getTrixelCount : State -> Vector
-getTrixelCount state =
-  state.cachedTimeState.trixelCount
 
 
 getTimeState : State -> TimeInsentiveState
@@ -339,5 +324,4 @@ updateCachedTimeState newTimeState state =
 type alias TimeInsentiveState =
   { layers : TrixelLayers
   , currentLayer : LayerPosition
-  , trixelCount : Vector
   }

@@ -15,14 +15,6 @@ import Debug
 
 update action state =
   case action of
-    SetGridX x ->
-      updateGridX x state
-      |> updateGrid
-
-    SetGridY y ->
-      updateGridY y state
-      |> updateGrid
-
     SetColor color ->
       updateTrixelColor color state
 
@@ -113,9 +105,9 @@ updateOffset offset speed state =
       relativeSpeed =
         speed * trixelInfo.scale
       newOffsetX =
-        x + (offset.x * relativeSpeed)
+        x - (offset.x * relativeSpeed)
       newOffsetY =
-        y + (offset.y * relativeSpeed)
+        y - (offset.y * relativeSpeed)
   in
     { state
         | trixelInfo <-
@@ -294,13 +286,13 @@ applyMouseDragAction : MouseDragState -> State -> State
 applyMouseDragAction mouseDragState state =
   if | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
          updateScale
-           (state.trixelInfo.scale + (0.0025 * mouseDragState.difference.y))
+           (state.trixelInfo.scale + (0.005 * mouseDragState.difference.y))
            state
 
      | otherwise ->
          updateOffset
            mouseDragState.difference
-           workspaceOffsetMouseMoveSpeed
+           (workspaceOffsetMouseMoveSpeed * (state.trixelInfo.scale + (1 - state.trixelInfo.scale)))
            state
 
 
@@ -467,64 +459,82 @@ updateMousePosition point state =
           margin =
             state.boxModels.workspace.margin
 
-          offsetX =
-            (state.boxModels.workspace.width - state.trixelInfo.dimensions.x) / 2
-          offsetY =
-            (state.boxModels.workspace.height - state.trixelInfo.dimensions.y) / 2
-
           (menuOffsetX, menuOffsetY) =
             computeDimensionsFromBoxModel state.boxModels.menu
 
-          trixelOffset =
-            state.trixelInfo.offset
+          cursorMinX =
+            padding.x + margin.x
+          cursorMinY =
+            padding.y + margin.y + menuOffsetY
 
-          cursorX =
-            point.x - padding.x - margin.x - offsetX - trixelOffset.x
-          cursorY =
-            state.trixelInfo.dimensions.y
-              - (point.y - padding.y - margin.y - menuOffsetY - offsetY)
-              - trixelOffset.y
-
-          (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
-            if state.trixelInfo.mode == ClassicMode
-              then
-                ( state.trixelInfo.width
-                , state.trixelInfo.height
-                , state.trixelInfo.width
-                , state.trixelInfo.height / 2
-                )
-              else
-                ( state.trixelInfo.height
-                , state.trixelInfo.width
-                , state.trixelInfo.height / 2
-                , state.trixelInfo.width
-                )
-
-          pointX =
-            (cursorX - cursorOffsetX) / triangleWidth
-            |> round |> toFloat
-          pointY =
-            (cursorY - cursorOffsetY) / triangleHeight
-            |> round |> toFloat
+          cursorMaxX =
+            cursorMinX + state.boxModels.workspace.width
+          cursorMaxY =
+            cursorMinY + state.boxModels.workspace.height
 
           workState =
             state.workState
-
-          trixelCount =
-            getTrixelCount state
       in
-        { state
-            | mouseState <-
-                MouseHover
-                  { x = pointX
-                  , y = pointY
-                  }
-            , workState <-
-                { workState
-                  | lastMousePosition <-
-                      point
-                }
-        }
+        if not
+            (point.x >= cursorMinX && point.x <= cursorMaxX
+              && point.y >= cursorMinY && point.y <= cursorMaxY)
+        then
+          { state
+                | mouseState <-
+                    MouseNone
+                , workState <-
+                    { workState
+                      | lastMousePosition <-
+                          point
+                    }
+            }
+        else
+          let trixelInfo =
+                state.trixelInfo
+
+              trixelOffset =
+                { x = (trixelInfo.dimensions.x / 2) - trixelInfo.offset.x
+                , y = (trixelInfo.dimensions.y / 2) - trixelInfo.offset.y }
+
+              cursorX =
+                point.x - cursorMinX - trixelOffset.x
+              cursorY =
+                trixelInfo.dimensions.y - (point.y - cursorMinY) - trixelOffset.y
+
+              (triangleWidth, triangleHeight, cursorOffsetX, cursorOffsetY) =
+                if state.trixelInfo.mode == ClassicMode
+                  then
+                    ( state.trixelInfo.width
+                    , state.trixelInfo.height
+                    , state.trixelInfo.width
+                    , state.trixelInfo.height / 2
+                    )
+                  else
+                    ( state.trixelInfo.height
+                    , state.trixelInfo.width
+                    , state.trixelInfo.height / 2
+                    , state.trixelInfo.width
+                    )
+
+              pointX =
+                (cursorX - cursorOffsetX) / triangleWidth
+                |> round |> toFloat
+              pointY =
+                (cursorY - cursorOffsetY) / triangleHeight
+                |> round |> toFloat
+          in
+            { state
+                | mouseState <-
+                    MouseHover
+                      { x = pointX
+                      , y = pointY
+                      }
+                , workState <-
+                    { workState
+                      | lastMousePosition <-
+                          point
+                    }
+            }
 
 
 updateScale : Float -> State -> State
@@ -575,54 +585,6 @@ updateWindowDimensions dimensions state =
         , windowDimensions <-
             dimensions
     }
-
-
-updateGridX : Float -> State -> State
-updateGridX x state =
-  let timeState =
-        getTimeState state
-
-      newCountX =
-        max 1 x |> min maxTrixelRowCount
-  in
-    updateTimeState
-      { timeState
-          | trixelCount <-
-              { x =
-                  newCountX
-              , y =
-                  timeState.trixelCount.y
-              }
-          , layers <-
-              eraseLayerTrixelByPosition
-                (round newCountX)
-                timeState.layers
-      }
-      state
-
-
-updateGridY : Float -> State -> State
-updateGridY y state =
-  let timeState =
-        getTimeState state
-
-      newCountY =
-        max 1 y |> min maxTrixelRowCount
-  in
-    updateTimeState
-      { timeState
-          | trixelCount <-
-              { x =
-                  timeState.trixelCount.x
-              , y =
-                  newCountY
-              }
-          , layers <-
-              eraseLayerRowByPosition
-                (round newCountY)
-                timeState.layers
-      }
-      state
 
 
 updateTrixelColor : Color -> State -> State
