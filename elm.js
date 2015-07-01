@@ -13798,7 +13798,7 @@ Elm.Trixel.Constants.make = function (_elm) {
    var email = "contact@glendc.com";
    var newsletterSubscribeURL = "http://eepurl.com/brwmSn";
    var githubRepositoryURL = "https://github.com/GlenDC/trixel";
-   var version = "0.1.11";
+   var version = "0.1.12";
    _elm.Trixel.Constants.values = {_op: _op
                                   ,version: version
                                   ,githubRepositoryURL: githubRepositoryURL
