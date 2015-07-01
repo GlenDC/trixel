@@ -272,31 +272,23 @@ updatePreviousButtonsDown state =
 
 applyButtonsAction : Vector -> State -> State
 applyButtonsAction position state =
-  let count =
-        getTrixelCount state
-  in
-    if position.x >= 0 && position.x < count.x
-         && position.y >= 0 && position.y < count.y
-      then
-        case computeButtonState buttonCodeLeft state.actions.buttonsDown state.actions.previousButtonsDown of
-          ButtonDown ->
-            applyLeftButtonDownAction position state
+  case computeButtonState buttonCodeLeft state.actions.buttonsDown state.actions.previousButtonsDown of
+    ButtonDown ->
+      applyLeftButtonDownAction position state
 
-          ButtonPressed ->
-            applyLeftButtonPressedAction position state
+    ButtonPressed ->
+      applyLeftButtonPressedAction position state
 
-          _ ->
-            case computeButtonState buttonCodeRight state.actions.buttonsDown state.actions.previousButtonsDown of
-              ButtonDown ->
-                applyRightButtonDownAction position state
+    _ ->
+      case computeButtonState buttonCodeRight state.actions.buttonsDown state.actions.previousButtonsDown of
+        ButtonDown ->
+          applyRightButtonDownAction position state
 
-              ButtonPressed ->
-                applyRightButtonPressedAction position state
+        ButtonPressed ->
+          applyRightButtonPressedAction position state
 
-              _ ->
-                state  -- nothng to do...
-        else
-          state
+        _ ->
+          state  -- nothng to do...
 
 applyMouseDragAction : MouseDragState -> State -> State
 applyMouseDragAction mouseDragState state =
@@ -347,19 +339,7 @@ resetOffset state =
 
 checkForSoloShortcuts : KeyCodeSet -> State -> State
 checkForSoloShortcuts previousKeyCodeSet state =
-  if | isKeyCodeJustInSet shortcutG state.actions.keysDown previousKeyCodeSet ->
-          let userSettings =
-              state.userSettings
-          in
-            { state
-                | userSettings <-
-                    { userSettings
-                        | showGrid <-
-                            not userSettings.showGrid
-                    }
-            }
-
-      | isKeyCodeJustInSet shortcutR state.actions.keysDown previousKeyCodeSet ->
+  if  | isKeyCodeJustInSet shortcutR state.actions.keysDown previousKeyCodeSet ->
           update ResetOffset state
 
       | otherwise ->
@@ -535,15 +515,10 @@ updateMousePosition point state =
       in
         { state
             | mouseState <-
-              if pointX >= 0 && pointX < trixelCount.x
-                    && pointY >= 0 && pointY < trixelCount.y
-                then
-                  MouseHover
-                    { x = pointX
-                    , y = pointY
-                    }
-                else
-                  MouseNone
+                MouseHover
+                  { x = pointX
+                  , y = pointY
+                  }
             , workState <-
                 { workState
                   | lastMousePosition <-

@@ -149,8 +149,7 @@ constructNewState countX countY =
     , windowDimensions = zeroVector
     , mouseState = MouseNone
     , renderCache =
-        { grid = []
-        , layers = []
+        { layers = []
         }
     , condition = NormalCondition
     , actions =
@@ -165,7 +164,6 @@ constructNewState countX countY =
     , timeState = freshTimeState
     , hasUserUpdatedTimeState = False
     , cachedTimeState = freshTimeState.present
-    , userSettings = defaultUserSettings
     , glueState = emptyGlueState
     }
 

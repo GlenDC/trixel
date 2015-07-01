@@ -56,11 +56,6 @@ viewWorkSpace state =
         state.boxModels.workspace
   in
     state.renderCache.layers ++
-      (renderMouse state workspace.width workspace.height
-        ( if state.userSettings.showGrid
-          then state.renderCache.grid
-          else []
-          )
-        )
+      (renderMouse state workspace.width workspace.height [])
     |> collage (round workspace.width) (round workspace.height)
     |> fromElement

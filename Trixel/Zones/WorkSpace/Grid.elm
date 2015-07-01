@@ -104,7 +104,6 @@ updateGrid state =
                     }
             }
     }
-    |> generateGrid
     |> updateLayers
 
 
@@ -180,58 +179,6 @@ getTrixelOrientation x y mode =
       if mode == IsometricMode
         then Right
         else Up
-
-
-renderTrixelRow: State -> Float -> Float -> Float -> Float -> List Form -> List Form
-renderTrixelRow state countX countY width height trixels =
-  if countX == 0
-    then trixels
-    else
-      let x =
-            ((countX - 1) * width) - state.trixelInfo.extraOffset.x
-          y =
-            ((countY - 1) * height) - state.trixelInfo.extraOffset.y
-      in
-        (renderTrixel
-          (getTrixelOrientation countX countY state.trixelInfo.mode)
-          x y
-          state.trixelInfo.width state.trixelInfo.height
-          (\triangle -> outlined (solid state.colorScheme.bg.elm) triangle)
-        ) :: trixels
-        |> renderTrixelRow state (countX - 1) countY width height
-
-
-renderGrid : State -> Float -> Float -> Float -> Float -> List Form -> List Form
-renderGrid state countX countY width height trixels =
-  if countY == 0
-    then
-      trixels
-    else
-      renderTrixelRow state countX countY width height trixels
-      |> renderGrid state countX (countY - 1) width height
-
-
-generateGrid : State -> State
-generateGrid state =
-  let count =
-        getTrixelCount state
-
-      (triangleWidth, triangleHeight) =
-        if state.trixelInfo.mode == ClassicMode
-          then
-            (state.trixelInfo.width, state.trixelInfo.height)
-          else
-            (state.trixelInfo.height, state.trixelInfo.width)
-
-      renderCache = state.renderCache
-  in
-    { state
-        | renderCache <-
-            { renderCache
-                | grid <-
-                    renderGrid state count.x count.y triangleWidth triangleHeight []
-            }
-    }
 
 
 renderMouse : State -> Float -> Float -> List Form -> List Form

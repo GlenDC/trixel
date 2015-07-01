@@ -140,8 +140,7 @@ type alias WorkSpaceActions =
 
 
 type alias RenderCache =
-  { grid : List Form
-  , layers : List Form
+  { layers : List Form
   }
 
 
@@ -153,17 +152,6 @@ type alias WorkState =
 cleanWorkState : WorkState
 cleanWorkState =
   { lastMousePosition = negativeUnitVector
-  }
-
-
-type alias UserSettings =
-  { showGrid : Bool
-  }
-
-
-defaultUserSettings : UserSettings
-defaultUserSettings =
-  { showGrid = True
   }
 
 
@@ -184,7 +172,6 @@ type alias State =
   , timeState : TimeState
   , hasUserUpdatedTimeState : Bool
   , cachedTimeState : TimeInsentiveState
-  , userSettings : UserSettings
   , glueState : GlueState
   }
 
