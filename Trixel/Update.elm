@@ -142,7 +142,7 @@ applyLeftButtonDownAction position state =
       workState =
           state.workState
   in
-    if | isKeyCodeInSet keyCodeCtrl state.actions.keysDown ->
+    if | isKeyCodeInSet keyCodeAlt state.actions.keysDown ->
           -- ColorPicker Brush
           let maybeTrixel =
                 findTrixel

@@ -33,7 +33,7 @@ constructMainStyle state =
       cursor =
         case state.mouseState of
           MouseHover _ ->
-            if isKeyCodeInSet keyCodeCtrl state.actions.keysDown
+            if isKeyCodeInSet keyCodeAlt state.actions.keysDown
               then "copy"
               else "pointer"
 
