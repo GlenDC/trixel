@@ -1,3 +1,12 @@
+html,head,body {
+  adding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: calibri, helvetica, arial, sans-serif;
+}
+
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

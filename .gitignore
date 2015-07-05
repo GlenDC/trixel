@@ -1,7 +1,6 @@
 # Elm Script GitIgnore Section
 **/*.swp
-elm.js
-elm-stuff/
+**/Out/
 
 
 node_modules/
