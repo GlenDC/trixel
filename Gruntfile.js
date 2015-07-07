@@ -7,9 +7,10 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: [
-          'Trixel/**/*.elm',
-          'index.html',
-          'stylesheet.css'
+          'src/**/*.elm',
+          'src/**/*.html',
+          'src/**/*.css',
+          'src/Native/*.js',
           ],
         tasks: ['shell'],
         options: {
@@ -23,7 +24,7 @@ module.exports = function(grunt) {
             stderr: false
         },
         target: {
-            command: 'elm-make Trixel/Main.elm'
+            command: 'elm-make src/Trixel/Main.elm --output src/Out/Trixel.js'
         }
     }
   });
