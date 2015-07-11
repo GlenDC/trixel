@@ -24,7 +24,7 @@ module.exports = function(grunt) {
             stderr: false
         },
         target: {
-            command: 'elm-make src/Trixel/Main.elm --output src/Out/Trixel.js'
+            command: 'cd src && elm-make Trixel/Main.elm --output Out/Trixel.js'
         }
     }
   });
