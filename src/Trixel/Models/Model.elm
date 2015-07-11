@@ -1,7 +1,7 @@
 module Trixel.Models.Model where
 
-import Trixel.Models.HtmlModel as HtmlModel
-import Trixel.Types.ColorScheme as ColorScheme
+import Trixel.Models.HtmlModel as TrHtmlModel
+import Trixel.Types.ColorScheme as TrColorScheme
 
 import Html exposing (Html, Attribute, div, text)
 import Html.Attributes exposing (style, id, class)
@@ -14,14 +14,14 @@ type alias MainSignal = Signal Html
 
 initialModel : Model
 initialModel =
-  { html = HtmlModel.initialModel
-  , colorScheme = ColorScheme.nightColorScheme
+  { html = TrHtmlModel.initialModel
+  , colorScheme = TrColorScheme.nightColorScheme
   }
 
 
 type alias Model =
-  { html : HtmlModel.Model
-  , colorScheme : ColorScheme.ColorScheme
+  { html : TrHtmlModel.Model
+  , colorScheme : TrColorScheme.ColorScheme
   }
 
 
@@ -34,8 +34,8 @@ view : Model -> Html
 view model =
   div
     [ style
-        [ ("color", ColorScheme.constructHtmlColor model.colorScheme.primary.accentHigh)
-        , ("background-color", ColorScheme.constructHtmlColor model.colorScheme.primary.default.fill)
+        [ ("color", TrColorScheme.constructHtmlColor model.colorScheme.primary.accentHigh)
+        , ("background-color", TrColorScheme.constructHtmlColor model.colorScheme.primary.default.fill)
         , ("font-family", "'Open Sans', sans-serif")
         , ("position", "absolute")
         , ("overflow", "hidden")
@@ -51,7 +51,7 @@ view model =
             [ ("position", "absolute")
             , ("width", "300px")
             , ("height", "300px")
-        , ("background-color", ColorScheme.constructHtmlColor model.colorScheme.document)
+        , ("background-color", TrColorScheme.constructHtmlColor model.colorScheme.document)
             ]
         , id model.html.identifiers.workspace
         , class "noselect"

@@ -1,6 +1,6 @@
 module Tests.Math.Float (tests) where
 
-import Trixel.Math.Float exposing (compareFloats)
+import Trixel.Math.Float as TrFloat
 
 import ElmTest.Test exposing (test, Test, suite)
 import ElmTest.Assertion exposing (assertEqual, assert, Assertion)
@@ -8,7 +8,7 @@ import ElmTest.Assertion exposing (assertEqual, assert, Assertion)
 
 assertEqualFloat : Float -> Float -> Assertion
 assertEqualFloat a b =
-  compareFloats a b
+  TrFloat.compare a b
   |> assert
 
 

@@ -1,10 +1,10 @@
 module Trixel.Main where
 
-import Trixel.Types.Mouse as Mouse
-import Trixel.Types.Keyboard as Keyboard
+import Trixel.Types.Mouse as TrMouse
+import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.Input exposing (..)
 import Trixel.Math.Vector exposing (Vector)
-import Trixel.Models.Model as Model
+import Trixel.Models.Model as TrModel
 
 -- Incoming Javascript Ports
 port setMouseButtonsDown : Signal Buttons
@@ -16,23 +16,23 @@ port setWindowSizeManual : Signal Vector
 
 
 -- Outgoing Javascript Ports
-port updateEditor : Model.ModelSignal
+port updateEditor : TrModel.ModelSignal
 port updateEditor =
   mainSignal
 
 
 -- Main Update Signal
-mainSignal : Model.ModelSignal
+mainSignal : TrModel.ModelSignal
 mainSignal =
   Signal.foldp
-    Model.update
-    Model.initialModel
-    (Signal.constant Model.initialModel)
+    TrModel.update
+    TrModel.initialModel
+    (Signal.constant TrModel.initialModel)
 
 
 -- Main Signal
-main : Model.MainSignal
+main : TrModel.MainSignal
 main =
   Signal.map
-    Model.view
+    TrModel.view
     mainSignal

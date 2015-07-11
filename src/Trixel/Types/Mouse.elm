@@ -1,6 +1,6 @@
 module Trixel.Types.Mouse where
 
-import Trixel.Types.Input exposing(Button)
+import Trixel.Types.Input exposing (Button)
 
 
 leftButton : Button

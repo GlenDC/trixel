@@ -1,26 +1,26 @@
 module Trixel.Math.Bounds where
 
-import Trixel.Math.Vector as Vector
+import Trixel.Math.Vector as TrVector
 
 
 zeroBounds : Bounds
 zeroBounds =
-  constructBounds 0 0 0 0
+  construct 0 0 0 0
 
 
-computeDimensions : Bounds -> Vector.Vector
+computeDimensions : Bounds -> TrVector.Vector
 computeDimensions bounds =
-  Vector.substractVectors bounds.max bounds.min
+  TrVector.substract bounds.max bounds.min
 
 
-constructBounds : Float -> Float -> Float -> Float -> Bounds
-constructBounds minX minY maxX maxY =
-  { min = Vector.constructVector minX minY
-  , max = Vector.constructVector maxX maxY
+construct : Float -> Float -> Float -> Float -> Bounds
+construct minX minY maxX maxY =
+  { min = TrVector.construct minX minY
+  , max = TrVector.construct maxX maxY
   }
 
 
 type alias Bounds =
-  { min : Vector.Vector
-  , max : Vector.Vector
+  { min : TrVector.Vector
+  , max : TrVector.Vector
   }

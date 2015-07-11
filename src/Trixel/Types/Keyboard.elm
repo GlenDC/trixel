@@ -1,6 +1,6 @@
 module Trixel.Types.Keyboard where
 
-import Trixel.Types.Input exposing(Button)
+import Trixel.Types.Input exposing (Button)
 
 
 a: Button

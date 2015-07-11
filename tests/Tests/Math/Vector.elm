@@ -1,70 +1,70 @@
 module Tests.Math.Vector (tests) where
 
-import Trixel.Math.Vector as Vector
-import Trixel.Math.Float exposing (compareFloats)
+import Trixel.Math.Vector as TrVector
+import Trixel.Math.Float as TrFloat
 
 import ElmTest.Test exposing (test, Test, suite)
 import ElmTest.Assertion exposing (assertEqual, assert, Assertion)
 
 
-vectorA : Vector.Vector
+vectorA : TrVector.Vector
 vectorA =
-  Vector.constructVector 4 8
+  TrVector.construct 4 8
 
 
-vectorB : Vector.Vector
+vectorB : TrVector.Vector
 vectorB =
-  Vector.constructVector 2 3
+  TrVector.construct 2 3
 
 
-vectorC : Vector.Vector
+vectorC : TrVector.Vector
 vectorC =
-  Vector.constructVector 6 8
+  TrVector.construct 6 8
 
 
-assertEqualVector : Vector.Vector -> Vector.Vector -> Assertion
+assertEqualVector : TrVector.Vector -> TrVector.Vector -> Assertion
 assertEqualVector a b =
-  Vector.compareVectors a b
+  TrVector.compare a b
   |> assert
 
 
 assertEqualFloat : Float -> Float -> Assertion
 assertEqualFloat a b =
-  compareFloats a b
+  TrFloat.compare a b
   |> assert
 
 
 tests : Test
 tests =
   suite "Math/Vector"
-    [ test "compareVectors"
+    [ test "compare"
         (assertEqualVector
-          (Vector.constructVector (5000 * 200) (-400 * 3000))
-          (Vector.constructVector (1000 * 1000) (-40 * 30000))
+          (TrVector.construct (5000 * 200) (-400 * 3000))
+          (TrVector.construct (1000 * 1000) (-40 * 30000))
           )
-    , test "addVectors"
+    , test "add"
         (assertEqualVector
-          (Vector.constructVector 6 11)
-          (Vector.addVectors vectorA vectorB)
+          (TrVector.construct 6 11)
+          (TrVector.add vectorA vectorB)
           )
-    , test "substractVectors"
+    , test "substract"
         (assertEqualVector
-          (Vector.constructVector 2 5)
-          (Vector.substractVectors vectorA vectorB)
+          (TrVector.construct 2 5)
+          (TrVector.substract vectorA vectorB)
           )
-    , test "computeVectorLength"
+    , test "computeLength"
         (assertEqualFloat
           10
-          (Vector.computeVectorLength vectorC)
+          (TrVector.computeLength vectorC)
           )
     , test "computeDotProduct"
         (assertEqualFloat
           72
-          (Vector.computeDotProduct vectorA vectorB)
+          (TrVector.computeDotProduct vectorA vectorB)
           )
-    , test "scaleVector"
+    , test "scale"
         (assertEqualVector
-          (Vector.constructVector 40 80)
-          (Vector.scaleVector vectorA 10)
+          (TrVector.construct 40 80)
+          (TrVector.scale vectorA 10)
           )
     ]

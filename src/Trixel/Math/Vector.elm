@@ -1,54 +1,54 @@
 module Trixel.Math.Vector where
 
-import Trixel.Math.Float exposing (compareFloats)
+import Trixel.Math.Float as TrFloat
 
 
 zeroVector : Vector
 zeroVector =
-  constructVector 0 0
+  construct 0 0
 
 
 negativeUnitVector : Vector
 negativeUnitVector =
-  constructVector -1 -1
+  construct -1 -1
 
 
 unitVector : Vector
 unitVector =
-  constructVector 1 1
+  construct 1 1
 
 
-addVectors : Vector -> Vector -> Vector
-addVectors a b =
-  computeVectorOperation (+) a b
+add : Vector -> Vector -> Vector
+add a b =
+  computeOperation (+) a b
 
 
-substractVectors : Vector -> Vector -> Vector
-substractVectors a b =
-  computeVectorOperation (-) a b
+substract : Vector -> Vector -> Vector
+substract a b =
+  computeOperation (-) a b
 
 
-computeVectorOperation : (Float -> Float -> Float) -> Vector -> Vector -> Vector
-computeVectorOperation operation a b =
+computeOperation : (Float -> Float -> Float) -> Vector -> Vector -> Vector
+computeOperation operation a b =
   { x = operation a.x b.x
   , y = operation a.y b.y
   }
 
 
-scaleVector : Vector -> Float -> Vector
-scaleVector vector scale =
-  computeVectorElementOperation (*) vector scale
+scale : Vector -> Float -> Vector
+scale vector scale =
+  computeFloatOperation (*) vector scale
 
 
-computeVectorElementOperation : (Float -> Float -> Float) -> Vector -> Float -> Vector
-computeVectorElementOperation operation a value =
+computeFloatOperation : (Float -> Float -> Float) -> Vector -> Float -> Vector
+computeFloatOperation operation a value =
   { x = operation a.x value
   , y = operation a.y value
   }
 
 
-computeVectorLength : Vector -> Float
-computeVectorLength vector =
+computeLength : Vector -> Float
+computeLength vector =
   (vector.x ^ 2) + (vector.y ^ 2)
   |> sqrt
 
@@ -58,17 +58,17 @@ computeDotProduct a b =
   (a.x * b.x) + (a.y * a.y)
 
 
-constructVector : Float -> Float -> Vector
-constructVector x y =
+construct : Float -> Float -> Vector
+construct x y =
   { x = x
   , y = y
   }
 
 
-compareVectors : Vector -> Vector -> Bool
-compareVectors a b =
-  (compareFloats a.x b.x)
-  && (compareFloats a.y b.y)
+compare : Vector -> Vector -> Bool
+compare a b =
+  (TrFloat.compare a.x b.x)
+  && (TrFloat.compare a.y b.y)
 
 
 type alias Vector =

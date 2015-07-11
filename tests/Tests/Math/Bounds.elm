@@ -1,6 +1,6 @@
 module Tests.Math.Bounds (tests) where
 
-import Trixel.Math.Bounds as Bounds
+import Trixel.Math.Bounds as TrBounds
 
 import ElmTest.Test exposing (test, Test, suite)
 import ElmTest.Assertion exposing (assertEqual)
@@ -12,8 +12,8 @@ tests =
     [ test "computeDimensions"
         (assertEqual
           { x = 2, y = 3 }
-          (Bounds.computeDimensions
-            (Bounds.constructBounds 1 2 3 5)
+          (TrBounds.computeDimensions
+            (TrBounds.construct 1 2 3 5)
             )
           )
     ]
