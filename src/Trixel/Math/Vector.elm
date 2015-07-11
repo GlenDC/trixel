@@ -1,5 +1,7 @@
 module Trixel.Math.Vector where
 
+import Trixel.Math.Float exposing (compareFloats)
+
 
 zeroVector : Vector
 zeroVector =
@@ -61,6 +63,12 @@ constructVector x y =
   { x = x
   , y = y
   }
+
+
+compareVectors : Vector -> Vector -> Bool
+compareVectors a b =
+  (compareFloats a.x b.x)
+  && (compareFloats a.y b.y)
 
 
 type alias Vector =

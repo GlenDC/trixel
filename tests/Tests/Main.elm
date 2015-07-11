@@ -1,6 +1,7 @@
 module Tests.Main where
 
 import Tests.Types.Input as Input
+import Tests.Math.Float as Float
 import Tests.Math.Vector as Vector
 
 import ElmTest.Test exposing (test, Test, suite)
@@ -12,6 +13,7 @@ tests : Test
 tests =
   suite "Trixel Unit Tests"
     [ Input.tests
+    , Float.tests
     , Vector.tests
     ]
 
