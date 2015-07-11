@@ -1,11 +1,6 @@
 module Trixel.Types.Mouse where
 
-import List
-
-
-initialButtonList : Buttons
-initialButtonList =
-  []
+import Trixel.Types.Input exposing(Button)
 
 
 leftButton : Button
@@ -21,8 +16,3 @@ middleButton =
 rightButton : Button
 rightButton =
   2
-
-
-type alias Button = Int
-
-type alias Buttons = List Button

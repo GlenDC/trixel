@@ -7,7 +7,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: [
-          'src/**/*.elm',
+          'src/Trixel/**/*.elm',
           'src/**/*.html',
           'src/**/*.css',
           'src/Native/*.js',

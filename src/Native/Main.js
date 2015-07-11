@@ -3,6 +3,21 @@ var nativeState = {
   mouse: {
     buttonsDown: [],
   },
+  keyboard: {
+    buttonsDown: [],
+  },
+}
+
+function remove(arr, item) {
+  for(var i = arr.length; i--;) {
+    if(arr[i] === item) {
+      arr.splice(i, 1);
+    }
+  }
+}
+
+function isArrayNonEmpty(array) {
+  return array.length > 0;
 }
 
 // Global namespace for the manual native code
@@ -12,32 +27,25 @@ var nativeTrixel = {
 attachMouseEventsToWorkspace: function(id, editorPorts) {
   var workspace = document.getElementById(id);
 
-  function remove(arr, item) {
-    for(var i = arr.length; i--;) {
-      if(arr[i] === item) {
-        arr.splice(i, 1);
-      }
-    }
+  if (workspace) {
+    workspace.onmousemove = function(event) {
+      var mouseX = event.pageX - workspace.offsetLeft;
+      var mouseY = event.pageY - workspace.offsetTop;
+
+      editorPorts.setMousePosition.send(
+        { x: mouseX , y: mouseY }
+      );
+    };
+
+    workspace.onmousedown = function(event) {
+      nativeState.mouse.buttonsDown.push(event.button);
+      editorPorts.setMouseButtonsDown.send(nativeState.mouse.buttonsDown);
+    };
   }
+},
 
-  function isArrayNonEmpty(array) {
-    return array.length > 0;
-  }
-
-  workspace.onmousemove = function(event) {
-    var mouseX = event.pageX - workspace.offsetLeft;
-    var mouseY = event.pageY - workspace.offsetTop;
-
-    editorPorts.setMousePosition.send(
-      { x: mouseX , y: mouseY }
-    );
-  };
-
-  workspace.onmousedown = function(event) {
-    nativeState.mouse.buttonsDown.push(event.button);
-    editorPorts.setMouseButtonsDown.send(nativeState.mouse.buttonsDown);
-  };
-
+// Method to attach all wanted mouse events for the html document
+attachMouseEventsToHtmlDocument: function(editorPorts) {
   // we sould always listen to onMouseUp
   document.onmouseup = function(event) {
     if(isArrayNonEmpty(nativeState.mouse.buttonsDown)) {
@@ -47,19 +55,66 @@ attachMouseEventsToWorkspace: function(id, editorPorts) {
   };
 
   // we sould always listen to onMouseUp
-  document.wheel = function(event) {
+  document.onwheel = function(event) {
     event.preventDefault();
     event.stopPropagation();
-    editorPorts.setMouseButtonsDown.send(
+
+    editorPorts.setMouseWheel.send(
       { x: event.deltaX
       , y: event.deltaY
       }
     );
   };
+
+   // Disabling Context Menu (as it interferes with right click)
+  document.oncontextmenu = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  };
 },
 
-update: function(model) {
+// Method to attach all wanted keyboard events for the html document
+attachKeyboardEventsToHtmlDocument: function(editorPorts) {
+  document.onkeydown = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  // we sould always listen to onMouseUp
+  document.onkeyup = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(isArrayNonEmpty(nativeState.keyboard.buttonsDown)) {
+      remove(nativeState.keyboard.buttonsDown, event.keyCode);
+      editorPorts.setKeyboardButtonsDown.send(nativeState.keyboard.buttonsDown);
+    }
+  };
+},
+
+// Method to attach all wanted keyboard events for the workspace
+attachKeyboardEventsToWorkspace: function(id, editorPorts) {
+  var workspace = document.getElementById(id);
+
+  if (workspace) {
+    workspace.onkeydown = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      nativeState.keyboard.buttonsDown.push(event.keyCode);
+      editorPorts.setKeyboardButtonsDown.send(nativeState.keyboard.buttonsDown);
+    };
+  }
+},
+
+updateModel: function(model) {
   this.attachMouseEventsToWorkspace(
+    model.html.identifiers.workspace,
+    this.trixelEditor.ports
+    );
+
+
+  this.attachKeyboardEventsToWorkspace(
     model.html.identifiers.workspace,
     this.trixelEditor.ports
     );
@@ -71,6 +126,7 @@ main: function() {
 
   var trixelEditor = Elm.fullscreen(Elm.Trixel.Main, {
     setMouseButtonsDown: [],
+    setKeyboardButtonsDown: [],
     setMouseWheel: zeroVector,
     setWindowSizeManual: zeroVector,
     setMousePosition: zeroVector,
@@ -86,12 +142,11 @@ main: function() {
   );
 
   // Gets called when updating the editor
-  trixelEditor.ports.updateEditor.subscribe(this.update);
+  trixelEditor.ports.updateEditor.subscribe(this.updateModel);
 
-   // Disabling Context Menu (as it interferes with right click)
-  document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-  }, false);
+  // Attaching Mouse/Keyboard events to the Html Document
+  this.attachMouseEventsToHtmlDocument(this.trixelEditor.ports);
+  this.attachKeyboardEventsToHtmlDocument(this.trixelEditor.ports);
 },
 
 };

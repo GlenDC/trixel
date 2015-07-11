@@ -2,11 +2,13 @@ module Trixel.Main where
 
 import Trixel.Types.Mouse as Mouse
 import Trixel.Types.Keyboard as Keyboard
+import Trixel.Types.Input exposing (..)
 import Trixel.Math.Vector exposing (Vector)
 import Trixel.Models.Model as Model
 
 -- Incoming Javascript Ports
-port setMouseButtonsDown : Signal Mouse.Buttons
+port setMouseButtonsDown : Signal Buttons
+port setKeyboardButtonsDown : Signal Buttons
 port setMouseWheel : Signal Vector
 port setMousePosition : Signal Vector
 

@@ -1,191 +1,328 @@
-module Trixel.Types.Keyboard
-    ( KeyCode
-    , arrows, wasd
-    , enter, space, ctrl, shift, alt, meta
-    , isDown, keysDown, presses
-    ) where
+module Trixel.Types.Keyboard where
 
-{-| Submodule for working with keyboard input, forked from Elm-Core/Keyboard. -}
-
-import Set
-import Native.EditorKeyboard
-import Signal exposing (Signal)
+import Trixel.Types.Input exposing(Button)
 
 
-{-| Type alias to make it clearer what integers are supposed to represent
-in this library. Use `Char.toCode` and `Char.fromCode` to convert key codes
-to characters. Use the uppercase character with `toCode`.
--}
-type alias KeyCode = Int
+a: Button
+a =
+ 65
 
 
--- MANAGE RAW STREAMS
-
-type alias Model =
-    { alt : Bool
-    , meta : Bool
-    , keyCodes : Set.Set KeyCode
-    }
+b: Button
+b =
+ 66
 
 
-empty : Model
-empty =
-    { alt = False
-    , meta = False
-    , keyCodes = Set.empty
-    }
+c: Button
+c =
+ 67
 
 
-type Event = Up EventInfo | Down EventInfo | Blur
-
-type alias EventInfo =
-    { alt : Bool
-    , meta : Bool
-    , keyCode : KeyCode
-    }
+d: Button
+d =
+ 68
 
 
-update : Event -> Model -> Model
-update event model =
-  case event of
-    Down info ->
-        { alt = info.alt
-        , meta = info.meta
-        , keyCodes = Set.insert info.keyCode model.keyCodes
-        }
-
-    Up info ->
-        { alt = info.alt
-        , meta = info.meta
-        , keyCodes = Set.remove info.keyCode model.keyCodes
-        }
-
-    Blur ->
-        empty
+e: Button
+e = 
+ 69
 
 
-
-model : Signal Model
-model =
-  Signal.foldp update empty rawEvents
-
-
-rawEvents : Signal Event
-rawEvents =
-  Signal.mergeMany
-    [ Signal.map Up Native.EditorKeyboard.ups
-    , Signal.map Down Native.EditorKeyboard.downs
-    , Signal.map (always Blur) Native.EditorKeyboard.blurs
-    ]
+f: Button
+f = 
+ 70
 
 
-dropMap : (a -> b) -> Signal a -> Signal b
-dropMap f signal =
-  Signal.dropRepeats (Signal.map f signal)
+g: Button
+g = 
+ 71
 
 
--- PUBLIC API
-
-{-| Key codes for different layouts. You can set it up to be WASD, arrow keys, etc.
-    arrowKeys = { up = 38, down = 40, left = 37, right = 39 }
-    wasdKeys = { up = 87, down = 83, left = 65, right = 68 }
--}
-type alias Directions =
-    { up : KeyCode
-    , down : KeyCode
-    , left : KeyCode
-    , right : KeyCode
-    }
+h: Button
+h = 
+ 72
 
 
-{-| Extract an x and y value representing directions from a set of key codes
-that are currently pressed. For example, you can use this to define `wasd`
-like this:
-    wasd : Signal { x : Int, y : Int }
-    wasd =
-        Signal.map (toXY { up = 87, down = 83, left = 65, right = 68 }) keysDown
--}
-toXY : Directions -> Set.Set KeyCode -> { x : Int, y : Int }
-toXY {up,down,left,right} keyCodes =
-  let is keyCode =
-        if Set.member keyCode keyCodes
-          then 1
-          else 0
-  in
-      { x = is right - is left
-      , y = is up - is down
-      }
+i: Button
+i = 
+ 73
 
 
-{-| A signal of records indicating which arrow keys are pressed.
-  * `{ x = 0, y = 0 }` when pressing no arrows.
-  * `{ x =-1, y = 0 }` when pressing the left arrow.
-  * `{ x = 1, y = 1 }` when pressing the up and right arrows.
-  * `{ x = 0, y =-1 }` when pressing the down, left, and right arrows.
--}
-arrows : Signal { x:Int, y:Int }
-arrows =
-  dropMap (toXY { up = 38, down = 40, left = 37, right = 39 }) keysDown
+j: Button
+j = 
+ 74
 
 
-{-| Just like the arrows signal, but this uses keys w, a, s, and d,
-which are common controls for many computer games.
--}
-wasd : Signal { x:Int, y:Int }
-wasd =
-  dropMap (toXY { up = 87, down = 83, left = 65, right = 68 }) keysDown
+k: Button
+k = 
+ 75
 
 
-{-| Whether an arbitrary key is pressed. -}
-isDown : KeyCode -> Signal Bool
-isDown keyCode =
-  dropMap (Set.member keyCode) keysDown
+l: Button
+l = 
+ 76
 
 
-{-|-}
-alt : Signal Bool
-alt =
-  dropMap .alt model
+m: Button
+m = 
+ 77
 
 
-{-|-}
-ctrl : Signal Bool
-ctrl =
-  isDown 17
+n: Button
+n = 
+ 78
 
 
-{-| The meta key is the Windows key on Windows and the Command key on Mac.
--}
-meta : Signal Bool
-meta =
-  dropMap .meta model
+o: Button
+o = 
+ 79
 
 
-{-|-}
-shift : Signal Bool
-shift =
-  isDown 16
+p: Button
+p = 
+ 80
 
 
-{-|-}
-space : Signal Bool
-space =
-  isDown 32
+q: Button
+q = 
+ 81
 
 
-{-|-}
-enter : Signal Bool
-enter =
-  isDown 13
+r: Button
+r = 
+ 82
 
 
-{-| Set of keys that are currently down. -}
-keysDown : Signal (Set.Set KeyCode)
-keysDown =
-  dropMap .keyCodes model
+s: Button
+s = 
+ 83
 
 
-{-| The latest key that has been pressed. -}
-presses : Signal KeyCode
-presses =
-  Signal.map .keyCode Native.EditorKeyboard.presses
+t: Button
+t = 
+ 84
+
+
+u: Button
+u = 
+ 85
+
+
+v: Button
+v = 
+ 86
+
+
+w: Button
+w = 
+ 87
+
+
+x: Button
+x = 
+ 88
+
+
+y: Button
+y = 
+ 89
+
+
+z: Button
+z = 
+ 90
+
+
+ctrl: Button
+ctrl = 
+ 17
+
+
+shift: Button
+shift = 
+ 16
+
+
+tab: Button
+tab = 
+ 9
+
+
+{-| super,meta,windows are all the same -}
+super: Button
+super = 
+ 91
+
+
+{-| super,meta,windows are all the same -}
+meta: Button
+meta = 
+ 91
+
+
+{-| super,meta,windows are all the same -}
+windows: Button
+windows = 
+ 91
+
+
+{-| A Button on mac keyboards. The same keycode as the windows/super/meta keys -}
+commandLeft: Button
+commandLeft =
+ 91
+
+
+{-| A Button on mac keyboards. -}
+commandRight: Button
+commandRight =
+ 93
+
+
+space: Button
+space = 
+ 32
+
+
+enter: Button
+enter = 
+ 13
+
+
+arrowRight: Button
+arrowRight = 
+ 37
+
+
+arrowLeft: Button
+arrowLeft = 
+ 39
+
+
+arrowUp: Button
+arrowUp = 
+ 38
+
+
+arrowDown: Button
+arrowDown = 
+ 40
+
+
+backspace: Button
+backspace = 
+ 8
+
+
+delete: Button
+delete = 
+ 46
+
+
+insert: Button
+insert = 
+ 45
+
+
+end: Button
+end = 
+ 35
+
+
+home: Button
+home = 
+ 36
+
+
+pageDown: Button
+pageDown = 
+ 34
+
+
+pageUp: Button
+pageUp = 
+ 33
+
+
+escape: Button
+escape = 
+ 27
+
+
+-- We don't define the F keys that are not availiable.
+-- AKA, F1 is help, F3 is search.  F5 is refresh.
+-- Those keys cannot be used.
+
+
+f2: Button
+f2 = 
+ 113
+
+
+f4: Button
+f4 = 
+ 115
+
+
+f8: Button
+f8 = 
+ 119
+
+
+f9: Button
+f9 = 
+ 120
+
+
+f10: Button
+f10 = 
+ 121
+
+
+one: Button
+one = 
+ 49
+
+
+two: Button
+two = 
+ 50
+
+
+three: Button
+three = 
+ 51
+
+
+four: Button
+four = 
+ 52
+
+
+five: Button
+five = 
+ 53
+
+
+six: Button
+six = 
+ 54
+
+
+seven: Button
+seven = 
+ 55
+
+
+eight: Button
+eight = 
+ 56
+
+
+nine: Button
+nine = 
+ 57
+
+
+zero: Button
+zero = 
+ 58
