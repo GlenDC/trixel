@@ -3,7 +3,10 @@
 **/Out/
 **/elm-stuff/
 
-
+# nodejs
 node_modules/
+
+# tests
+tests/**/*.html
 
 .DS_STORE

@@ -33,10 +33,22 @@ computeVectorOperation operation a b =
   }
 
 
+computeVectorElementOperation : (Float -> Float -> Float) -> Vector -> Float -> Vector
+computeVectorElementOperation operation a value =
+  { x = operation a.x value
+  , y = operation a.y value
+  }
+
+
 computeVectorLength : Vector -> Float
 computeVectorLength vector =
   (vector.x ^ 2) + (vector.y ^ 2)
   |> sqrt
+
+
+computeDotProduct : Vector -> Vector -> Float
+computeDotProduct a b =
+  (a.x * b.x) + (a.y * a.y)
 
 
 constructVector : Float -> Float -> Vector

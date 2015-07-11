@@ -8,32 +8,38 @@ module.exports = function(grunt) {
       scripts: {
         files: [
           'src/Trixel/**/*.elm',
-          'src/**/*.html',
+          'src/*.html',
           'src/**/*.css',
           'src/Native/*.js',
+          'tests/Tests/**/*.elm',
           ],
-        tasks: ['shell'],
+        tasks: ['shell:source', 'shell:tests'],
         options: {
           spawn: true,
+          atBegin: true,
         },
       },
     },
 
     shell: {
-        options: {
-            stderr: false
+        source: {
+          command: function() {
+            return 'cd src && elm-make Trixel/Main.elm --output Out/Trixel.js';
+          }
         },
-        target: {
-            command: 'cd src && elm-make Trixel/Main.elm --output Out/Trixel.js'
-        }
-    }
+        tests: {
+          command: function() {
+            return 'cd tests && elm-make Tests/Main.elm --output Index.html';
+          }
+        },
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-shell');
 
-  // Default task(s).
-  grunt.registerTask('default', ['shell']);
-
-  grunt.task.run(['shell'])
+  // Custom Tasks
+  grunt.registerTask('test', 'A task to compile the unit tests.', function() {
+    grunt.task.run(['shell:tests'])
+  });
 };
