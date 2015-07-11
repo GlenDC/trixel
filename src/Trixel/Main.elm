@@ -1,44 +1,36 @@
 module Trixel.Main where
 
 import Trixel.Types.Mouse as Mouse
+import Trixel.Types.Keyboard as Keyboard
 import Trixel.Math.Vector exposing (Vector)
+import Trixel.Models.Model as Model
 
-import Html exposing (Html, Attribute, div, text)
-import Html.Attributes exposing (style, id, class)
-
-
+-- Incoming Javascript Ports
 port setMouseButtonsDown : Signal Mouse.Buttons
+port setMouseWheel : Signal Vector
+port setMousePosition : Signal Vector
 
 port setWindowSizeManual : Signal Vector
 
-port setMousePosition : Signal Vector
+
+-- Outgoing Javascript Ports
+port updateEditor : Model.ModelSignal
+port updateEditor =
+  mainSignal
 
 
-mainSignal : Signal Mouse.Buttons
+-- Main Update Signal
+mainSignal : Model.ModelSignal
 mainSignal =
-  Signal.foldp update [] setMouseButtonsDown
+  Signal.foldp
+    Model.update
+    Model.initialModel
+    (Signal.constant Model.initialModel)
 
 
-main : Signal Html
+-- Main Signal
+main : Model.MainSignal
 main =
-  Signal.map view mainSignal
-
-
-update : Mouse.Buttons -> Mouse.Buttons -> Mouse.Buttons
-update new state =
-  new
-
-
-view : Mouse.Buttons -> Html
-view buttons =
-  div
-    [ style
-        [ ("position", "absolute")
-        , ("width", "300px")
-        , ("height", "300px")
-        ]
-    , id "canvas"
-    , class "noselect"
-    ]
-    [ text (toString buttons)
-    ]
+  Signal.map
+    Model.view
+    mainSignal

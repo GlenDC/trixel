@@ -45,6 +45,24 @@ attachMouseEventsToWorkspace: function(id, editorPorts) {
       editorPorts.setMouseButtonsDown.send(nativeState.mouse.buttonsDown);
     }
   };
+
+  // we sould always listen to onMouseUp
+  document.wheel = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    editorPorts.setMouseButtonsDown.send(
+      { x: event.deltaX
+      , y: event.deltaY
+      }
+    );
+  };
+},
+
+update: function(model) {
+  this.attachMouseEventsToWorkspace(
+    model.html.identifiers.workspace,
+    this.trixelEditor.ports
+    );
 },
 
 // Main function starting the entire editor
@@ -52,13 +70,13 @@ main: function() {
   var zeroVector = { x: 0, y: 0 };
 
   var trixelEditor = Elm.fullscreen(Elm.Trixel.Main, {
-    setMouseButtonsDown:
-      [],
-    setWindowSizeManual:
-      zeroVector,
-    setMousePosition:
-      zeroVector,
+    setMouseButtonsDown: [],
+    setMouseWheel: zeroVector,
+    setWindowSizeManual: zeroVector,
+    setMousePosition: zeroVector,
   });
+
+  this.trixelEditor = trixelEditor
   
   // Set initial window dimensions
   trixelEditor.ports.setWindowSizeManual.send(
@@ -67,7 +85,8 @@ main: function() {
     }
   );
 
-  this.attachMouseEventsToWorkspace("canvas", trixelEditor.ports);
+  // Gets called when updating the editor
+  trixelEditor.ports.updateEditor.subscribe(this.update);
 
    // Disabling Context Menu (as it interferes with right click)
   document.addEventListener('contextmenu', function(event) {
