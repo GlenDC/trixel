@@ -44,9 +44,9 @@ tests =
           72
           (Vector.computeDotProduct vectorA vectorB)
           )
-    , test "computeVectorElementOperation -> scale"
+    , test "scaleVector"
         (assertEqual
           (Vector.constructVector 40 80)
-          (Vector.computeVectorElementOperation (*) vectorA 10)
+          (Vector.scaleVector vectorA 10)
           )
     ]

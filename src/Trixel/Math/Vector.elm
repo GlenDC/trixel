@@ -33,6 +33,11 @@ computeVectorOperation operation a b =
   }
 
 
+scaleVector : Vector -> Float -> Vector
+scaleVector vector scale =
+  computeVectorElementOperation (*) vector scale
+
+
 computeVectorElementOperation : (Float -> Float -> Float) -> Vector -> Float -> Vector
 computeVectorElementOperation operation a value =
   { x = operation a.x value
