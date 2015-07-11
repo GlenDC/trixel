@@ -2,6 +2,7 @@ module Trixel.Models.Model where
 
 import Trixel.Models.HtmlModel as TrHtmlModel
 import Trixel.Types.ColorScheme as TrColorScheme
+import Trixel.Types.RgbaColor as TrRgbaColor
 
 import Html exposing (Html, Attribute, div, text)
 import Html.Attributes exposing (style, id, class)
@@ -34,8 +35,8 @@ view : Model -> Html
 view model =
   div
     [ style
-        [ ("color", TrColorScheme.constructHtmlColor model.colorScheme.primary.accentHigh)
-        , ("background-color", TrColorScheme.constructHtmlColor model.colorScheme.primary.default.fill)
+        [ ("color", TrRgbaColor.toString model.colorScheme.primary.accentHigh)
+        , ("background-color", TrRgbaColor.toString model.colorScheme.primary.default.fill)
         , ("font-family", "'Open Sans', sans-serif")
         , ("position", "absolute")
         , ("overflow", "hidden")
@@ -51,7 +52,7 @@ view model =
             [ ("position", "absolute")
             , ("width", "300px")
             , ("height", "300px")
-        , ("background-color", TrColorScheme.constructHtmlColor model.colorScheme.document)
+        , ("background-color", TrRgbaColor.toString model.colorScheme.document)
             ]
         , id model.html.identifiers.workspace
         , class "noselect"
