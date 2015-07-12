@@ -1,4 +1,4 @@
-module Trixel.Models.HtmlModel
+module Trixel.Models.Native
   ( initialModel
   , Model
   )

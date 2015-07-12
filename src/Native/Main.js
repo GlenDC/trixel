@@ -20,6 +20,11 @@ function isArrayNonEmpty(array) {
   return array.length > 0;
 }
 
+function setTitle(model) {
+  document.title =
+    Elm.Trixel.Models.Work.computeTitle(model.work);
+}
+
 // Global namespace for the manual native code
 var nativeTrixel = {
 
@@ -118,6 +123,8 @@ updateModel: function(model) {
     model.html.identifiers.workspace,
     this.trixelEditor.ports
     );
+
+  setTitle(model);
 },
 
 // Main function starting the entire editor

@@ -1,6 +1,7 @@
 module Trixel.Models.Model where
 
-import Trixel.Models.HtmlModel as TrHtmlModel
+import Trixel.Models.Native as TrNative
+import Trixel.Models.Work as TrWork
 import Trixel.Types.ColorScheme as TrColorScheme
 import Trixel.Types.RgbaColor as TrRgbaColor
 
@@ -15,13 +16,15 @@ type alias MainSignal = Signal Html
 
 initialModel : Model
 initialModel =
-  { html = TrHtmlModel.initialModel
+  { native = TrNative.initialModel
+  , work = TrWork.initialModel
   , colorScheme = TrColorScheme.nightColorScheme
   }
 
 
 type alias Model =
-  { html : TrHtmlModel.Model
+  { native : TrNative.Model
+  , work : TrWork.Model
   , colorScheme : TrColorScheme.ColorScheme
   }
 
@@ -45,7 +48,7 @@ view model =
         , ("width", "100%")
         , ("height", "100%")
         ]
-    , id model.html.identifiers.main
+    , id model.native.identifiers.main
     ]
     [ div
         [ style
@@ -54,7 +57,7 @@ view model =
             , ("height", "300px")
         , ("background-color", TrRgbaColor.toString model.colorScheme.document)
             ]
-        , id model.html.identifiers.workspace
+        , id model.native.identifiers.workspace
         , class "noselect"
         ]
         [ text (toString "Hello, World!")

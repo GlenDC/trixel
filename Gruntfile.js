@@ -23,6 +23,7 @@ module.exports = function(grunt) {
         options: {
           spawn: true,
           atBegin: true,
+          debounceDelay: 1500,
         },
       },
     },
