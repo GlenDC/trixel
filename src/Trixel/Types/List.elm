@@ -1,5 +1,6 @@
 module Trixel.Types.List
-  ( erase
+  ( find
+  , erase
   , eraseStable
   , head
   , tail
@@ -12,6 +13,28 @@ module Trixel.Types.List
 
 import List
 import Maybe exposing (..)
+
+
+{-| Returns the first found item in a list, if any.
+
+    find (\x -> x == 2) [1, 2, 2, 3] == Just 2
+    find (\x -> x == 2) [1, 3] == Nothing
+-}
+find : (a -> Bool) -> List a -> Maybe a
+find predicate list =
+  case List.head list of
+    -- Empty list or couldn't find it.
+    Nothing ->
+      Nothing 
+
+    Just item ->
+      if predicate item
+        -- item has been found
+        then Just item
+        else
+          tail list
+          |> find predicate
+
 
 {-| Returns a list excluding the first-found item in the list, if any.
     Note that the order of elements in the list is not respected.
@@ -44,7 +67,7 @@ eraseStable predicate list =
 -- Function internally used as the common logic to erase an element from a list
 eraseRecursive : (a -> Bool) -> List a -> List a -> (List a, List a, Maybe a)
 eraseRecursive predicate newList oldList =
-  case List.head oldList of ->
+  case List.head oldList of
     Nothing ->
       -- Item was not in the list
       (newList, oldList, Nothing)
@@ -56,7 +79,7 @@ eraseRecursive predicate newList oldList =
           -- Found Item and returning
           then (newList, oldList', Just item) 
           -- Item not Found yet, but we'll keep looking
-          else eraseRecursive predicate newList oldList'
+          else eraseRecursive predicate (item::newList) oldList'
 
 
 {-| Returns either the head of the given list or the given default value.
