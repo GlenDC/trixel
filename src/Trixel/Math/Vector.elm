@@ -65,10 +65,16 @@ construct x y =
   }
 
 
-compare : Vector -> Vector -> Bool
-compare a b =
-  (TrFloat.compare a.x b.x)
-  && (TrFloat.compare a.y b.y)
+isEqual : Vector -> Vector -> Bool
+isEqual a b =
+  (TrFloat.isEqual a.x b.x)
+  && (TrFloat.isEqual a.y b.y)
+
+
+isNotEqual : Vector -> Vector -> Bool
+isNotEqual a b =
+  isEqual a b
+  |> not
 
 
 type alias Vector =

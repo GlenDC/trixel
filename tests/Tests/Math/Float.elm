@@ -8,7 +8,7 @@ import ElmTest.Assertion exposing (assertEqual, assert, Assertion)
 
 assertEqualFloat : Float -> Float -> Assertion
 assertEqualFloat a b =
-  TrFloat.compare a b
+  TrFloat.isEqual a b
   |> assert
 
 

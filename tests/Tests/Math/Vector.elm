@@ -24,13 +24,13 @@ vectorC =
 
 assertEqualVector : TrVector.Vector -> TrVector.Vector -> Assertion
 assertEqualVector a b =
-  TrVector.compare a b
+  TrVector.isEqual a b
   |> assert
 
 
 assertEqualFloat : Float -> Float -> Assertion
 assertEqualFloat a b =
-  TrFloat.compare a b
+  TrFloat.isEqual a b
   |> assert
 
 

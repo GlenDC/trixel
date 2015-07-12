@@ -1,10 +1,20 @@
-module Trixel.Math.Float (compare) where
+module Trixel.Math.Float
+  ( isEqual
+  , isNotEqual
+  )
+  where
 
 
 epsilon : Float
 epsilon = 0.001
 
 
-compare : Float -> Float -> Bool
-compare a b =
+isEqual : Float -> Float -> Bool
+isEqual a b =
   abs (a - b) < epsilon
+
+
+isNotEqual : Float -> Float -> Bool
+isNotEqual a b =
+  isEqual a b
+  |> not

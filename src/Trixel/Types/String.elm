@@ -1,5 +1,7 @@
 module Trixel.Types.String where
 
+-- Wrapper functions for Core.Strings functionality
+
 import String
 
 

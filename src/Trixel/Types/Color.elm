@@ -1,7 +1,12 @@
-module Trixel.Types.RgbaColor where
+module Trixel.Types.Color where
 
 import Trixel.Math.Float as TrFloat
 import Color exposing (Color)
+
+
+initialColor : RgbaColor
+initialColor =
+  construct 0 0 0 0
 
 
 construct : Int -> Int -> Int -> Float -> RgbaColor
@@ -13,12 +18,18 @@ construct red green blue alpha =
   }
 
 
-compare : RgbaColor -> RgbaColor -> Bool
-compare a b =
+isEqual : RgbaColor -> RgbaColor -> Bool
+isEqual a b =
   (a.red == b.red)
   && (a.green == b.green)
   && (a.blue == b.blue)
-  && (TrFloat.compare a.alpha b.alpha)
+  && (TrFloat.isEqual a.alpha b.alpha)
+
+
+isNotEqual : RgbaColor -> RgbaColor -> Bool
+isNotEqual a b =
+  isEqual a b
+  |> not
 
 
 computeAlphaBlend : RgbaColor -> RgbaColor -> RgbaColor
