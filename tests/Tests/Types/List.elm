@@ -22,6 +22,63 @@ findTests =
     ]
 
 
+replaceTests : Test
+replaceTests =
+  let a = ("Void", 0)
+      a' = ("Nop", 0)
+
+      b = ("Foo", 1)
+
+      c = ("Bar", 2)
+      c' = ("Baz", 2)
+
+      d = ("Inf", 3)
+
+      list = [a, b, c]
+
+
+      predicate =
+        (\(_, x) (_, y) -> x == y)
+  in
+    suite "replace"
+      [ test "something"
+          (assertEqual
+            ([b, a, c'], Just c)
+            (TrList.replace predicate c' list)
+            )
+      , test "stable something"
+          (assertEqual
+            ([a, b, c'], Just c)
+            (TrList.replaceStable predicate c' list)
+            )
+      , test "nothing"
+          (assertEqual
+            ([c, b, a], Nothing)
+            (TrList.replace predicate d list)
+            )
+      , test "stable nothing"
+          (assertEqual
+            (list, Nothing)
+            (TrList.replaceStable predicate d list)
+            )
+      , test "`something` can be equal to `stable something`"
+          (assertEqual
+            (TrList.replace predicate a' list)
+            (TrList.replaceStable predicate a' list)
+            )
+      , test "`nothing` can be equal to `stable nothing`"
+          (assertEqual
+            (TrList.replace predicate a [b])
+            (TrList.replaceStable predicate a [b])
+            )
+      , test "nothing found in an empty list"
+          (assertEqual
+            ([], Nothing)
+            (TrList.replace predicate a [])
+            )
+      ]
+
+
 eraseTests : Test
 eraseTests =
   suite "erase"
@@ -79,6 +136,7 @@ tests : Test
 tests =
   suite "Types/List"
     [ findTests
+    , replaceTests
     , eraseTests
     , headAndTailTests
     ]
