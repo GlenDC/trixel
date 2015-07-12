@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           'src/Trixel/**/*.elm',
           'src/*.html',
           'src/**/*.css',
-          'src/Native/*.js',
+          'src/Native/**/*.ls',
           'tests/Tests/**/*.elm',
           ],
         tasks:
@@ -18,6 +18,7 @@ module.exports = function(grunt) {
           , 'htmlmin'
           , 'cssmin'
           , 'copy'
+          , 'livescript'
           , 'uglify'
           ],
         options: {
@@ -82,6 +83,19 @@ module.exports = function(grunt) {
       }
     },
 
+    livescript: {
+      src: {
+        files: {
+         'src/Out/Native.js':
+            [ 'src/Native/Helpers.ls'
+            , 'src/Native/Input.ls'
+            , 'src/Native/Update.ls'
+            , 'src/Native/Main.ls'
+            ]
+        }
+      }
+    },
+
     uglify: {
       options: {
         mangle: false,
@@ -89,9 +103,9 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/native.js':
-            [ 'src/Libs/**/*.js'
-            , 'src/Native/**/*.js'
-            , 'src/Out/**/*.js'
+            [ 'src/Libs/*.js'
+            , 'src/Out/Trixel.js'
+            , 'src/Out/Native.js'
             ]
         }
       }
@@ -102,6 +116,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
 
