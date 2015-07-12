@@ -1,5 +1,8 @@
 module Trixel.Types.Work2D.Row
-  ( constructInitial
+  ( Grid
+  , Rows
+  , Row
+  , constructInitial
   , construct
   , findTrixel
   , insertTrixel
