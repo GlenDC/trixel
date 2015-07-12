@@ -9,4 +9,7 @@ node_modules/
 # tests
 tests/**/*.html
 
+# dist
+dist/
+
 .DS_STORE

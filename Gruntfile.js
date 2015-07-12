@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     watch: {
-      scripts: {
+      all: {
         files: [
           'src/Trixel/**/*.elm',
           'src/*.html',
@@ -13,7 +13,13 @@ module.exports = function(grunt) {
           'src/Native/*.js',
           'tests/Tests/**/*.elm',
           ],
-        tasks: ['shell:source', 'shell:tests'],
+        tasks:
+          [ 'shell'
+          , 'htmlmin'
+          , 'cssmin'
+          , 'copy'
+          , 'uglify'
+          ],
         options: {
           spawn: true,
           atBegin: true,
@@ -33,9 +39,69 @@ module.exports = function(grunt) {
           }
         },
     },
+
+    htmlmin: {
+      dist: {
+        options: {
+          removeComments: true,
+          collapseWhitespace: true,
+          useShortDoctype: true,
+        },
+        files: {
+          'dist/index.html': 'src/index.html',
+        },
+      },
+    },
+
+    cssmin: {
+      options: {
+        shorthandCompacting: false,
+        roundingPrecision: -1
+      },
+      target: {
+        files: {
+          'dist/style.css':
+            [ 'src/Libs/**/*.css'
+            , 'src/Stylesheets/**/*.css'
+            ]
+        }
+      }
+    },
+
+    copy: {
+      main: {
+        files: [
+          { expand: true
+          , flatten: true
+          , src: ['src/Assets/**']
+          , dest: 'dist/assets'
+          , filter: 'isFile'
+          },
+        ]
+      }
+    },
+
+    uglify: {
+      options: {
+        mangle: false,
+      },
+      dist: {
+        files: {
+          'dist/native.js':
+            [ 'src/Libs/**/*.js'
+            , 'src/Native/**/*.js'
+            , 'src/Out/**/*.js'
+            ]
+        }
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
 
   // Custom Tasks

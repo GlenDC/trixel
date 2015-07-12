@@ -1,6 +1,6 @@
 # Trixel
 
-![Image Alt](trixel.png)
+![Image Alt](assets/trixel.png)
 
 Trixel, make trixel art.
 
