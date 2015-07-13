@@ -105,12 +105,21 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    clean : [
+      "src/elm-stuff/build-artifacts",
+      "tests/elm-stuff/build-artifacts",
+      "tests/index.html",
+      "dist",
+      "src/Out",
+    ],
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
