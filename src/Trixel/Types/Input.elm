@@ -3,6 +3,13 @@ module Trixel.Types.Input where
 import List
 
 
+containsButton : Button -> Buttons -> Bool
+containsButton button buttons =
+  List.any
+    ((==) button)
+    buttons
+
+
 initialButtonList : Buttons
 initialButtonList =
   []

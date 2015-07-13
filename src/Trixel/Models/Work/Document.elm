@@ -1,4 +1,4 @@
-module Trixel.Models.Document
+module Trixel.Models.Work.Document
   ( initialModel
   , Model
   , computeFileName

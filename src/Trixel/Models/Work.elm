@@ -5,19 +5,22 @@ module Trixel.Models.Work
   )
   where
 
-import Trixel.Models.Document as TrDocument
+import Trixel.Models.Work.Document as TrDocument
+import Trixel.Models.Work.Input as TrInput
 
 
 initialModel : Model
 initialModel =
   { unsavedProgress = False
   , document = TrDocument.initialModel
+  , input = TrInput.initialModel
   }
 
 
 type alias Model =
   { unsavedProgress : Bool
   , document : TrDocument.Model
+  , input : TrInput.Model
   }
 
 
