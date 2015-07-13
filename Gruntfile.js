@@ -13,14 +13,7 @@ module.exports = function(grunt) {
           'src/Native/**/*.ls',
           'tests/Tests/**/*.elm',
           ],
-        tasks:
-          [ 'shell'
-          , 'htmlmin'
-          , 'cssmin'
-          , 'copy'
-          , 'livescript'
-          , 'uglify'
-          ],
+        tasks: ['deploy'],
         options: {
           spawn: true,
           atBegin: true,
@@ -92,18 +85,29 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      options: {
-        mangle: false,
+      dev: {
+        options: {
+          mangle: false,
+        },
+        src:
+          [ 'src/Libs/*.js'
+          , 'src/Out/Trixel.js'
+          , 'src/Out/Native.js'
+          ],
+        dest: 'dist/native.js',
       },
-      dist: {
-        files: {
-          'dist/native.js':
-            [ 'src/Libs/*.js'
-            , 'src/Out/Trixel.js'
-            , 'src/Out/Native.js'
-            ]
-        }
-      }
+      release: {
+        options: {
+          mangle: true,
+          compress: true,
+        },
+        src:
+          [ 'src/Libs/*.js'
+          , 'src/Out/Trixel.js'
+          , 'src/Out/Native.js'
+          ],
+        dest: 'dist/native.js',
+      },
     },
 
     clean : [
@@ -125,7 +129,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
 
   // Custom Tasks
+
   grunt.registerTask('test', 'A task to compile the unit tests.', function() {
     grunt.task.run(['shell:tests'])
+  });
+
+  grunt.registerTask('deploy', 'A task to compile the entire editor', function() {
+    var release = grunt.option('release');
+    var target = release ? 'release' : 'dev';
+    grunt.task.run(
+      [ 'shell'
+      , 'htmlmin'
+      , 'cssmin'
+      , 'copy'
+      , 'livescript'
+      , 'uglify:' + target
+      ])
   });
 };
