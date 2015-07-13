@@ -9,7 +9,7 @@ import Html exposing (Html, Attribute, div, text)
 import Html.Attributes exposing (style, id, class)
 
 
-type alias ModelSignal = Signal Model
+type alias ModelSignal = Signal Action
 
 type alias MainSignal = Signal Html
 
@@ -29,9 +29,19 @@ type alias Model =
   }
 
 
-update : Model -> Model -> Model
-update new old =
-  new
+type Action
+  = UpdateWork TrWork.Model
+  | UpdateColorScheme TrColorScheme.ColorScheme
+
+
+update : Action -> Model -> Model
+update action model =
+  case action of
+    UpdateWork work ->
+      { model | work <- work }
+
+    UpdateColorScheme colorScheme ->
+      { model | colorScheme <- colorScheme }
 
 
 view : Model -> Html

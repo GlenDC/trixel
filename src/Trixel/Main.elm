@@ -2,37 +2,67 @@ module Trixel.Main where
 
 import Trixel.Types.Mouse as TrMouse
 import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Types.Input exposing (..)
-import Trixel.Math.Vector exposing (Vector)
+import Trixel.Types.Input as TrInput
+
+import Trixel.Math.Vector as TrVector
+
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Work as TrWorkModel
+
+import Window
+
 
 -- Incoming Javascript Ports
-port setMouseButtonsDown : Signal Buttons
-port setKeyboardButtonsDown : Signal Buttons
-port setMouseWheel : Signal Vector
-port setMousePosition : Signal Vector
+port setMouseButtonsDown : Signal TrInput.Buttons
+port setMousePosition : Signal TrVector.Vector
+port setMouseWheel : Signal TrVector.Vector
+port setKeyboardButtonsDown : Signal TrInput.Buttons
 
-port setWindowSizeManual : Signal Vector
+port setWindowSizeManual : Signal TrVector.Vector
 
 
 -- Outgoing Javascript Ports
-port updateEditor : TrModel.ModelSignal
-port updateEditor =
-  mainSignal
+port updateEditor : Signal TrModel.Model
+port updateEditor = signal
 
 
--- Main Update Signal
-mainSignal : TrModel.ModelSignal
-mainSignal =
-  Signal.foldp
-    TrModel.update
-    TrModel.initialModel
-    (Signal.constant TrModel.initialModel)
+setWindowDimensions : Signal TrVector.Vector
+setWindowDimensions =
+  Signal.map
+    (\(x, y) -> 
+      TrVector.construct (toFloat x) (toFloat y))
+    Window.dimensions
+  |> Signal.merge setWindowSizeManual
+
+
+-- Work Update Signal
+workSignal : TrModel.ModelSignal
+workSignal =
+  let workMailbox = TrWorkModel.mailbox
+  in
+    Signal.mergeMany
+      [ TrWorkModel.mouseButtonsSignal setMouseButtonsDown
+      , TrWorkModel.mousePositionSignal setMousePosition
+      , TrWorkModel.keyboardButtonsSignal setKeyboardButtonsDown
+      , TrWorkModel.mouseWheelSignal setMouseWheel
+      , TrWorkModel.windowDimensionsSignal setWindowDimensions
+      , workMailbox.signal
+      ]
+    |> Signal.foldp TrWorkModel.update TrWorkModel.initialModel
+    |> Signal.map (\work -> TrModel.UpdateWork work)
 
 
 -- Main Signal
-main : TrModel.MainSignal
+signal : Signal TrModel.Model
+signal =
+  Signal.foldp
+    TrModel.update
+    TrModel.initialModel
+    workSignal
+
+
+-- Main Signal
 main =
   Signal.map
     TrModel.view
-    mainSignal
+    signal

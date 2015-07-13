@@ -14,9 +14,10 @@ import Trixel.Math.Vector as TrVector
 import Maybe exposing (..)
 
 
-setKeyboardButtons : TrInput.Buttons -> TrInput.Buttons -> Model -> Model
-setKeyboardButtons previousDown newDown model =
-  { model | keyboard <- constructButtonModel previousDown newDown }
+setKeyboardButtons : TrInput.Buttons -> Model -> Model
+setKeyboardButtons buttons model =
+  { model | keyboard <-
+    constructButtonModel model.keyboard.down buttons }
 
 
 setMouseButtons : TrInput.Buttons -> Model -> Model

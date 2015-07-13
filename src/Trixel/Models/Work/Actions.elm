@@ -3,6 +3,7 @@ module Trixel.Models.Work.Actions where
 import Trixel.Types.Input as TrInput
 import Trixel.Math.Vector as TrVector
 
+
 -- All action related to the work environment
 type Action
   = None
@@ -21,3 +22,5 @@ type Action
   -- Move/Set Work Offset
   | MoveOffset TrVector.Vector
   | SetOffset TrVector.Vector
+  -- Set Editor Window Size
+  | SetWindowDimensions TrVector.Vector
