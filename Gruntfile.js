@@ -85,10 +85,18 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      dev: {
+      investigate: {
         options: {
-          mangle: false,
+          beautify: true,
         },
+        src:
+          [ 'src/Libs/*.js'
+          , 'src/Out/Trixel.js'
+          , 'src/Out/Native.js'
+          ],
+        dest: 'dist/native.js',
+      },
+      dev: {
         src:
           [ 'src/Libs/*.js'
           , 'src/Out/Trixel.js'
@@ -136,7 +144,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', 'A task to compile the entire editor', function() {
     var release = grunt.option('release');
-    var target = release ? 'release' : 'dev';
+    var investigate = grunt.option('investigate');
+    var target = investigate ? 'investigate' : (release ? 'release' : 'dev');
     grunt.task.run(
       [ 'shell'
       , 'htmlmin'

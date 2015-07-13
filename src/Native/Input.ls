@@ -37,7 +37,7 @@ this.tr-attachMouseEventsToHtmlDocument = (editorPorts) ->
   document.onmouseup = (event) ->
     tr-disableBehaviour event
     if tr-isArrayNonEmpty tr-state.mouse.buttonsDown
-      tr-remove tr-state.mouse.buttonsDown event.button
+      tr-remove tr-state.mouse.buttonsDown, event.button
       editorPorts.setMouseButtonsDown.send tr-state.mouse.buttonsDown
     void
 
@@ -56,7 +56,7 @@ this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts) ->
   document.onkeyup = (event) ->
     tr-disableBehaviour event
     if tr-isArrayNonEmpty tr-state.keyboard.buttonsDown
-      tr-remove tr-state.keyboard.buttonsDown event.keyCode
+      tr-remove tr-state.keyboard.buttonsDown, event.keyCode
       editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
 
     void

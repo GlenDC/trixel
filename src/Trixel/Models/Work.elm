@@ -22,10 +22,12 @@ import Trixel.Math.Vector as TrVector
 
 import Signal exposing (Signal)
 
+import Debug
+
 
 initialModel : Model
 initialModel =
-  { unsavedProgress = False
+  { unsavedProgress = True
   , document = TrDocument.initialModel
   , input = TrInput.initialModel
   , dimensions = TrVector.zeroVector
@@ -85,7 +87,7 @@ computeTitle model =
           model.document
   in
     if model.unsavedProgress
-      then title ++ "*"
+      then title ++ " *"
       else title
 
 

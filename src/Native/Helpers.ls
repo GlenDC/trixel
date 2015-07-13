@@ -2,7 +2,7 @@
 this.tr-remove = (arr, item) ->
   for let x, i in arr
     if x == item
-      arr.splice i 1
+      arr.splice i, 1
 
   void
 

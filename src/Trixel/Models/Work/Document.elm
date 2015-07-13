@@ -21,11 +21,10 @@ type alias Model =
 
 computeFileName : Model -> String
 computeFileName model =
-  case model.title of
+  (case model.title of
     Just title ->
       title
 
     Nothing ->
       "untitled" -- todo: replace with localised version
-
-  |> (++) ".trixel"
+  ) ++ ".trixel"

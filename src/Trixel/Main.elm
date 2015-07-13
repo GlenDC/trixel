@@ -28,14 +28,14 @@ port updateEditor = signal
 
 setWindowDimensions : Signal TrVector.Vector
 setWindowDimensions =
-  Signal.map
+  (Signal.map
     (\(x, y) -> 
       TrVector.construct (toFloat x) (toFloat y))
-    Window.dimensions
+    Window.dimensions)
   |> Signal.merge setWindowSizeManual
 
 
--- Work Update Signal
+-- Work Signal
 workSignal : TrModel.ModelSignal
 workSignal =
   let workMailbox = TrWorkModel.mailbox
@@ -61,7 +61,7 @@ signal =
     workSignal
 
 
--- Main Signal
+-- Main Function
 main =
   Signal.map
     TrModel.view

@@ -13,7 +13,7 @@ type alias ColorScheme =
 
 
 type alias ColorGroup =
-  { default : ColorPair
+  { main : ColorPair
   , accentHigh : TrColor.RgbaColor
   , accentMid : TrColor.RgbaColor
   , accentLow : TrColor.RgbaColor
@@ -36,7 +36,7 @@ constructColorPair fill stroke =
 dayColorScheme : ColorScheme
 dayColorScheme =
   { primary =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 214 214 214 1)
             (TrColor.construct 73 73 71 1)
@@ -45,7 +45,7 @@ dayColorScheme =
       , accentLow = TrColor.construct 236 236 236 1
       }
   , secondary =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 253 253 253 1)
             (TrColor.construct 174 174 176 1)
@@ -54,7 +54,7 @@ dayColorScheme =
       , accentLow = TrColor.construct 233 233 231 1
       }
   , selection =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 150 150 150 1)
             (TrColor.construct 75 75 75 1)
@@ -73,7 +73,7 @@ dayColorScheme =
 nightColorScheme : ColorScheme
 nightColorScheme =
   { primary =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 83 83 83 1)
             (TrColor.construct 56 56 56 1)
@@ -82,7 +82,7 @@ nightColorScheme =
       , accentLow = TrColor.construct 112 112 112 1
       }
   , secondary =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 58 58 58 1)
             (TrColor.construct 48 48 48 1)
@@ -91,7 +91,7 @@ nightColorScheme =
       , accentLow = TrColor.construct 99 99 99 1
       }
   , selection =
-      { default =
+      { main =
           constructColorPair
             (TrColor.construct 45 54 61 1)
             (TrColor.construct 35 42 48 1)
