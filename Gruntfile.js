@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         files: [
           'src/Trixel/**/*.elm',
           'src/*.html',
-          'src/**/*.css',
+          'src/**/*.sass',
           'src/Native/**/*.ls',
           'tests/Tests/**/*.elm',
           ],
@@ -48,6 +48,18 @@ module.exports = function(grunt) {
       },
     },
 
+    sass: {
+      dist: {
+        options: {
+          compass: true,
+          sourcemap: 'none',
+        },
+        files: {
+          'src/Out/Main.css': 'src/Stylesheets/Main.sass'
+        }
+      }
+    },
+
     cssmin: {
       options: {
         shorthandCompacting: false,
@@ -57,7 +69,7 @@ module.exports = function(grunt) {
         files: {
           'dist/style.css':
             [ 'src/Libs/**/*.css'
-            , 'src/Stylesheets/**/*.css'
+            , 'src/Out/**/*.css'
             ]
         }
       }
@@ -129,9 +141,10 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
@@ -149,6 +162,7 @@ module.exports = function(grunt) {
     grunt.task.run(
       [ 'shell'
       , 'htmlmin'
+      , 'sass'
       , 'cssmin'
       , 'copy'
       , 'livescript'

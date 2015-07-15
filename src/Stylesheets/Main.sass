@@ -1,0 +1,25 @@
+// fonts
+$font_main: 'Open Sans'
+$font_backup: 'sans-serif'
+
+
+// imports
+@import "compass/css3/user-interface"
+
+
+// general
+html,
+head,
+body
+  padding: 0
+  margin: 0
+
+
+body
+  font-family: $font_main, $font_backup
+  @include user-select(none)
+  cursor: default
+
+
+// Other Files
+@import "Layout.sass"

@@ -53,25 +53,14 @@ view model =
     [ style
         [ ("color", TrColor.toString model.colorScheme.primary.accentHigh)
         , ("background-color", TrColor.toString model.colorScheme.primary.main.fill)
-        , ("font-family", "'Open Sans', sans-serif")
-        , ("position", "absolute")
-        , ("overflow", "hidden")
-        , ("margin", "0")
-        , ("padding", "0")
-        , ("width", "100%")
-        , ("height", "100%")
         ]
     , id model.dom.tags.main
     ]
     [ div
         [ style
-            [ ("position", "absolute")
-            , ("width", "300px")
-            , ("height", "300px")
-        , ("background-color", TrColor.toString model.colorScheme.document)
+            [ ("background-color", TrColor.toString model.colorScheme.document)
             ]
         , id model.dom.tags.workspace
-        , class "noselect"
         ]
         [ text (toString "Hello, World!")
         ]

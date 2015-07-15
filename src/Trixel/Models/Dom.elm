@@ -11,8 +11,8 @@ import Trixel.Models.Work as TrWork
 initialModel : Model
 initialModel =
   { tags =
-      { workspace = "ws-canvas"
-      , main = "uv-main"
+      { workspace = "tr-workspace"
+      , main = "tr-main"
       }
   , title = "Trixel"
   }

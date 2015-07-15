@@ -12,4 +12,8 @@ tests/**/*.html
 # dist
 dist/
 
+#sass & ruby
+Gemfile.lock
+.sass-cache/
+
 .DS_STORE
