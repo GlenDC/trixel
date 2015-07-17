@@ -38,7 +38,7 @@ As the GUI is still crappy at this point, here are the controls currently functi
 2. install _gem_ packages: `bundler install`
 3. install _npm_ packages: `npm install`
 4. deploy project: `grunt deploy`
-5. dev version of the project is now built and can be found in ./dist
+5. dev version of the project is now built and can be found in `./dist`
 
 ## Subscribe To The Newsletter
 
