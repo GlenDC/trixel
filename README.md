@@ -24,6 +24,21 @@ As the GUI is still crappy at this point, here are the controls currently functi
 + **R**: Reset View
 + **Keyboard Arrows**: Move workspace
 
+## Build Instructions
+
+### Dependencies
+
++ Ruby: [https://www.ruby-lang.org/en/documentation/installation/](https://www.ruby-lang.org/en/documentation/installation/)
++ NodeJS: [https://nodejs.org/download/](https://nodejs.org/download/)
++ Elm: [http://elm-lang.org/install](http://elm-lang.org/install)
+
+### Instructions
+
+1. install _bundler_: `gem install bundler`
+2. install _gem_ packages: `bundler install`
+3. install _npm_ packages: `npm install`
+4. deploy project: `grunt deploy`
+5. dev version of the project is now built and can be found in ./dist
 
 ## Subscribe To The Newsletter
 
