@@ -132,8 +132,8 @@ module.exports = function(grunt) {
     },
 
     clean : [
-      "src/elm-stuff/build-artifacts",
-      "tests/elm-stuff/build-artifacts",
+      "src/elm-stuff",
+      "tests/elm-stuff",
       "tests/index.html",
       "dist",
       "src/Out",
