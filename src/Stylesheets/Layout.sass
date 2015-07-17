@@ -1,13 +1,54 @@
-#tr-main
+$default-border-width: 1px
+
+#tr-main,
+body
   position: absolute
+  height: 100%
+  width: 100%
+  font-size: 100%
+
+#tr-menu,
+#tr-toolbar,
+#tr-workspace,
+#tr-footer
   overflow: hidden
+  box-sizing: border-box
+  position: relative
   margin: 0
   padding: 0
+
+
+#tr-main
+  overflow: hidden
+
+
+#tr-menu
   width: 100%
-  height: 100%
+  border-bottom-style: solid
+  border-bottom-width: $default-border-width
+
+
+#tr-toolbar
+  width: 100%
+  border-bottom-style: solid
+  border-bottom-width: $default-border-width
 
 
 #tr-workspace
-  position: absolute
-  width: 300px
-  height: 300px
+  width: 100%
+  border-top-style: solid
+  border-top-width: $default-border-width
+
+
+#tr-footer
+  width: 100%
+  border-top-style: solid
+  border-top-width: $default-border-width
+  font-size: 0.45em
+
+#tr-footer-right
+  box-sizing: border-box
+  margin: 0
+  padding: 5px
+  float: right
+  text-align: right

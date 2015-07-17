@@ -12,7 +12,6 @@ initialModel : Model
 initialModel =
   { tags =
       { workspace = "tr-workspace"
-      , main = "tr-main"
       }
   , title = "Trixel"
   }
@@ -26,7 +25,6 @@ type alias Model =
 
 type alias Tags =
   { workspace : String
-  , main : String
   }
 
 

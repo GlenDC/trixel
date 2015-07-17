@@ -122,7 +122,8 @@ module.exports = function(grunt) {
           compress: true,
         },
         src:
-          [ 'src/Libs/*.js'
+          [ 'src/Libs/Release/*.js'
+          , 'src/Libs/*.js'
           , 'src/Out/Trixel.js'
           , 'src/Out/Native.js'
           ],

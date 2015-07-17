@@ -9,6 +9,8 @@ import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWorkModel
 
+import Trixel.Views.View as TrView
+
 import Window
 
 
@@ -64,5 +66,5 @@ signal =
 -- Main Function
 main =
   Signal.map
-    TrModel.view
+    TrView.view
     signal

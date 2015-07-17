@@ -5,13 +5,8 @@ import Trixel.Models.Work as TrWork
 import Trixel.Types.ColorScheme as TrColorScheme
 import Trixel.Types.Color as TrColor
 
-import Html exposing (Html, Attribute, div, text)
-import Html.Attributes exposing (style, id, class)
-
 
 type alias ModelSignal = Signal Action
-
-type alias MainSignal = Signal Html
 
 
 initialModel : Model
@@ -45,24 +40,3 @@ update action model =
 
     UpdateColorScheme colorScheme ->
       { model | colorScheme <- colorScheme }
-
-
-view : Model -> Html
-view model =
-  div
-    [ style
-        [ ("color", TrColor.toString model.colorScheme.primary.accentHigh)
-        , ("background-color", TrColor.toString model.colorScheme.primary.main.fill)
-        ]
-    , id model.dom.tags.main
-    ]
-    [ div
-        [ style
-            [ ("background-color", TrColor.toString model.colorScheme.document)
-            ]
-        , id model.dom.tags.workspace
-        ]
-        [ text (toString "Hello, World!")
-        ]
-    ]
-      
