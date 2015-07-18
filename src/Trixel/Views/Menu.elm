@@ -1,16 +1,11 @@
 module Trixel.Views.Menu (view) where
 
-import Trixel.Constants as TrConstants
 import Trixel.Math.Vector as TrVector
-import Trixel.Types.Color as TrColor
 import Trixel.Types.State as TrState
-import Trixel.Models.Model as TrModel
-
 import Trixel.Models.Model as TrModel
 
 import Trixel.Graphics as TrGraphics
 import Graphics.Element as Element
-import Graphics.Collage as Collage
 import Graphics.Input as Input
 
 import Signal
@@ -22,8 +17,8 @@ viewLogo { y } =
         TrVector.construct y y
   in
     TrGraphics.image
-      (TrVector.scale dimensions 0.8)
-      (TrVector.scale dimensions 0.1)
+      (TrVector.scale 0.8 dimensions)
+      (TrVector.scale 0.1 dimensions)
       "assets/logo.svg"
     |> TrGraphics.hoverable "Return back to your workspace." dimensions
     |> Input.clickable

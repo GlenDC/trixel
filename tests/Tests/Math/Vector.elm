@@ -65,6 +65,6 @@ tests =
     , test "scale"
         (assertEqualVector
           (TrVector.construct 40 80)
-          (TrVector.scale vectorA 10)
+          (TrVector.scale 10 vectorA)
           )
     ]

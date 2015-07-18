@@ -17,8 +17,26 @@ import Html
 import Html.Attributes as HtmlAttributes
 
 
-text : String -> Float -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> Element.Element
-text title size color bold italic line =
+type TextAlignment
+  = LeftAligned
+  | RightAligned
+  | CenterAligned
+
+alignText : TextAlignment -> Text.Text -> Element.Element
+alignText alignment text =
+  case alignment of
+    LeftAligned ->
+      Element.leftAligned text
+
+    RightAligned ->
+      Element.rightAligned text
+
+    CenterAligned ->
+      Element.centered text
+
+
+text : String -> Float -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
+text title size color bold italic line alignment =
   let textElement =
         Text.fromString title
           |> Text.style
@@ -29,7 +47,7 @@ text title size color bold italic line =
               , italic = italic
               , line = line
               }
-          |> Element.centered
+          |> alignText alignment
 
       (width, height) = Element.sizeOf textElement
   in
@@ -58,9 +76,9 @@ hoverable message dimensions element =
 button : String -> String -> Bool -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
 button title help selected size padding' normal select address action =
   let up = text
-        title size normal False False Nothing
+        title size normal False False Nothing CenterAligned
       hover = text
-        title size select False False (Just Text.Under)
+        title size select False False (Just Text.Under) CenterAligned
 
       padding =
         TrVector.construct padding' padding'
@@ -87,7 +105,7 @@ image dimensions padding src =
 applyPadding : TrVector.Vector -> TrVector.Vector -> Element.Element -> Element.Element
 applyPadding dimensions padding element =
   Collage.toForm element
-  |> toElement (TrVector.add dimensions (TrVector.scale padding 2))
+  |> toElement (TrVector.add dimensions (TrVector.scale 2 padding))
 
 
 toElement : TrVector.Vector -> Collage.Form -> Element.Element

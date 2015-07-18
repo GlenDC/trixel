@@ -5,12 +5,14 @@ import Trixel.Types.Color as TrColor
 import Trixel.Models.Model as TrModel
 
 import Trixel.Views.Menu as TrMenuView
+import Trixel.Views.Footer as TrFooterView
 import Trixel.Views.Toolbar as TrToolbarView
 import Trixel.Views.Work as TrWorkView
 
 import Trixel.Graphics as TrGraphics
 import Graphics.Element as Element
 import Graphics.Collage as Collage
+
 
 computeMenuDimensions : TrVector.Vector -> TrVector.Vector
 computeMenuDimensions dimensions =
@@ -19,9 +21,17 @@ computeMenuDimensions dimensions =
     (clamp 30 75 (dimensions.y * 0.035))
 
 
+computeFooterDimensions : TrVector.Vector -> TrVector.Vector
+computeFooterDimensions dimensions =
+  TrVector.construct
+    dimensions.x
+    (clamp 25 50 (dimensions.y * 0.025))
+
+
 viewChildren : TrVector.Vector -> TrModel.Model -> List Element.Element
 viewChildren dimensions model =
   [ TrMenuView.view (computeMenuDimensions dimensions) model
+  , TrFooterView.view (computeFooterDimensions dimensions) model
   ]
 
 

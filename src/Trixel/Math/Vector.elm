@@ -35,8 +35,8 @@ computeOperation operation a b =
   }
 
 
-scale : Vector -> Float -> Vector
-scale vector scale =
+scale : Float -> Vector -> Vector
+scale scale vector =
   computeFloatOperation (*) vector scale
 
 

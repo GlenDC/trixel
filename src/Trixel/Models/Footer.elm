@@ -15,7 +15,7 @@ computeMessageFunction message =
 
 initialModel : Model
 initialModel =
-  { help = Nothing
+  { help = Just "Welcome, ready to trixel!"
   }
 
 
@@ -32,7 +32,7 @@ type Action
 
 mailbox : Signal.Mailbox Action
 mailbox =
-  Signal.mailbox None
+  Signal.mailbox HideHelp
 
 address =
   mailbox.address
@@ -47,8 +47,8 @@ signal =
 update : Action -> Model -> Model
 update action model =
   case action of
-    ShowHelp help ->
-      { model | help <- Just help }
+    ShowHelp message ->
+      { model | help <- Just message }
 
     HideHelp ->
       { model | help <- Nothing }
