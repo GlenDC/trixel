@@ -6,7 +6,6 @@ import Trixel.Types.State as TrState
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Keyboard as TrKeyboard
 
-import Debug
 
 updateWorkspace : TrWorkModel.Model -> TrWorkModel.Model
 updateWorkspace model =
@@ -17,7 +16,7 @@ updateContextMenu : TrWorkModel.Model -> TrWorkModel.Model
 updateContextMenu model =
   if | TrInput.containsButton
           TrKeyboard.escape
-          (Debug.log "pressed: " model.input.keyboard.pressed) ->
+          model.input.keyboard.pressed ->
         { model | state <- TrState.Default }
 
 

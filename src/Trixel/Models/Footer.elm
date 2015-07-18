@@ -15,7 +15,7 @@ computeMessageFunction message =
 
 initialModel : Model
 initialModel =
-  { help = Just "Welcome... Ready to trixel!"
+  { help = Nothing
   }
 
 
@@ -32,7 +32,7 @@ type Action
 
 mailbox : Signal.Mailbox Action
 mailbox =
-  Signal.mailbox HideHelp
+  Signal.mailbox None
 
 address =
   mailbox.address

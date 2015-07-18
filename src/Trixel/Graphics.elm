@@ -14,7 +14,7 @@ import Maybe exposing (..)
 import Signal
 
 import Html
-import Html.Attributes as HtmlAttributes
+import Html.Attributes as Attributes
 
 
 type TextAlignment
@@ -22,39 +22,58 @@ type TextAlignment
   | RightAligned
   | CenterAligned
 
-alignText : TextAlignment -> Text.Text -> Element.Element
-alignText alignment text =
-  case alignment of
-    LeftAligned ->
-      Element.leftAligned text
 
-    RightAligned ->
-      Element.rightAligned text
+alignText : TextAlignment -> (String, String)
+alignText alignment =
+  ( "text-align"
+  , case alignment of
+      LeftAligned ->
+        "left"
 
-    CenterAligned ->
-      Element.centered text
+      RightAligned ->
+        "right"
+
+      CenterAligned ->
+        "center"
+  )
 
 
-text : String -> Float -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
-text title size color bold italic line alignment =
-  let textElement =
-        Text.fromString title
-          |> Text.style
-              { typeface = ["Open Sans", "sans-serif"]
-              , height = Just size
-              , color = TrColor.toColor color
-              , bold = bold
-              , italic = italic
-              , line = line
-              }
-          |> alignText alignment
+decorateText : Maybe Text.Line -> (String, String)
+decorateText maybeLine =
+  ( "text-decoration"
+  , case maybeLine of
+      Nothing ->
+        "none"
 
-      (width, height) = Element.sizeOf textElement
-  in
-    Element.size
-      (width + (round (size * 0.5)))
-      (height + (round (size * 0.5)))
-      textElement
+      Just line ->
+        case line of
+          Text.Under ->
+            "underline"
+
+          Text.Over ->
+            "overline"
+
+          Text.Through ->
+            "line-through"
+    )
+
+
+text : String -> TrVector.Vector -> TrColor.RgbaColor -> Bool -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
+text title dimensions color bold italic pointer line alignment =
+  Html.div
+    [ Attributes.style
+        [ ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
+        , ("font-style", (if italic then "italic" else "normal"))
+        , ("font-weight", (if bold then "bold" else "normal"))
+        , ("padding", (toString (dimensions.y * 0.175)) ++ "px")
+        , ("color", (TrColor.toString color))
+        , ("cursor", (if pointer then "pointer" else "default"))
+        , alignText alignment
+        , decorateText line
+        ]
+    ]
+    [ Html.text title]
+  |> Html.toElement (round dimensions.x) (round dimensions.y)
 
 
 computeDimensions : Element.Element -> TrVector.Vector
@@ -68,32 +87,23 @@ hoverable message dimensions element =
   let htmlElement =
         Html.fromElement element
   in
-    Html.div [ HtmlAttributes.class "tr-hoverable" ] [ htmlElement ]
+    Html.div [ Attributes.class "tr-hoverable" ] [ htmlElement ]
     |> Html.toElement (round dimensions.x) (round dimensions.y)
     |> Input.hoverable (TrFooterModel.computeMessageFunction message)
 
 
-button : String -> String -> Bool -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-button title help selected size padding' normal select address action =
+button : String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+button title help selected dimensions normal select address action =
   let up = text
-        title size normal False False Nothing CenterAligned
+        title dimensions normal False False (not selected) Nothing CenterAligned
       hover = text
-        title size select False False (Just Text.Under) CenterAligned
-
-      padding =
-        TrVector.construct padding' padding'
-
-      buttonElement =
-        Input.customButton
-          (Signal.message address action)
-          (if selected then hover else up)
-          hover hover
-
-      buttonDimensions =
-        computeDimensions buttonElement
+        title dimensions select False False (not selected) (Just Text.Under) CenterAligned
   in
-    hoverable help buttonDimensions buttonElement
-    |> applyPadding buttonDimensions padding
+    Input.customButton
+      (Signal.message address action)
+      (if selected then hover else up)
+      hover hover
+    |> hoverable help dimensions
 
 
 image : TrVector.Vector -> TrVector.Vector -> String -> Element.Element
