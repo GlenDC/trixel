@@ -10,16 +10,27 @@ $font_backup: 'sans-serif'
 // general
 html,
 head,
-body
-  padding: 0
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+span,
+p,
+a
   margin: 0
+  padding: 0
+  box-sizing: border-box
+  overflow: hidden
 
 
 body
   font-family: $font_main, $font_backup
   @include user-select(none)
-  cursor: default
 
 
-// Other Files
-@import "Layout.sass"
+.tr-hoverable
+  cursor: pointer

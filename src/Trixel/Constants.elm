@@ -26,6 +26,11 @@ email =
   "contact@glendc.com"
 
 
+svgType : String
+svgType =
+  "image/svg+xml"
+
+
 sqrt3 : Float
 sqrt3 =
   sqrt 3

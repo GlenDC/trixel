@@ -8,6 +8,7 @@ module Trixel.Models.Work
   , keyboardButtonsSignal
   , windowDimensionsSignal
   , mailbox
+  , address
   , update
   , computeTitle
   )
@@ -96,6 +97,10 @@ mailbox =
   Signal.mailbox None
 
 
+address =
+  mailbox.address
+
+
 update : Action -> Model -> Model
 update action model =
   case action of
@@ -135,6 +140,9 @@ update action model =
 
     SetWindowDimensions dimensions ->
       { model | dimensions <- dimensions }
+
+    None ->
+      model
 
 
 updateInput : Model -> TrInput.Model -> Model
