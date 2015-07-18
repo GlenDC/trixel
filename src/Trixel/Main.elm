@@ -6,6 +6,7 @@ import Trixel.Types.Input as TrInput
 
 import Trixel.Math.Vector as TrVector
 
+import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWorkModel
 
@@ -24,8 +25,11 @@ port setWindowSizeManual : Signal TrVector.Vector
 
 
 -- Outgoing Javascript Ports
-port updateEditor : Signal TrModel.Model
-port updateEditor = signal
+port updateEditor : Signal TrDomModel.Model
+port updateEditor =
+  Signal.map
+    (\model -> model.dom)
+    signal
 
 
 setWindowDimensions : Signal TrVector.Vector
@@ -57,10 +61,13 @@ workSignal =
 -- Main Signal
 signal : Signal TrModel.Model
 signal =
-  Signal.foldp
+  Signal.mergeMany
+    [ workSignal
+    , TrModel.signal
+    ]
+  |> Signal.foldp
     TrModel.update
     TrModel.initialModel
-    workSignal
 
 
 -- Main Function

@@ -23,16 +23,24 @@ hoverAddress = hover.address
 
 text : String -> Float -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> Element.Element
 text title size color bold italic line =
-  Text.fromString title
-  |> Text.style
-      { typeface = ["Open Sans", "sans-serif"]
-      , height = Just size
-      , color = TrColor.toColor color
-      , bold = bold
-      , italic = italic
-      , line = line
-      }
-  |> Element.centered
+  let textElement =
+        Text.fromString title
+          |> Text.style
+              { typeface = ["Open Sans", "sans-serif"]
+              , height = Just size
+              , color = TrColor.toColor color
+              , bold = bold
+              , italic = italic
+              , line = line
+              }
+          |> Element.centered
+
+      (width, height) = Element.sizeOf textElement
+  in
+    Element.size
+      (width + (round (size * 0.5)))
+      (height + (round (size * 0.5)))
+      textElement
 
 
 computeDimensions : Element.Element -> TrVector.Vector
@@ -41,12 +49,25 @@ computeDimensions element =
   in TrVector.construct (toFloat x) (toFloat y)
 
 
-button : String -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-button title size padding normal select address action =
+hoverable : String -> TrVector.Vector -> Element.Element -> Element.Element
+hoverable message dimensions element =
+  let htmlElement =
+        Html.fromElement element
+  in
+    Html.div [ HtmlAttributes.class "tr-hoverable" ] [ htmlElement ]
+    |> Html.toElement (round dimensions.x) (round dimensions.y)
+    |> Input.hoverable (Signal.message hoverAddress)
+
+
+button : String -> String -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+button title help size padding' normal select address action =
   let up = text
         title size normal False False Nothing
       hover = text
         title size select False False (Just Text.Under)
+
+      padding =
+        TrVector.construct padding' padding'
 
       buttonElement =
         Input.customButton
@@ -55,16 +76,9 @@ button title size padding normal select address action =
 
       buttonDimensions =
         computeDimensions buttonElement
-
-      htmlButton =
-        Html.fromElement buttonElement
   in
-    Html.div [ HtmlAttributes.class "tr-hoverable" ] [ htmlButton ]
-    |> Html.toElement (round buttonDimensions.x) (round buttonDimensions.y)
-    |> applyPadding
-      buttonDimensions
-      (TrVector.construct padding padding)
-    |> Input.hoverable (Signal.message hoverAddress)
+    hoverable help buttonDimensions buttonElement
+    |> applyPadding buttonDimensions padding
 
 
 image : TrVector.Vector -> TrVector.Vector -> String -> Element.Element
@@ -90,6 +104,14 @@ collage dimensions forms =
     (round dimensions.x)
     (round dimensions.y)
     forms
+
+
+setDimensions : TrVector.Vector -> Element.Element -> Element.Element
+setDimensions dimensions element =
+  Element.size
+    (round dimensions.x)
+    (round dimensions.y)
+    element
 
 
 background : TrColor.RgbaColor -> TrVector.Vector -> Collage.Form
