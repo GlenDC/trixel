@@ -3,6 +3,8 @@ module Trixel.Graphics where
 import Trixel.Types.Color as TrColor
 import Trixel.Math.Vector as TrVector
 
+import Trixel.Models.Footer as TrFooterModel
+
 import Graphics.Collage as Collage
 import Graphics.Element as Element
 import Graphics.Input as Input
@@ -13,12 +15,6 @@ import Signal
 
 import Html
 import Html.Attributes as HtmlAttributes
-
-
-hover : Signal.Mailbox Bool
-hover =
-  Signal.mailbox False
-hoverAddress = hover.address
 
 
 text : String -> Float -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> Element.Element
@@ -56,11 +52,11 @@ hoverable message dimensions element =
   in
     Html.div [ HtmlAttributes.class "tr-hoverable" ] [ htmlElement ]
     |> Html.toElement (round dimensions.x) (round dimensions.y)
-    |> Input.hoverable (Signal.message hoverAddress)
+    |> Input.hoverable (TrFooterModel.computeMessageFunction message)
 
 
-button : String -> String -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-button title help size padding' normal select address action =
+button : String -> String -> Bool -> Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+button title help selected size padding' normal select address action =
   let up = text
         title size normal False False Nothing
       hover = text
@@ -72,7 +68,8 @@ button title help size padding' normal select address action =
       buttonElement =
         Input.customButton
           (Signal.message address action)
-          up hover hover
+          (if selected then hover else up)
+          hover hover
 
       buttonDimensions =
         computeDimensions buttonElement

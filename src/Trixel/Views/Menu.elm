@@ -31,11 +31,12 @@ viewLogo { y } =
           (TrModel.UpdateState TrState.Default))
 
 
-viewButton : String -> String -> TrVector.Vector -> TrModel.Model -> Signal.Address a -> a -> Element.Element
-viewButton title help { y } model address action =
+viewButton : String -> String -> Bool -> TrVector.Vector -> TrModel.Model -> Signal.Address a -> a -> Element.Element
+viewButton title help selected { y } model address action =
   TrGraphics.button
     title
     help
+    selected
     (y * 0.5)
     (y * 0.125)
     model.colorScheme.primary.accentHigh
@@ -51,14 +52,17 @@ viewLeftMenu dimensions model =
     [ viewLogo dimensions
     , viewButton
         "New" "Create a new document."
+        (model.state == TrState.New)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.New)
     , viewButton
         "Open" "Open an existing document."
+        (model.state == TrState.Open)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Open)
     , viewButton
         "Save" "Save current document."
+        (model.state == TrState.Save)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Save)
     ]
@@ -71,6 +75,7 @@ viewRightMenu dimensions model =
     Element.left
     [ viewButton
         "Settings" "View and modify your editor settings."
+        (model.state == TrState.Settings)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Settings)
     ]
