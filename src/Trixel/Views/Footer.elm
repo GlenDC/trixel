@@ -27,14 +27,13 @@ alignText alignment =
       ("text-align", "center")
 
 
-viewText : String -> Bool -> TrVector.Vector -> TrModel.Model -> TrGraphics.TextAlignment -> Element.Element
-viewText title italic dimensions model alignment =
+viewText : String -> TrVector.Vector -> TrColor.RgbaColor -> TrModel.Model -> TrGraphics.TextAlignment -> Element.Element
+viewText title dimensions color model alignment =
   Html.div
     [ Attributes.style
-        [ ("font-style", (if italic then "italic" else "normal"))
-        , ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
+        [ ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
         , ("padding", (toString (dimensions.y * 0.175)) ++ "px")
-        , ("color", (TrColor.toString model.colorScheme.primary.accentMid))
+        , ("color", (TrColor.toString color))
         , alignText alignment
         ]
     ]
@@ -48,8 +47,8 @@ viewLeftMenu dimensions model =
     Element.right
     [ viewText
         (Maybe.withDefault "" model.footer.help)
-        True
         dimensions
+        model.colorScheme.primary.accentMid
         model
         TrGraphics.LeftAligned
     ]
@@ -62,8 +61,8 @@ viewRightMenu dimensions model =
     Element.right
     [ viewText
         ("version " ++ TrConstants.version)
-        False
         dimensions
+        model.colorScheme.primary.accentLow
         model
         TrGraphics.RightAligned
     ]

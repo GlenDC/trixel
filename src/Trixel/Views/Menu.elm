@@ -47,17 +47,17 @@ viewLeftMenu dimensions model =
     [ viewLogo dimensions
     , viewButton
         "New" "Create a new document."
-        (model.state == TrState.New)
+        (model.work.state == TrState.New)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.New)
     , viewButton
         "Open" "Open an existing document."
-        (model.state == TrState.Open)
+        (model.work.state == TrState.Open)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Open)
     , viewButton
         "Save" "Save current document."
-        (model.state == TrState.Save)
+        (model.work.state == TrState.Save)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Save)
     ]
@@ -70,7 +70,7 @@ viewRightMenu dimensions model =
     Element.left
     [ viewButton
         "Settings" "View and modify your editor settings."
-        (model.state == TrState.Settings)
+        (model.work.state == TrState.Settings)
         dimensions model TrModel.address
         (TrModel.UpdateState TrState.Settings)
     ]

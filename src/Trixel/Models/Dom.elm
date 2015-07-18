@@ -5,7 +5,7 @@ module Trixel.Models.Dom
   )
   where
 
-import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Model as TrWorkModel
 
 
 initialModel : Model
@@ -28,7 +28,7 @@ type alias Tags =
   }
 
 
-update : TrWork.Model -> Model -> Model
+update : TrWorkModel.Model -> Model -> Model
 update workModel model =
   { model | title <-
-    TrWork.computeTitle workModel }
+    TrWorkModel.computeTitle workModel }

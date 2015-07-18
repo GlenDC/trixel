@@ -1,7 +1,5 @@
 module Trixel.Models.Work
-  ( initialModel
-  , Model
-  , WorkSignal
+  ( WorkSignal
   , mouseButtonsSignal
   , mousePositionSignal
   , mouseWheelSignal
@@ -10,37 +8,20 @@ module Trixel.Models.Work
   , mailbox
   , address
   , update
-  , computeTitle
   )
   where
 
-import Trixel.Models.Work.Document as TrDocument
-import Trixel.Models.Work.Input as TrInput
+import Trixel.Models.Work.Input as TrInputModel
 import Trixel.Models.Work.Actions exposing (..)
+import Trixel.Models.Work.Model exposing (..)
 
+import Trixel.Models.Update.Shortcuts as TrShortcuts
+
+import Trixel.Types.State as TrState
 import Trixel.Types.Input exposing (Buttons)
 import Trixel.Math.Vector as TrVector
 
 import Signal exposing (Signal)
-
-import Debug
-
-
-initialModel : Model
-initialModel =
-  { unsavedProgress = True
-  , document = TrDocument.initialModel
-  , input = TrInput.initialModel
-  , dimensions = TrVector.zeroVector
-  }
-
-
-type alias Model =
-  { unsavedProgress : Bool
-  , document : TrDocument.Model
-  , input : TrInput.Model
-  , dimensions : TrVector.Vector
-  }
 
 
 type alias WorkSignal = Signal Model 
@@ -81,17 +62,6 @@ windowDimensionsSignal signal =
     signal
 
 
-computeTitle : Model -> String
-computeTitle model =
-  let title =
-        TrDocument.computeFileName
-          model.document
-  in
-    if model.unsavedProgress
-      then title ++ " *"
-      else title
-
-
 mailbox : Signal.Mailbox Action
 mailbox =
   Signal.mailbox None
@@ -105,20 +75,21 @@ update : Action -> Model -> Model
 update action model =
   case action of
     SetMouseWheel wheel ->
-      TrInput.setMouseWheel wheel model.input
+      TrInputModel.setMouseWheel wheel model.input
       |> updateInput model
 
     SetMousePosition position ->
-      TrInput.setMousePosition position model.input
+      TrInputModel.setMousePosition position model.input
       |> updateInput model
 
     SetMouseButtons buttons ->
-      TrInput.setMouseButtons buttons model.input
+      TrInputModel.setMouseButtons buttons model.input
       |> updateInput model
 
     SetKeyboardButtons buttons ->
-      TrInput.setKeyboardButtons buttons model.input
+      TrInputModel.setKeyboardButtons buttons model.input
       |> updateInput model
+      |> TrShortcuts.update
 
     Undo ->
       model -- todo
@@ -145,6 +116,6 @@ update action model =
       model
 
 
-updateInput : Model -> TrInput.Model -> Model
+updateInput : Model -> TrInputModel.Model -> Model
 updateInput model inputModel =
   { model | input <- inputModel }

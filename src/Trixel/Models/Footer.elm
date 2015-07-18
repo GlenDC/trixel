@@ -15,7 +15,7 @@ computeMessageFunction message =
 
 initialModel : Model
 initialModel =
-  { help = Just "Welcome, ready to trixel!"
+  { help = Just "Welcome... Ready to trixel!"
   }
 
 

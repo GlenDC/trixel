@@ -1,7 +1,7 @@
 module Trixel.Models.Model where
 
 import Trixel.Models.Dom as TrDom
-import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Model as TrWorkModel
 import Trixel.Models.Footer as TrFooter
 import Trixel.Types.ColorScheme as TrColorScheme
 import Trixel.Types.Color as TrColor
@@ -14,25 +14,23 @@ type alias ModelSignal = Signal Action
 initialModel : Model
 initialModel =
   { dom = TrDom.initialModel
-  , work = TrWork.initialModel
+  , work = TrWorkModel.initialModel
   , footer = TrFooter.initialModel
-  , state = TrState.initialState
   , colorScheme = TrColorScheme.nightColorScheme
   }
 
 
 type alias Model =
   { dom : TrDom.Model
-  , work : TrWork.Model
+  , work : TrWorkModel.Model
   , footer : TrFooter.Model
-  , state : TrState.State
   , colorScheme : TrColorScheme.ColorScheme
   }
 
 
 type Action
   = None
-  | UpdateWork TrWork.Model
+  | UpdateWork TrWorkModel.Model
   | UpdateColorScheme TrColorScheme.ColorScheme
   | UpdateFooter TrFooter.Model
   | UpdateState TrState.State
@@ -47,6 +45,7 @@ address =
 
 signal =
   mailbox.signal
+
 
 update : Action -> Model -> Model
 update action model =
@@ -64,7 +63,9 @@ update action model =
       { model | footer <- footer }
 
     UpdateState state ->
-      { model | state <- state }
+      let work = model.work
+      in 
+        { model | work <- { work | state  <- state } }
 
     None ->
       model

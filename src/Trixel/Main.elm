@@ -9,7 +9,8 @@ import Trixel.Math.Vector as TrVector
 import Trixel.Models.Footer as TrFooterModel
 import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel
-import Trixel.Models.Work as TrWorkModel
+import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Views.View as TrView
 
@@ -45,17 +46,17 @@ setWindowDimensions =
 -- Work Signal
 workSignal : TrModel.ModelSignal
 workSignal =
-  let workMailbox = TrWorkModel.mailbox
+  let workMailbox = TrWork.mailbox
   in
     Signal.mergeMany
-      [ TrWorkModel.mouseButtonsSignal setMouseButtonsDown
-      , TrWorkModel.mousePositionSignal setMousePosition
-      , TrWorkModel.keyboardButtonsSignal setKeyboardButtonsDown
-      , TrWorkModel.mouseWheelSignal setMouseWheel
-      , TrWorkModel.windowDimensionsSignal setWindowDimensions
+      [ TrWork.mouseButtonsSignal setMouseButtonsDown
+      , TrWork.mousePositionSignal setMousePosition
+      , TrWork.keyboardButtonsSignal setKeyboardButtonsDown
+      , TrWork.mouseWheelSignal setMouseWheel
+      , TrWork.windowDimensionsSignal setWindowDimensions
       , workMailbox.signal
       ]
-    |> Signal.foldp TrWorkModel.update TrWorkModel.initialModel
+    |> Signal.foldp TrWork.update TrWorkModel.initialModel
     |> Signal.map (\work -> TrModel.UpdateWork work)
 
 
