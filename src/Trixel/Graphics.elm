@@ -123,7 +123,6 @@ svgButtonElement render label size background color =
       [ Attributes.style
           [ ("background-color", TrColor.toString background)
           , ("color", TrColor.toString color)
-          , ("margin", "0 " ++ paddingHor)
           , ("padding", "0 " ++ paddingHor)
           ]
       ]
