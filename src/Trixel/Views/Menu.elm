@@ -18,7 +18,10 @@ viewLogo { y } =
   in
     TrGraphics.image
       (TrVector.scale 0.8 dimensions)
-      (TrVector.scale 0.1 dimensions)
+      (TrVector.construct
+        (dimensions.x * 0.2)
+        (dimensions.y * 0.1)
+      )
       "assets/logo.svg"
     |> TrGraphics.hoverable "Return back to your workspace." dimensions
     |> Input.clickable
@@ -43,7 +46,7 @@ viewLeftMenu : TrVector.Vector -> TrModel.Model -> Element.Element
 viewLeftMenu dimensions model =
   let buttonDimensions =
         TrVector.construct
-          (dimensions.y * 2)
+          (dimensions.y * 1.75)
           (dimensions.y * 0.8)
   in
     Element.flow
