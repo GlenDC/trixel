@@ -10,6 +10,10 @@ import Graphics.Input as Input
 
 import Signal
 
+import Material.Icons.Action as ActionIcons
+import Material.Icons.Content as ContentIcons
+import Material.Icons.File as FileIcons
+
 
 viewLogo : TrVector.Vector -> Element.Element
 viewLogo { y } =
@@ -29,15 +33,17 @@ viewLogo { y } =
           (TrModel.UpdateState TrState.Default))
 
 
-viewButton : String -> String -> Bool -> TrVector.Vector -> TrModel.Model -> Signal.Address a -> a -> Element.Element
-viewButton title help selected dimensions model address action =
-  TrGraphics.button
-    title
+viewSvgButton render label help selected dimensions model address action =
+  TrGraphics.svgButton
+    render
+    label
     help
     selected
     dimensions
     model.colorScheme.primary.accentHigh
     model.colorScheme.selection.accentHigh
+    model.colorScheme.primary.main.fill
+    model.colorScheme.selection.main.fill
     address
     action
 
@@ -46,24 +52,24 @@ viewLeftMenu : TrVector.Vector -> TrModel.Model -> Element.Element
 viewLeftMenu dimensions model =
   let buttonDimensions =
         TrVector.construct
-          (dimensions.y * 1.75)
-          (dimensions.y * 0.85)
+          (dimensions.y * 3.35)
+          (dimensions.y * 0.95)
   in
     Element.flow
       Element.right
       [ viewLogo dimensions
-      , viewButton
-          "New" "Create a new document."
+      , viewSvgButton
+          ContentIcons.create "New" "Create a new document."
           (model.work.state == TrState.New)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.New)
-      , viewButton
-          "Open" "Open an existing document."
+      , viewSvgButton
+          FileIcons.folder_open "Open" "Open an existing document."
           (model.work.state == TrState.Open)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.Open)
-      , viewButton
-          "Save" "Save current document."
+      , viewSvgButton
+          ContentIcons.save "Save" "Save current document."
           (model.work.state == TrState.Save)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.Save)
@@ -75,23 +81,23 @@ viewRightMenu : TrVector.Vector -> TrModel.Model -> Element.Element
 viewRightMenu dimensions model =
   let buttonDimensions =
         TrVector.construct
-          (dimensions.y * 2.25)
-          (dimensions.y * 0.85)
+          (dimensions.y * 4)
+          (dimensions.y * 0.95)
   in
     Element.flow
       Element.left
-      [ viewButton
-          "About" "Information regarding this editor."
+      [ viewSvgButton
+          ActionIcons.info_outline "About" "Information regarding this editor."
           (model.work.state == TrState.About)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.About)
-      , viewButton
-          "Help" "Information regarding shortcuts and other relevant content."
+      , viewSvgButton
+          ActionIcons.help_outline "Help" "Information regarding shortcuts and other relevant content."
           (model.work.state == TrState.Help)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.Help)
-      , viewButton
-          "Settings" "View and modify your editor settings."
+      , viewSvgButton
+          ActionIcons.settings "Settings" "View and modify your editor settings."
           (model.work.state == TrState.Settings)
           buttonDimensions model TrModel.address
           (TrModel.UpdateState TrState.Settings)

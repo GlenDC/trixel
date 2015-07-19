@@ -16,6 +16,9 @@ import Signal
 import Html
 import Html.Attributes as Attributes
 
+import Svg exposing (Svg)
+import Color exposing (Color)
+
 
 type TextAlignment
   = LeftAligned
@@ -98,6 +101,57 @@ button title help selected dimensions normal select address action =
         title dimensions normal False False (not selected) Nothing CenterAligned
       hover = text
         title dimensions select False False (not selected) (Just Text.Under) CenterAligned
+  in
+    Input.customButton
+      (Signal.message address action)
+      (if selected then hover else up)
+      hover hover
+    |> hoverable help dimensions
+
+
+svgButtonElement : (Color -> Int -> Svg) -> String -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrVector.Vector -> Element.Element
+svgButtonElement render label background color dimensions =
+  let margin =
+        dimensions.y * 0.1
+
+      width =
+        dimensions.x - (margin * 2)
+      height =
+        dimensions.y - (margin * 2)
+  in
+    Html.div
+      [ Attributes.style
+          [ ("background-color", TrColor.toString background)
+          , ("color", TrColor.toString color)
+          ]
+      ]
+      [ Svg.svg
+        [ Attributes.style
+            [ ("width", (toString height) ++ "px")
+            , ("height", (toString height) ++ "px")
+            , ("margin", (toString margin) ++ "px")
+            , ("float", "left")
+            ]
+        ]
+        [ render (TrColor.toColor color) (round height) ]
+      , Html.div
+          [ Attributes.style
+              [ ("font-size", (toString (dimensions.y * 0.5)) ++ "px")
+              , ("padding", (toString (dimensions.y * 0.15)) ++ "px " ++ (toString (dimensions.y * 0.1)) ++ "px")
+              , ("float", "left")
+              ]
+          ] [ Html.text label ]
+      ]
+    |> Html.toElement (round dimensions.x) (round dimensions.y)
+
+
+
+svgButton : (Color -> Int -> Svg) -> String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgButton render label help selected dimensions normal select normalBackground selectBackground address action =
+  let up = 
+        svgButtonElement render label normalBackground normal dimensions
+      hover =
+        svgButtonElement render label selectBackground select dimensions
   in
     Input.customButton
       (Signal.message address action)
