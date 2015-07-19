@@ -85,13 +85,13 @@ computeDimensions element =
   in TrVector.construct (toFloat x) (toFloat y)
 
 
-hoverable : String -> TrVector.Vector -> Element.Element -> Element.Element
-hoverable message dimensions element =
+hoverable : String -> Element.Element -> Element.Element
+hoverable message element =
   let htmlElement =
         Html.fromElement element
   in
     Html.div [ Attributes.class "tr-hoverable" ] [ htmlElement ]
-    |> Html.toElement (round dimensions.x) (round dimensions.y)
+    |> Html.toElement -1 -1
     |> Input.hoverable (TrFooterModel.computeMessageFunction message)
 
 
@@ -106,58 +106,54 @@ button title help selected dimensions normal select address action =
       (Signal.message address action)
       (if selected then hover else up)
       hover hover
-    |> hoverable help dimensions
+    |> hoverable help
 
 
-svgButtonElement : (Color -> Int -> Svg) -> String -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrVector.Vector -> Element.Element
-svgButtonElement render label background color dimensions =
-  let margin =
-        dimensions.y * 0.1
-
-      width =
-        dimensions.x - (margin * 2)
-      height =
-        dimensions.y - (margin * 2)
+svgButtonElement : (Color -> Int -> Svg) -> String -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
+svgButtonElement render label size background color =
+  let paddingVer =
+        (toString (size * 0.15)) ++ "px "
+      paddingHor =
+        (toString (size * 0.10)) ++ "px "
   in
     Html.div
       [ Attributes.style
           [ ("background-color", TrColor.toString background)
           , ("color", TrColor.toString color)
+          , ("margin", "0 " ++ paddingHor)
           ]
       ]
       [ Svg.svg
         [ Attributes.style
-            [ ("width", (toString height) ++ "px")
-            , ("height", (toString height) ++ "px")
-            , ("margin", (toString margin) ++ "px")
+            [ ("width", (toString size) ++ "px")
+            , ("height", (toString size) ++ "px")
             , ("float", "left")
             ]
         ]
-        [ render (TrColor.toColor color) (round height) ]
+        [ render (TrColor.toColor color) (round size) ]
       , Html.div
           [ Attributes.style
-              [ ("font-size", (toString (dimensions.y * 0.5)) ++ "px")
-              , ("padding", (toString (dimensions.y * 0.15)) ++ "px " ++ (toString (dimensions.y * 0.1)) ++ "px")
+              [ ("font-size", (toString (size * 0.5)) ++ "px")
+              , ("padding", paddingVer ++ " " ++ paddingHor)
               , ("float", "left")
               ]
           ] [ Html.text label ]
       ]
-    |> Html.toElement (round dimensions.x) (round dimensions.y)
+    |> Html.toElement -1 -1
 
 
-
-svgButton : (Color -> Int -> Svg) -> String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-svgButton render label help selected dimensions normal select normalBackground selectBackground address action =
+svgButton : (Color -> Int -> Svg) -> String -> String -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgButton render label help selected size normal select normalBackground selectBackground address action =
   let up = 
-        svgButtonElement render label normalBackground normal dimensions
+        svgButtonElement render label size normalBackground normal
       hover =
-        svgButtonElement render label selectBackground select dimensions
+        svgButtonElement render label size selectBackground select
   in
     Input.customButton
       (Signal.message address action)
       (if selected then hover else up)
       hover hover
-    |> hoverable help dimensions
+    |> hoverable help
 
 
 image : TrVector.Vector -> TrVector.Vector -> String -> Element.Element
