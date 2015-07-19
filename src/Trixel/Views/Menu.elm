@@ -47,7 +47,7 @@ viewLeftMenu dimensions model =
   let buttonDimensions =
         TrVector.construct
           (dimensions.y * 1.75)
-          (dimensions.y * 0.8)
+          (dimensions.y * 0.85)
   in
     Element.flow
       Element.right
@@ -76,7 +76,7 @@ viewRightMenu dimensions model =
   let buttonDimensions =
         TrVector.construct
           (dimensions.y * 2.25)
-          (dimensions.y * 0.8)
+          (dimensions.y * 0.85)
   in
     Element.flow
       Element.left

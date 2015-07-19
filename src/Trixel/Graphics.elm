@@ -65,7 +65,7 @@ text title dimensions color bold italic pointer line alignment =
         [ ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
         , ("font-style", (if italic then "italic" else "normal"))
         , ("font-weight", (if bold then "bold" else "normal"))
-        , ("padding", (toString (dimensions.y * 0.175)) ++ "px")
+        , ("padding", (toString (dimensions.y * 0.1)) ++ "px")
         , ("color", (TrColor.toString color))
         , ("cursor", (if pointer then "pointer" else "default"))
         , alignText alignment

@@ -49,12 +49,12 @@ view dimensions model =
   let rightMenuDimensions =
         TrVector.construct
           (dimensions.x * 0.3)
-          dimensions.y
+          (dimensions.y * 0.85)
 
       leftMenuDimensions =
         TrVector.construct
           (dimensions.x * 0.7)
-          dimensions.y
+          (dimensions.y * 0.85)
   in
     Element.flow
       Element.right
