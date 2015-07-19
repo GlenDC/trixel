@@ -81,6 +81,16 @@ viewRightMenu dimensions model =
     Element.flow
       Element.left
       [ viewButton
+          "About" "Information regarding this editor."
+          (model.work.state == TrState.About)
+          buttonDimensions model TrModel.address
+          (TrModel.UpdateState TrState.About)
+      , viewButton
+          "Help" "Information regarding shortcuts and other relevant content."
+          (model.work.state == TrState.Help)
+          buttonDimensions model TrModel.address
+          (TrModel.UpdateState TrState.Help)
+      , viewButton
           "Settings" "View and modify your editor settings."
           (model.work.state == TrState.Settings)
           buttonDimensions model TrModel.address

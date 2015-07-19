@@ -12,5 +12,7 @@ type State
   | New
   | Open
   | Save
+  | Help
+  | About
   | Settings
   | Properties
