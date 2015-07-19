@@ -115,22 +115,27 @@ svgButtonElement render label size background color =
         (toString (size * 0.15)) ++ "px "
       paddingHor =
         (toString (size * 0.10)) ++ "px "
+
+      iconSize =
+        size * 0.8
   in
     Html.div
       [ Attributes.style
           [ ("background-color", TrColor.toString background)
           , ("color", TrColor.toString color)
           , ("margin", "0 " ++ paddingHor)
+          , ("padding", "0 " ++ paddingHor)
           ]
       ]
       [ Svg.svg
         [ Attributes.style
-            [ ("width", (toString size) ++ "px")
-            , ("height", (toString size) ++ "px")
+            [ ("width", (toString iconSize) ++ "px")
+            , ("height", (toString iconSize) ++ "px")
+            , ("padding", (toString  ((size - iconSize) / 2)) ++ "px")
             , ("float", "left")
             ]
         ]
-        [ render (TrColor.toColor color) (round size) ]
+        [ render (TrColor.toColor color) (round iconSize) ]
       , Html.div
           [ Attributes.style
               [ ("font-size", (toString (size * 0.5)) ++ "px")
