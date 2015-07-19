@@ -33,8 +33,4 @@ this.tr-main = ->
   # Gets called when updating the editor from Elm
   tr-state.editor.ports.updateEditor.subscribe tr-update
 
-  # Attaching Mouse/Keyboard events to the Html Document
-  tr-attachMouseEventsToHtmlDocument tr-state.editor.ports
-  tr-attachKeyboardEventsToHtmlDocument tr-state.editor.ports
-
   void

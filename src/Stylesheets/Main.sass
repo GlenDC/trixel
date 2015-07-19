@@ -21,10 +21,16 @@ div,
 span,
 p,
 a
-  margin: 0
-  padding: 0
   box-sizing: border-box
   overflow: hidden
+
+
+html,
+head,
+body,
+div
+  margin: 0
+  padding: 0
 
 
 body
@@ -35,3 +41,16 @@ body
 
 .tr-hoverable
   cursor: pointer
+
+
+.tr-menu-article
+  cursor: auto
+  @include user-select(all)
+
+  & a,
+  & a:hover,
+  & a:visited
+    color: currentColor !important
+
+  & a:hover
+    font-weight: bold

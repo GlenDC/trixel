@@ -63,9 +63,15 @@ update action model =
       { model | footer <- footer }
 
     UpdateState state ->
-      let work = model.work
+      let work =
+            model.work
+          updatedWork =
+            { work | state  <- state }
       in 
-        { model | work <- { work | state  <- state } }
+        { model
+            | work <- updatedWork
+            , dom <- TrDom.update updatedWork model.dom
+        }
 
     None ->
       model

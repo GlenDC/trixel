@@ -109,14 +109,19 @@ viewRightMenu dimensions model =
 
 view : TrVector.Vector -> TrModel.Model -> Element.Element
 view dimensions model =
-  let menuDimensions =
+  let leftMenuDimensions =
         TrVector.construct
-          (dimensions.x * 0.5)
+          (dimensions.x * 0.45)
+          dimensions.y
+
+      rightMenuDimensions =
+        TrVector.construct
+          (dimensions.x * 0.55)
           dimensions.y
   in
     Element.flow
       Element.right
-      [ viewLeftMenu menuDimensions model
-      , viewRightMenu menuDimensions model
+      [ viewLeftMenu leftMenuDimensions model
+      , viewRightMenu rightMenuDimensions model
       ]
     |> TrGraphics.setDimensions dimensions

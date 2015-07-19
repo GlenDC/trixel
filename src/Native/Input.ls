@@ -4,6 +4,9 @@ tr-disableBehaviour = (event) ->
   event.stopPropagation!
   void
 
+tr-dummyBehaviour = (event) ->
+  void
+
 
 # attach all wanted mouse events for the workspace of the editor
 this.tr-attachMouseEventsToWorkspace = (id, editorPorts) ->
@@ -33,31 +36,54 @@ this.tr-attachMouseEventsToWorkspace = (id, editorPorts) ->
 
 
 # attach all wanted mouse events for the html document
-this.tr-attachMouseEventsToHtmlDocument = (editorPorts) ->
+this.tr-attachMouseEventsToHtmlDocument = (editorPorts, limitInput) ->
   document.onmouseup = (event) ->
-    tr-disableBehaviour event
+    if limitInput
+      tr-disableBehaviour event
+
     if tr-isArrayNonEmpty tr-state.mouse.buttonsDown
       tr-remove tr-state.mouse.buttonsDown, event.button
       editorPorts.setMouseButtonsDown.send tr-state.mouse.buttonsDown
     void
 
   # disabling global mouse wheel (as it allows zooming)
-  document.onwheel = tr-disableBehaviour
+  document.onwheel =
+    if limitInput then tr-disableBehaviour else tr-dummyBehaviour
 
   # disabling Context Menu (as it interferes with right click)
   document.oncontextmenu = tr-disableBehaviour
 
   void
 
+
+# check for exceptional key
+this.tr-isExceptionalKey = (key, keys) ->
+  for x in keys
+    if x == key
+      return true
+  false
+
+
 # attach all wanted keyboard events for the html document
-this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts) ->
-  document.onkeydown = tr-disableBehaviour
+this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts, limitInput, exceptionalKeys) ->
+  document.onkeydown =
+    if limitInput
+      then tr-disableBehaviour
+      else (event) ->
+        if (tr-isExceptionalKey event.keyCode, exceptionalKeys)
+          tr-state.keyboard.buttonsDown.push event.keyCode
+          editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
+
+        void
 
   document.onkeyup = (event) ->
-    tr-disableBehaviour event
+    if limitInput
+      tr-disableBehaviour event
+
     if tr-isArrayNonEmpty tr-state.keyboard.buttonsDown
-      tr-remove tr-state.keyboard.buttonsDown, event.keyCode
-      editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
+      if limitInput || (tr-isExceptionalKey event.keyCode, exceptionalKeys)
+        tr-remove tr-state.keyboard.buttonsDown, event.keyCode
+        editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
 
     void
 
