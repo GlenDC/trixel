@@ -24,7 +24,7 @@ computeFooterDimensions : TrVector.Vector -> TrVector.Vector
 computeFooterDimensions dimensions =
   TrVector.construct
     dimensions.x
-    (clamp 30 60 (dimensions.y * 0.0275))
+    (clamp 29 50 (dimensions.y * 0.025))
 
 
 viewChildren : TrVector.Vector -> TrModel.Model -> List Element.Element

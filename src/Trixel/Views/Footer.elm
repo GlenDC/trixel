@@ -36,7 +36,7 @@ viewRightMenu dimensions model =
         ("version " ++ TrConstants.version)
         dimensions
         model.colorScheme.primary.accentLow
-        False
+        True
         False
         False
         Nothing
