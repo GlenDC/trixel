@@ -112,6 +112,9 @@ update action model =
     SetWindowDimensions dimensions ->
       { model | dimensions <- dimensions }
 
+    SetState state ->
+      { model | state <- state }
+
     None ->
       model
 

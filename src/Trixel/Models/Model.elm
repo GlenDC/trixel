@@ -33,7 +33,6 @@ type Action
   | UpdateWork TrWorkModel.Model
   | UpdateColorScheme TrColorScheme.ColorScheme
   | UpdateFooter TrFooter.Model
-  | UpdateState TrState.State
 
 
 mailbox : Signal.Mailbox Action
@@ -61,17 +60,6 @@ update action model =
 
     UpdateFooter footer ->
       { model | footer <- footer }
-
-    UpdateState state ->
-      let work =
-            model.work
-          updatedWork =
-            { work | state  <- state }
-      in 
-        { model
-            | work <- updatedWork
-            , dom <- TrDom.update updatedWork model.dom
-        }
 
     None ->
       model

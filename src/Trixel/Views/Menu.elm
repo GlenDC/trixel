@@ -3,6 +3,8 @@ module Trixel.Views.Menu (view) where
 import Trixel.Math.Vector as TrVector
 import Trixel.Types.State as TrState
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Actions as TrWorkActions
 
 import Trixel.Graphics as TrGraphics
 import Graphics.Element as Element
@@ -29,8 +31,8 @@ viewLogo { y } =
       "assets/logo.svg"
     |> TrGraphics.hoverable "Return back to your workspace."
     |> Input.clickable
-        (Signal.message TrModel.address
-          (TrModel.UpdateState TrState.Default))
+        (Signal.message TrWork.address
+          (TrWorkActions.SetState TrState.Default))
 
 
 viewSvgButton render label help selected size model address action =
@@ -59,18 +61,18 @@ viewLeftMenu dimensions model =
       , viewSvgButton
           ContentIcons.create "New" "Create a new document."
           (model.work.state == TrState.New)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.New)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.New)
       , viewSvgButton
           FileIcons.folder_open "Open" "Open an existing document."
           (model.work.state == TrState.Open)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.Open)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.Open)
       , viewSvgButton
           ContentIcons.save "Save" "Save current document."
           (model.work.state == TrState.Save)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.Save)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.Save)
       ]
     |> Element.container
           (round dimensions.x)
@@ -88,18 +90,18 @@ viewRightMenu dimensions model =
       [ viewSvgButton
           ActionIcons.info_outline "About" "Information regarding this editor."
           (model.work.state == TrState.About)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.About)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.About)
       , viewSvgButton
           ActionIcons.help_outline "Help" "Information regarding shortcuts and other relevant content."
           (model.work.state == TrState.Help)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.Help)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.Help)
       , viewSvgButton
           ActionIcons.settings "Settings" "View and modify your editor settings."
           (model.work.state == TrState.Settings)
-          size model TrModel.address
-          (TrModel.UpdateState TrState.Settings)
+          size model TrWork.address
+          (TrWorkActions.SetState TrState.Settings)
       ]
     |> Element.container
         (round dimensions.x)

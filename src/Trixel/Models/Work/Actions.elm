@@ -1,6 +1,7 @@
 module Trixel.Models.Work.Actions where
 
 import Trixel.Types.Input as TrInput
+import Trixel.Types.State as TrState
 import Trixel.Math.Vector as TrVector
 
 
@@ -24,3 +25,5 @@ type Action
   | SetOffset TrVector.Vector
   -- Set Editor Window Size
   | SetWindowDimensions TrVector.Vector
+  -- Set Editor State
+  | SetState TrState.State

@@ -2,6 +2,8 @@ module Trixel.Views.Context.Toolbar (view) where
 
 import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.State as TrState
 import Trixel.Graphics as TrGraphics
@@ -64,8 +66,8 @@ menuHorizontal dimensions menuDimensions model =
       [ viewButton
           HardwareIcons.keyboard_arrow_return "Return" "Return back to the editor."
           (model.work.state == TrState.Default)
-          buttonDimensions model TrModel.address
-          (TrModel.UpdateState TrState.Default)
+          buttonDimensions model TrWork.address
+          (TrWorkActions.SetState TrState.Default)
       , Element.spacer
           (round buttonDimensions.x)
           (round (buttonDimensions.y * 0.25))

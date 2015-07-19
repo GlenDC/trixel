@@ -19,6 +19,8 @@ updateContextMenu model =
           model.input.keyboard.pressed ->
         { model | state <- TrState.Default }
 
+      | otherwise ->
+          model
 
 
 update : TrWorkModel.Model -> TrWorkModel.Model
