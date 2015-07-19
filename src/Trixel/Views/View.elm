@@ -41,7 +41,7 @@ viewChildren dimensions model =
           (dimensions.y - menuDimensions.y - footerDimensions.y)
   in
     [ TrMenuView.view menuDimensions model
-    , TrContextView.view contextDimensions model
+    , TrContextView.view contextDimensions menuDimensions model
     , TrFooterView.view footerDimensions model
     ]
 

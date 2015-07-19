@@ -146,12 +146,69 @@ svgButtonElement render label size background color =
     |> Html.toElement -1 -1
 
 
+svgVerticalButtonElement : (Color -> Int -> Svg) -> String -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
+svgVerticalButtonElement render label dimensions background color =
+  let paddingVer =
+        (toString (dimensions.y * 0.15)) ++ "px "
+      paddingHor =
+        (toString (dimensions.y * 0.10)) ++ "px "
+
+      iconSize =
+        dimensions.y * 0.8
+  in
+    Html.div
+      [ Attributes.style
+          [ ("background-color", TrColor.toString background)
+          , ("color", TrColor.toString color)
+          ]
+      ]
+      [ Html.div
+          [ Attributes.style
+              [ ("display", "flex" )
+              , ("justify-content", "center")
+              ]
+          ]
+          [ Svg.svg
+            [ Attributes.style
+                [ ("width", (toString iconSize) ++ "px")
+                , ("height", (toString iconSize) ++ "px")
+                , ("padding", (toString  ((dimensions.y - iconSize) / 2)) ++ "px")
+                , ("float", "left")
+                ]
+            ]
+            [ render (TrColor.toColor color) (round iconSize) ]
+          , Html.div
+              [ Attributes.style
+                  [ ("font-size", (toString (dimensions.y * 0.5)) ++ "px")
+                  , ("padding", paddingVer ++ " " ++ paddingHor)
+                  , ("float", "left")
+                  ]
+              ] [ Html.text label ]
+          ]
+      ]
+    |> Html.toElement (round dimensions.x) (round dimensions.y)
+
+
 svgButton : (Color -> Int -> Svg) -> String -> String -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
 svgButton render label help selected size normal select normalBackground selectBackground address action =
   let up = 
         svgButtonElement render label size normalBackground normal
       hover =
         svgButtonElement render label size selectBackground select
+  in
+    Input.customButton
+      (Signal.message address action)
+      (if selected then hover else up)
+      hover hover
+    |> hoverable help
+
+
+svgVerticalButton : (Color -> Int -> Svg) -> String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgVerticalButton render label help selected dimensions normal select normalBackground selectBackground address action =
+  let up = 
+        svgVerticalButtonElement render label dimensions normalBackground normal
+      hover =
+        svgVerticalButtonElement render label dimensions selectBackground select
   in
     Input.customButton
       (Signal.message address action)

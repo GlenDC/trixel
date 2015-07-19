@@ -65,8 +65,8 @@ computeFlow layout =
       Element.down
 
 
-view : TrVector.Vector -> TrModel.Model -> Element.Element
-view dimensions model =
+view : TrVector.Vector -> TrVector.Vector -> TrModel.Model -> Element.Element
+view dimensions menuDimensions model =
   let layout =
         TrLayout.computeType dimensions
 
@@ -81,7 +81,7 @@ view dimensions model =
           dimensions
       , Element.flow
           (computeFlow layout)
-          [ TrToolbar.view toolDimensions layout model
+          [ TrToolbar.view toolDimensions menuDimensions layout model
           , TrWorkspace.view workDimensions layout model
               |> TrGraphics.applyPadding workDimensions workPadding
           ]
