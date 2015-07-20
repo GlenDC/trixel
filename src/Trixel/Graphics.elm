@@ -18,6 +18,9 @@ import Svg exposing (Svg)
 import Color exposing (Color)
 
 
+import Trixel.Native as TrNative
+
+
 type TextAlignment
   = LeftAligned
   | RightAligned
@@ -88,7 +91,12 @@ hoverable message element =
   let htmlElement =
         Html.fromElement element
   in
-    Html.div [ Attributes.class "tr-hoverable" ] [ htmlElement ]
+    Html.div
+      [ Attributes.class "tr-hoverable"
+      , TrNative.mouseEnter "trFooterShowHelp" [message]
+      , TrNative.mouseLeave "trFooterHideHelp" []
+      ]
+      [ htmlElement ]
     |> Html.toElement -1 -1
 
 

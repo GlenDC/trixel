@@ -5,6 +5,7 @@ this.tr-state =
   keyboard :
     buttonsDown : []
   editor: null
+  tags: null
 
 
 this.tr-main = ->

@@ -17,4 +17,7 @@ this.tr-update = (model) ->
   # Set Document Title
   tr-setTitle model
 
+  # Store shared DOM Tags (id's)
+  tr-state.tags = model.tags
+
   void
