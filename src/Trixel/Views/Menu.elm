@@ -16,6 +16,9 @@ import Material.Icons.Action as ActionIcons
 import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
 
+import Html
+import Html.Attributes as Attributes
+
 
 viewLogo : TrVector.Vector -> Element.Element
 viewLogo { y } =
@@ -35,10 +38,10 @@ viewLogo { y } =
           (TrWorkActions.SetState TrState.Default))
 
 
-viewSvgButton render label help selected size model address action =
+viewSvgButton render label help selected showLabel size model address action =
   TrGraphics.svgButton
     render
-    label
+    (if showLabel then label else "")
     help
     selected
     size
@@ -50,8 +53,16 @@ viewSvgButton render label help selected size model address action =
     action
 
 
-viewLeftMenu : TrVector.Vector -> TrModel.Model -> Element.Element
-viewLeftMenu dimensions model =
+makeFlowRelative : Element.Element -> Element.Element
+makeFlowRelative flowElement =
+  Html.div
+    [ Attributes.class "tr-force-position-relative" ]
+    [ Html.fromElement flowElement ]
+  |> Html.toElement -1 -1
+
+
+viewLeftMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
+viewLeftMenu dimensions showLabels model =
   let size =
         dimensions.y * 0.95
   in
@@ -61,27 +72,25 @@ viewLeftMenu dimensions model =
       , viewSvgButton
           ContentIcons.create "New" "Create a new document."
           (model.work.state == TrState.New)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.New)
       , viewSvgButton
           FileIcons.folder_open "Open" "Open an existing document."
           (model.work.state == TrState.Open)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.Open)
       , viewSvgButton
           ContentIcons.save "Save" "Save current document."
           (model.work.state == TrState.Save)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.Save)
       ]
-    |> Element.container
-          (round dimensions.x)
-          (round dimensions.y)
-          Element.topLeft
+    |> Element.container -1 (round dimensions.y) Element.topLeft
+    |> makeFlowRelative
 
 
-viewRightMenu : TrVector.Vector -> TrModel.Model -> Element.Element
-viewRightMenu dimensions model =
+viewRightMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
+viewRightMenu dimensions showLabels model =
   let size =
         dimensions.y * 0.95
   in
@@ -90,40 +99,55 @@ viewRightMenu dimensions model =
       [ viewSvgButton
           ActionIcons.info_outline "About" "Information regarding this editor."
           (model.work.state == TrState.About)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.About)
       , viewSvgButton
           ActionIcons.help_outline "Help" "Information regarding shortcuts and other relevant content."
           (model.work.state == TrState.Help)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.Help)
       , viewSvgButton
           ActionIcons.settings "Settings" "View and modify your editor settings."
           (model.work.state == TrState.Settings)
-          size model TrWork.address
+          showLabels size model TrWork.address
           (TrWorkActions.SetState TrState.Settings)
       ]
-    |> Element.container
-        (round dimensions.x)
-        (round dimensions.y)
-        Element.topRight
+    |> Element.container -1 (round dimensions.y) Element.topRight
+    |> makeFlowRelative
+
+
+makeFloat : String -> Element.Element -> Html.Html
+makeFloat float element =
+  Html.div
+    [ Attributes.style [ ("float", float) ] ]
+    [ Html.fromElement element ]
+
+
+groupMenus : Element.Element -> Element.Element -> Element.Element
+groupMenus leftElement rightElement =
+  Html.div []
+    [ makeFloat "left" leftElement
+    , makeFloat "right" rightElement
+    ]
+  |> Html.toElement -1 -1
 
 
 view : TrVector.Vector -> TrModel.Model -> Element.Element
 view dimensions model =
   let leftMenuDimensions =
         TrVector.construct
-          (dimensions.x * 0.45)
+          (dimensions.x * 0.4495)
           dimensions.y
 
       rightMenuDimensions =
         TrVector.construct
-          (dimensions.x * 0.55)
+          (dimensions.x * 0.5495)
           dimensions.y
+
+      showLabels =
+        dimensions.x > 580
   in
-    Element.flow
-      Element.right
-      [ viewLeftMenu leftMenuDimensions model
-      , viewRightMenu rightMenuDimensions model
-      ]
+    groupMenus
+      (viewLeftMenu leftMenuDimensions showLabels model)
+      (viewRightMenu rightMenuDimensions showLabels model)
     |> TrGraphics.setDimensions dimensions

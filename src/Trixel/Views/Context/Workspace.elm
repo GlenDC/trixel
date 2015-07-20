@@ -30,7 +30,7 @@ showMarkdown dimensions model markdown =
   in
     Html.div
       [ Attributes.style
-          [ ("color", TrColor.toString model.colorScheme.primary.accentMid)
+          [ ("color", TrColor.toString model.colorScheme.secondary.accentMid)
           ]
       , Attributes.class "tr-menu-article"
       ]
