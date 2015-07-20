@@ -15,6 +15,8 @@ initialModel : Model
 initialModel =
   { tags =
       { workspace = "tr-workspace"
+      , footerHelp = "tr-help-description"
+      , footerShortcut = "tr-help-shortcut"
       }
   , title = "Trixel"
   , exceptionalKeys =
@@ -34,6 +36,8 @@ type alias Model =
 
 type alias Tags =
   { workspace : String
+  , footerHelp : String
+  , footerShortcut : String
   }
 
 

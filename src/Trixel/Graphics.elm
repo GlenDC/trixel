@@ -3,8 +3,6 @@ module Trixel.Graphics where
 import Trixel.Types.Color as TrColor
 import Trixel.Math.Vector as TrVector
 
-import Trixel.Models.Footer as TrFooterModel
-
 import Graphics.Collage as Collage
 import Graphics.Element as Element
 import Graphics.Input as Input
@@ -92,7 +90,6 @@ hoverable message element =
   in
     Html.div [ Attributes.class "tr-hoverable" ] [ htmlElement ]
     |> Html.toElement -1 -1
-    |> Input.hoverable (TrFooterModel.computeMessageFunction message)
 
 
 button : String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element

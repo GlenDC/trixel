@@ -2,7 +2,6 @@ module Trixel.Models.Model where
 
 import Trixel.Models.Dom as TrDom
 import Trixel.Models.Work.Model as TrWorkModel
-import Trixel.Models.Footer as TrFooter
 import Trixel.Types.ColorScheme as TrColorScheme
 import Trixel.Types.Color as TrColor
 import Trixel.Types.State as TrState
@@ -15,7 +14,6 @@ initialModel : Model
 initialModel =
   { dom = TrDom.initialModel
   , work = TrWorkModel.initialModel
-  , footer = TrFooter.initialModel
   , colorScheme = TrColorScheme.nightColorScheme
   }
 
@@ -23,7 +21,6 @@ initialModel =
 type alias Model =
   { dom : TrDom.Model
   , work : TrWorkModel.Model
-  , footer : TrFooter.Model
   , colorScheme : TrColorScheme.ColorScheme
   }
 
@@ -32,7 +29,6 @@ type Action
   = None
   | UpdateWork TrWorkModel.Model
   | UpdateColorScheme TrColorScheme.ColorScheme
-  | UpdateFooter TrFooter.Model
 
 
 mailbox : Signal.Mailbox Action
@@ -57,9 +53,6 @@ update action model =
 
     UpdateColorScheme colorScheme ->
       { model | colorScheme <- colorScheme }
-
-    UpdateFooter footer ->
-      { model | footer <- footer }
 
     None ->
       model

@@ -6,7 +6,6 @@ import Trixel.Types.Input as TrInput
 
 import Trixel.Math.Vector as TrVector
 
-import Trixel.Models.Footer as TrFooterModel
 import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
@@ -60,20 +59,11 @@ workSignal =
     |> Signal.map (\work -> TrModel.UpdateWork work)
 
 
--- Footer Signal
-footerSignal : TrModel.ModelSignal
-footerSignal =
-  Signal.map
-    (\footer -> TrModel.UpdateFooter footer)
-    TrFooterModel.signal
-
-
 -- Main Signal
 signal : Signal TrModel.Model
 signal =
   Signal.mergeMany
     [ workSignal
-    , footerSignal
     , TrModel.signal
     ]
   |> Signal.foldp
