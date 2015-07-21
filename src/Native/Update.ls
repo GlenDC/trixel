@@ -5,6 +5,14 @@ tr-setTitle = (model) ->
   void
 
 
+this.tr-set-warning = (model) ->
+  window.onbeforeunload =
+    if model.isDirty
+      then -> model.messages.unsavedProgress
+      else null
+  void
+
+
 this.tr-update = (model) ->
   tr-attachMouseEventsToWorkspace model.tags.workspace, tr-state.editor.ports
 
@@ -19,5 +27,7 @@ this.tr-update = (model) ->
 
   # Store shared DOM Tags (id's)
   tr-state.tags = model.tags
+
+  tr-set-warning model
 
   void

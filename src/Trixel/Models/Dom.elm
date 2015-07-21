@@ -18,19 +18,30 @@ initialModel =
       , footerHelp = "tr-help-description"
       , footerShortcut = "tr-help-shortcut"
       }
+  , messages =
+      { unsavedProgress = "You have unsaved progress in your Trixel work. In case you choose to continue you will lose that progress."
+      }
   , title = "Trixel"
   , exceptionalKeys =
       [ TrKeyboard.escape
       ]
   , limitInput = True
+  , isDirty = False
   }
 
 
 type alias Model =
   { tags : Tags
+  , messages : Messages
   , title : String
   , exceptionalKeys : TrInput.Buttons
   , limitInput : Bool
+  , isDirty : Bool
+  }
+
+
+type alias Messages =
+  { unsavedProgress : String
   }
 
 
@@ -46,4 +57,5 @@ update workModel model =
   { model
       | title <- TrWorkModel.computeTitle workModel
       , limitInput <- (workModel.state == TrState.Default)
+      , isDirty <- workModel.unsavedProgress
   }
