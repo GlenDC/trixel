@@ -50,7 +50,6 @@ viewCenterMenu dimensions model =
           , ( "height", (toString dimensions.y) ++ "px")
           , ( "width", (toString (dimensions.x * 0.2)) ++ "px")
           , ( "overflow", "initial")
-          , ( "display", if dimensions.x < 560 then "none" else "block")
           ]
       ]
       [ Html.div
@@ -100,7 +99,9 @@ view dimensions model =
         ]
     ]
     [ viewLeftMenu dimensions model
-    , viewCenterMenu dimensions model
+    , if dimensions.x < 560
+        then Html.div [] []
+        else viewCenterMenu dimensions model
     , viewRightMenu dimensions model
     ]
   |> Html.toElement (round dimensions.x) (round dimensions.y)

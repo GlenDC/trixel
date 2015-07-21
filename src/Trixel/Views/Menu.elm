@@ -38,10 +38,10 @@ viewLogo { y } =
           (TrWorkActions.SetState TrState.Default))
 
 
-viewSvgButton render label help selected showLabel size model address action =
+viewSvgButton render maybeLabel help selected size model address action =
   TrGraphics.svgButton
     render
-    (if showLabel then label else "")
+    maybeLabel
     help
     selected
     size
@@ -61,6 +61,13 @@ makeFlowRelative flowElement =
   |> Html.toElement -1 -1
 
 
+viewLabel : Bool -> String -> Maybe String
+viewLabel showLabel label =
+  if showLabel
+    then Just label
+    else Nothing
+
+
 viewLeftMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
 viewLeftMenu dimensions showLabels model =
   let size =
@@ -70,19 +77,25 @@ viewLeftMenu dimensions showLabels model =
       Element.right
       [ viewLogo dimensions
       , viewSvgButton
-          ContentIcons.create "New" "Create a new document."
+          ContentIcons.create
+          (viewLabel showLabels "New")
+          "Create a new document."
           (model.work.state == TrState.New)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.New)
       , viewSvgButton
-          FileIcons.folder_open "Open" "Open an existing document."
+          FileIcons.folder_open
+          (viewLabel showLabels "Open")
+          "Open an existing document."
           (model.work.state == TrState.Open)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.Open)
       , viewSvgButton
-          ContentIcons.save "Save" "Save current document."
+          ContentIcons.save
+          (viewLabel showLabels "Save")
+          "Save current document."
           (model.work.state == TrState.Save)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.Save)
       ]
     |> Element.container -1 (round dimensions.y) Element.topLeft
@@ -97,19 +110,25 @@ viewRightMenu dimensions showLabels model =
     Element.flow
       Element.left
       [ viewSvgButton
-          ActionIcons.info_outline "About" "Information regarding this editor."
+          ActionIcons.info_outline
+          (viewLabel showLabels "About")
+          "Information regarding this editor."
           (model.work.state == TrState.About)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.About)
       , viewSvgButton
-          ActionIcons.help_outline "Help" "Information regarding shortcuts and other relevant content."
+          ActionIcons.help_outline
+          (viewLabel showLabels "Help")
+          "Information regarding shortcuts and other relevant content."
           (model.work.state == TrState.Help)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.Help)
       , viewSvgButton
-          ActionIcons.settings "Settings" "View and modify your editor settings."
+          ActionIcons.settings
+          (viewLabel showLabels "Settings")
+          "View and modify your editor settings."
           (model.work.state == TrState.Settings)
-          showLabels size model TrWork.address
+          size model TrWork.address
           (TrWorkActions.SetState TrState.Settings)
       ]
     |> Element.container -1 (round dimensions.y) Element.topRight

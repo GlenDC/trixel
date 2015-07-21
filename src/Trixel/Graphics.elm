@@ -62,8 +62,8 @@ decorateText maybeLine =
     )
 
 
-text : String -> TrVector.Vector -> TrColor.RgbaColor -> Bool -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
-text title dimensions color bold italic pointer line alignment =
+text : String -> TrVector.Vector -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
+text title dimensions color bold italic line alignment =
   Html.div
     [ Attributes.style
         [ ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
@@ -71,7 +71,6 @@ text title dimensions color bold italic pointer line alignment =
         , ("font-weight", (if bold then "bold" else "normal"))
         , ("padding", (toString (dimensions.y * 0.1)) ++ "px")
         , ("color", (TrColor.toString color))
-        , ("cursor", (if pointer then "pointer" else "default"))
         , alignText alignment
         , decorateText line
         ]
@@ -93,6 +92,7 @@ hoverable message element =
   in
     Html.div
       [ Attributes.class "tr-hoverable"
+      , Attributes.title message
       , TrNative.mouseEnter "trFooterShowHelp" [message]
       , TrNative.mouseLeave "trFooterHideHelp" []
       ]
@@ -100,22 +100,8 @@ hoverable message element =
     |> Html.toElement -1 -1
 
 
-button : String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-button title help selected dimensions normal select address action =
-  let up = text
-        title dimensions normal False False (not selected) Nothing CenterAligned
-      hover = text
-        title dimensions select False False (not selected) (Just Text.Under) CenterAligned
-  in
-    Input.customButton
-      (Signal.message address action)
-      (if selected then hover else up)
-      hover hover
-    |> hoverable help
-
-
-svgButtonElement : (Color -> Int -> Svg) -> String -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
-svgButtonElement render label size background color =
+svgButtonElement : (Color -> Int -> Svg) -> Maybe String -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
+svgButtonElement render maybeLabel size background color =
   let paddingVer =
         (toString (size * 0.15)) ++ "px "
       paddingHor =
@@ -123,6 +109,20 @@ svgButtonElement render label size background color =
 
       iconSize =
         size * 0.8
+
+      labelDiv =
+        case maybeLabel of
+          Nothing ->
+            Html.div [] []
+
+          Just label ->
+            Html.div
+            [ Attributes.style
+                [ ("font-size", (toString (size * 0.5)) ++ "px")
+                , ("padding", paddingVer ++ " " ++ paddingHor)
+                , ("float", "left")
+                ]
+            ] [ Html.text label ]
   in
     Html.div
       [ Attributes.style
@@ -140,13 +140,7 @@ svgButtonElement render label size background color =
             ]
         ]
         [ render (TrColor.toColor color) (round iconSize) ]
-      , Html.div
-          [ Attributes.style
-              [ ("font-size", (toString (size * 0.5)) ++ "px")
-              , ("padding", paddingVer ++ " " ++ paddingHor)
-              , ("float", "left")
-              ]
-          ] [ Html.text label ]
+      , labelDiv
       ]
     |> Html.toElement -1 -1
 
@@ -194,12 +188,12 @@ svgVerticalButtonElement render label dimensions background color =
     |> Html.toElement (round dimensions.x) (round dimensions.y)
 
 
-svgButton : (Color -> Int -> Svg) -> String -> String -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-svgButton render label help selected size normal select normalBackground selectBackground address action =
+svgButton : (Color -> Int -> Svg) -> Maybe String -> String -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgButton render maybeLabel help selected size normal select normalBackground selectBackground address action =
   let up = 
-        svgButtonElement render label size normalBackground normal
+        svgButtonElement render maybeLabel size normalBackground normal
       hover =
-        svgButtonElement render label size selectBackground select
+        svgButtonElement render maybeLabel size selectBackground select
   in
     Input.customButton
       (Signal.message address action)
