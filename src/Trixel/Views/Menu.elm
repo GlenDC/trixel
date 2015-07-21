@@ -7,6 +7,7 @@ import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
 
+import Trixel.Native as TrNative
 import Trixel.Graphics as TrGraphics
 import Graphics.Element as Element
 import Graphics.Input as Input
@@ -38,6 +39,14 @@ viewLogo { y } =
     |> Input.clickable
         (Signal.message TrWork.address
           (TrWorkActions.SetState TrState.Default))
+
+
+addBackgroundHover : TrModel.Model -> Element.Element -> Element.Element
+addBackgroundHover model node =
+  Html.fromElement node 
+  |> TrNative.hoverBackground model.colorScheme.selection.main.fill
+  |> Html.toElement -1 -1
+
 
 
 viewSvgButton render maybeLabel help shortcut selected size model address action =
@@ -79,6 +88,7 @@ viewLeftMenu dimensions showLabels model =
     Element.flow
       Element.right
       [ viewLogo dimensions
+        |> addBackgroundHover model
       , viewSvgButton
           ContentIcons.create
           (viewLabel showLabels "New")
@@ -128,6 +138,7 @@ viewRightMenu dimensions showLabels model =
           (viewLabel showLabels labelFullscreen)
           size
           model.colorScheme.primary.accentHigh
+        |> addBackgroundHover model
       , viewSvgButton
           ActionIcons.info_outline
           (viewLabel showLabels "About")
