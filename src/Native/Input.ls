@@ -64,26 +64,41 @@ this.tr-isExceptionalKey = (key, keys) ->
   false
 
 
+this.tr-optionKeyIsDown = (keys, key) ->
+  for x in keys
+    for y in tr-state.keyboard.buttonsDown
+      if x == y
+        return true
+
+  for y in keys
+      if y == key
+        return true
+
+  false
+
+
 # attach all wanted keyboard events for the html document
-this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts, limitInput, exceptionalKeys) ->
+this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts, limitInput, exceptionalKeys, optionKeys) ->
   document.onkeydown =
     if limitInput
       then tr-disableBehaviour
       else (event) ->
-        if (tr-isExceptionalKey event.keyCode, exceptionalKeys)
+        optionKeyIsDown = tr-optionKeyIsDown optionKeys, event.keyCode
+        if optionKeyIsDown || (tr-isExceptionalKey event.keyCode, exceptionalKeys)
+          if optionKeyIsDown
+            tr-disableBehaviour event
           tr-state.keyboard.buttonsDown.push event.keyCode
           editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
 
         void
 
   document.onkeyup = (event) ->
-    if limitInput
+    if limitInput || (tr-optionKeyIsDown optionKeys, event.keyCode)
       tr-disableBehaviour event
 
     if tr-isArrayNonEmpty tr-state.keyboard.buttonsDown
-      if limitInput || (tr-isExceptionalKey event.keyCode, exceptionalKeys)
-        tr-remove tr-state.keyboard.buttonsDown, event.keyCode
-        editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
+      tr-remove tr-state.keyboard.buttonsDown, event.keyCode
+      editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
 
     void
 

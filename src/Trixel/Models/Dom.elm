@@ -25,6 +25,10 @@ initialModel =
   , exceptionalKeys =
       [ TrKeyboard.escape
       ]
+  , optionKeys =
+      [ TrKeyboard.ctrl
+      , TrKeyboard.alt
+      ]
   , limitInput = True
   , isDirty = False
   }
@@ -35,6 +39,7 @@ type alias Model =
   , messages : Messages
   , title : String
   , exceptionalKeys : TrInput.Buttons
+  , optionKeys : TrInput.Buttons
   , limitInput : Bool
   , isDirty : Bool
   }

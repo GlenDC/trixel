@@ -20,7 +20,7 @@ this.tr-update = (model) ->
 
   # Attaching Mouse/Keyboard events to the Html Document
   tr-attachMouseEventsToHtmlDocument tr-state.editor.ports, model.limitInput
-  tr-attachKeyboardEventsToHtmlDocument tr-state.editor.ports, model.limitInput, model.exceptionalKeys
+  tr-attachKeyboardEventsToHtmlDocument tr-state.editor.ports, model.limitInput, model.exceptionalKeys, model.optionKeys
 
   # Set Document Title
   tr-setTitle model
