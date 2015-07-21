@@ -2,6 +2,7 @@ module Trixel.Views.Menu (view) where
 
 import Trixel.Math.Vector as TrVector
 import Trixel.Types.State as TrState
+import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
@@ -32,17 +33,18 @@ viewLogo { y } =
         (dimensions.y * 0.1)
       )
       "assets/logo.svg"
-    |> TrGraphics.hoverable "Return back to your workspace."
+    |> TrGraphics.hoverable "Return back to your workspace." [ TrKeyboard.escape ]
     |> Input.clickable
         (Signal.message TrWork.address
           (TrWorkActions.SetState TrState.Default))
 
 
-viewSvgButton render maybeLabel help selected size model address action =
+viewSvgButton render maybeLabel help shortcut selected size model address action =
   TrGraphics.svgButton
     render
     maybeLabel
     help
+    shortcut
     selected
     size
     model.colorScheme.primary.accentHigh
@@ -80,6 +82,7 @@ viewLeftMenu dimensions showLabels model =
           ContentIcons.create
           (viewLabel showLabels "New")
           "Create a new document."
+          [ TrKeyboard.alt, TrKeyboard.n ]
           (model.work.state == TrState.New)
           size model TrWork.address
           (TrWorkActions.SetState TrState.New)
@@ -87,6 +90,7 @@ viewLeftMenu dimensions showLabels model =
           FileIcons.folder_open
           (viewLabel showLabels "Open")
           "Open an existing document."
+          [ TrKeyboard.alt, TrKeyboard.o ]
           (model.work.state == TrState.Open)
           size model TrWork.address
           (TrWorkActions.SetState TrState.Open)
@@ -94,6 +98,7 @@ viewLeftMenu dimensions showLabels model =
           ContentIcons.save
           (viewLabel showLabels "Save")
           "Save current document."
+          [ TrKeyboard.alt, TrKeyboard.s ]
           (model.work.state == TrState.Save)
           size model TrWork.address
           (TrWorkActions.SetState TrState.Save)
@@ -113,6 +118,7 @@ viewRightMenu dimensions showLabels model =
           ActionIcons.info_outline
           (viewLabel showLabels "About")
           "Information regarding this editor."
+          []
           (model.work.state == TrState.About)
           size model TrWork.address
           (TrWorkActions.SetState TrState.About)
@@ -120,6 +126,7 @@ viewRightMenu dimensions showLabels model =
           ActionIcons.help_outline
           (viewLabel showLabels "Help")
           "Information regarding shortcuts and other relevant content."
+          [ TrKeyboard.alt, TrKeyboard.i ]
           (model.work.state == TrState.Help)
           size model TrWork.address
           (TrWorkActions.SetState TrState.Help)
@@ -127,6 +134,7 @@ viewRightMenu dimensions showLabels model =
           ActionIcons.settings
           (viewLabel showLabels "Settings")
           "View and modify your editor settings."
+          [ TrKeyboard.alt, TrKeyboard.s ]
           (model.work.state == TrState.Settings)
           size model TrWork.address
           (TrWorkActions.SetState TrState.Settings)

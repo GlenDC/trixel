@@ -5,6 +5,7 @@ import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Types.Layout as TrLayout
+import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.State as TrState
 import Trixel.Graphics as TrGraphics
 
@@ -14,11 +15,12 @@ import Graphics.Collage as Collage
 import Material.Icons.Hardware as HardwareIcons
 
 
-viewButton render label help selected dimensions model address action =
+viewButton render label help shortcuts selected dimensions model address action =
   TrGraphics.svgVerticalButton
     render
     label
     help
+    shortcuts
     selected
     dimensions
     model.colorScheme.secondary.accentHigh
@@ -64,7 +66,10 @@ menuHorizontal dimensions menuDimensions model =
     Element.flow
       Element.down
       [ viewButton
-          HardwareIcons.keyboard_arrow_return "Return" "Return back to the editor."
+          HardwareIcons.keyboard_arrow_return
+          "Return"
+          "Return back to the editor."
+          [ TrKeyboard.escape ]
           (model.work.state == TrState.Default)
           buttonDimensions model TrWork.address
           (TrWorkActions.SetState TrState.Default)

@@ -1,6 +1,9 @@
 module Trixel.Graphics where
 
 import Trixel.Types.Color as TrColor
+import Trixel.Types.List as TrList
+import Trixel.Types.Input as TrInput
+import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Math.Vector as TrVector
 
 import Graphics.Collage as Collage
@@ -85,15 +88,35 @@ computeDimensions element =
   in TrVector.construct (toFloat x) (toFloat y)
 
 
-hoverable : String -> Element.Element -> Element.Element
-hoverable message element =
+showShortcut : TrInput.Buttons -> String
+showShortcut buttons =
+  let descriptions =
+        TrKeyboard.getDescriptions buttons
+
+      aux = 
+        TrList.head descriptions ""
+  in
+    List.foldr
+      (\item result ->
+        result ++ " + " ++ item)
+      aux
+      (TrList.tail descriptions)
+
+
+hoverable : String -> TrInput.Buttons -> Element.Element -> Element.Element
+hoverable message buttons element =
   let htmlElement =
         Html.fromElement element
+
+      shortcut =
+        if List.isEmpty buttons
+          then ""
+          else "[ " ++ (showShortcut buttons) ++ " ]"
   in
     Html.div
       [ Attributes.class "tr-hoverable"
       , Attributes.title message
-      , TrNative.mouseEnter "trFooterShowHelp" [message]
+      , TrNative.mouseEnter "trFooterShowHelp" [message, shortcut]
       , TrNative.mouseLeave "trFooterHideHelp" []
       ]
       [ htmlElement ]
@@ -188,8 +211,8 @@ svgVerticalButtonElement render label dimensions background color =
     |> Html.toElement (round dimensions.x) (round dimensions.y)
 
 
-svgButton : (Color -> Int -> Svg) -> Maybe String -> String -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-svgButton render maybeLabel help selected size normal select normalBackground selectBackground address action =
+svgButton : (Color -> Int -> Svg) -> Maybe String -> String -> TrInput.Buttons -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgButton render maybeLabel help shortcut selected size normal select normalBackground selectBackground address action =
   let up = 
         svgButtonElement render maybeLabel size normalBackground normal
       hover =
@@ -199,11 +222,11 @@ svgButton render maybeLabel help selected size normal select normalBackground se
       (Signal.message address action)
       (if selected then hover else up)
       hover hover
-    |> hoverable help
+    |> hoverable help shortcut
 
 
-svgVerticalButton : (Color -> Int -> Svg) -> String -> String -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
-svgVerticalButton render label help selected dimensions normal select normalBackground selectBackground address action =
+svgVerticalButton : (Color -> Int -> Svg) -> String -> String -> TrInput.Buttons -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgVerticalButton render label help shortcut selected dimensions normal select normalBackground selectBackground address action =
   let up = 
         svgVerticalButtonElement render label dimensions normalBackground normal
       hover =
@@ -213,7 +236,7 @@ svgVerticalButton render label help selected dimensions normal select normalBack
       (Signal.message address action)
       (if selected then hover else up)
       hover hover
-    |> hoverable help
+    |> hoverable help shortcut
 
 
 image : TrVector.Vector -> TrVector.Vector -> String -> Element.Element

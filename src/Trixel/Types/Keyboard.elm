@@ -1,6 +1,59 @@
 module Trixel.Types.Keyboard where
 
-import Trixel.Types.Input exposing (Button)
+import Trixel.Types.Input exposing (Button, Buttons)
+
+import Dict
+import Maybe exposing (..)
+
+
+descriptions : Dict.Dict Button String
+descriptions =
+  Dict.fromList
+    [ (escape, "Esc")
+    , (alt, "Alt")
+    , (ctrl, "Ctrl")
+    , (shift, "Shift")
+    , (space, "Space")
+    , (a, "A")
+    , (b, "B")
+    , (c, "C")
+    , (d, "D")
+    , (e, "E")
+    , (f, "F")
+    , (g, "G")
+    , (h, "H")
+    , (i, "I")
+    , (j, "J")
+    , (k, "K")
+    , (l, "L")
+    , (m, "M")
+    , (n, "N")
+    , (o, "O")
+    , (p, "P")
+    , (q, "Q")
+    , (r, "R")
+    , (s, "S")
+    , (t, "T")
+    , (u, "U")
+    , (v, "V")
+    , (w, "W")
+    , (x, "X")
+    , (y, "Y")
+    , (z, "Z")
+    ]
+
+
+getDescription : Button -> String
+getDescription button =
+  Dict.get button descriptions
+  |> Maybe.withDefault ("<" ++ (toString button) ++ ">")
+
+
+getDescriptions : Buttons -> List String
+getDescriptions buttons =
+  List.map
+    getDescription
+    buttons
 
 
 a: Button
@@ -136,6 +189,11 @@ z =
 ctrl: Button
 ctrl = 
  17
+
+
+alt: Button
+alt =
+  18
 
 
 shift: Button
