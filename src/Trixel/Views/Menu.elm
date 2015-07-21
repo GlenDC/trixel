@@ -16,6 +16,7 @@ import Signal
 import Material.Icons.Action as ActionIcons
 import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
+import Material.Icons.Navigation as NavigationIcons
 
 import Html
 import Html.Attributes as Attributes
@@ -111,10 +112,23 @@ viewRightMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
 viewRightMenu dimensions showLabels model =
   let size =
         dimensions.y * 0.95
+
+      (renderFullscreen, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
+        if model.work.isFullscreen
+          then (NavigationIcons.fullscreen_exit, "Windowed", "trExitFullscreen", "Exit fullscreen mode.", [ TrKeyboard.escape ])
+          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", [ TrKeyboard.alt, TrKeyboard.enter ])
   in
     Element.flow
       Element.left
-      [ viewSvgButton
+      [ TrGraphics.svgNativeButton
+          renderFullscreen
+          functionFullscreen []
+          descriptionFullscreen
+          shortcutFullscreen
+          (viewLabel showLabels labelFullscreen)
+          size
+          model.colorScheme.primary.accentHigh
+      , viewSvgButton
           ActionIcons.info_outline
           (viewLabel showLabels "About")
           "General information on Trixel."
@@ -172,7 +186,7 @@ view dimensions model =
           dimensions.y
 
       showLabels =
-        dimensions.x > 580
+        dimensions.x > 640
   in
     groupMenus
       (viewLeftMenu leftMenuDimensions showLabels model)

@@ -123,6 +123,52 @@ hoverable message buttons element =
     |> Html.toElement -1 -1
 
 
+svgNativeButton : (Color -> Int -> Svg) -> String -> List String -> String -> TrInput.Buttons -> Maybe String -> Float -> TrColor.RgbaColor -> Element.Element
+svgNativeButton render function arguments help shortcut maybeLabel size color =
+  let paddingVer =
+        (toString (size * 0.15)) ++ "px "
+      paddingHor =
+        (toString (size * 0.10)) ++ "px "
+
+      iconSize =
+        size * 0.8
+
+      labelDiv =
+        case maybeLabel of
+          Nothing ->
+            Html.div [] []
+
+          Just label ->
+            Html.div
+            [ Attributes.style
+                [ ("font-size", (toString (size * 0.5)) ++ "px")
+                , ("padding", paddingVer ++ " " ++ paddingHor)
+                , ("float", "left")
+                ]
+            ] [ Html.text label ]
+  in
+    Html.div
+      [ Attributes.style
+          [ ("color", TrColor.toString color)
+          , ("padding", "0 " ++ paddingHor)
+          ]
+      , TrNative.mouseClick function arguments
+      ]
+      [ Svg.svg
+        [ Attributes.style
+            [ ("width", (toString iconSize) ++ "px")
+            , ("height", (toString iconSize) ++ "px")
+            , ("padding", (toString  ((size - iconSize) / 2)) ++ "px")
+            , ("float", "left")
+            ]
+        ]
+        [ render (TrColor.toColor color) (round iconSize) ]
+      , labelDiv
+      ]
+    |> Html.toElement -1 -1
+    |> hoverable help shortcut
+
+
 svgButtonElement : (Color -> Int -> Svg) -> Maybe String -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
 svgButtonElement render maybeLabel size background color =
   let paddingVer =

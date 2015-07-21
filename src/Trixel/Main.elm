@@ -9,11 +9,10 @@ import Trixel.Math.Vector as TrVector
 import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
+import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Views.View as TrView
-
-import Window
 
 
 -- Incoming Javascript Ports
@@ -22,7 +21,7 @@ port setMousePosition : Signal TrVector.Vector
 port setMouseWheel : Signal TrVector.Vector
 port setKeyboardButtonsDown : Signal TrInput.Buttons
 
-port setWindowSizeManual : Signal TrVector.Vector
+port setWindowInformation : Signal TrWorkActions.WindowContext
 
 
 -- Outgoing Javascript Ports
@@ -31,15 +30,6 @@ port updateEditor =
   Signal.map
     (\model -> model.dom)
     signal
-
-
-setWindowDimensions : Signal TrVector.Vector
-setWindowDimensions =
-  (Signal.map
-    (\(x, y) -> 
-      TrVector.construct (toFloat x) (toFloat y))
-    Window.dimensions)
-  |> Signal.merge setWindowSizeManual
 
 
 -- Work Signal
@@ -52,7 +42,7 @@ workSignal =
       , TrWork.mousePositionSignal setMousePosition
       , TrWork.keyboardButtonsSignal setKeyboardButtonsDown
       , TrWork.mouseWheelSignal setMouseWheel
-      , TrWork.windowDimensionsSignal setWindowDimensions
+      , TrWork.windowInformationSignal setWindowInformation
       , workMailbox.signal
       ]
     |> Signal.foldp TrWork.update TrWorkModel.initialModel

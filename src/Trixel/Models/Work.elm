@@ -4,7 +4,7 @@ module Trixel.Models.Work
   , mousePositionSignal
   , mouseWheelSignal
   , keyboardButtonsSignal
-  , windowDimensionsSignal
+  , windowInformationSignal
   , mailbox
   , address
   , update
@@ -30,35 +30,35 @@ type alias WorkSignal = Signal Model
 mouseButtonsSignal : Signal Buttons -> Signal Action
 mouseButtonsSignal signal =
   Signal.map
-    (\buttons -> SetMouseButtons buttons)
+    SetMouseButtons
     signal
 
 
 mousePositionSignal : Signal TrVector.Vector -> Signal Action
 mousePositionSignal signal =
   Signal.map
-    (\position -> SetMousePosition position)
+    SetMousePosition
     signal
 
 
 mouseWheelSignal : Signal TrVector.Vector -> Signal Action
 mouseWheelSignal signal =
   Signal.map
-    (\wheel -> SetMouseWheel wheel)
+    SetMouseWheel
     signal
 
 
 keyboardButtonsSignal : Signal Buttons -> Signal Action
 keyboardButtonsSignal signal =
   Signal.map
-    (\buttons -> SetKeyboardButtons buttons)
+    SetKeyboardButtons
     signal
 
 
-windowDimensionsSignal : Signal TrVector.Vector -> Signal Action
-windowDimensionsSignal signal =
+windowInformationSignal : Signal WindowContext -> Signal Action
+windowInformationSignal signal =
   Signal.map
-    (\dimensions -> SetWindowDimensions dimensions)
+    SetWindowInformation
     signal
 
 
@@ -109,8 +109,11 @@ update action model =
     SetOffset position ->
       model -- todo
 
-    SetWindowDimensions dimensions ->
-      { model | dimensions <- dimensions }
+    SetWindowInformation context ->
+      { model
+        | dimensions <- context.dimensions
+        , isFullscreen <- context.fullscreen
+      }
 
     SetState state ->
       { model | state <- state }

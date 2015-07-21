@@ -12,6 +12,7 @@ descriptions =
     [ (escape, "Esc")
     , (alt, "Alt")
     , (ctrl, "Ctrl")
+    , (enter, "Enter")
     , (shift, "Shift")
     , (space, "Space")
     , (a, "A")

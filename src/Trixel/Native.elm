@@ -1,6 +1,7 @@
 module Trixel.Native
   ( mouseEnter
   , mouseLeave
+  , mouseClick
   )
   where
 
@@ -40,3 +41,8 @@ mouseEnter function arguments =
 mouseLeave function arguments =
   constructNativeCall function arguments
   |> Attributes.attribute "onmouseleave"
+
+
+mouseClick function arguments =
+  constructNativeCall function arguments
+  |> Attributes.attribute "onclick"

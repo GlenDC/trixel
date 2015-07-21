@@ -23,7 +23,13 @@ type Action
   -- Move/Set Work Offset
   | MoveOffset TrVector.Vector
   | SetOffset TrVector.Vector
-  -- Set Editor Window Size
-  | SetWindowDimensions TrVector.Vector
+  -- Set Editor Window dimensions and fullscreen state
+  | SetWindowInformation WindowContext
   -- Set Editor State
   | SetState TrState.State
+
+
+type alias WindowContext =
+  { dimensions : TrVector.Vector
+  , fullscreen : Bool
+  }

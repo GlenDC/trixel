@@ -22,13 +22,27 @@ this.tr-footerHideHelp = ->
   void
 
 
-this.tr-footerShowShortcut = (message, shortcut) ->
-  tr-injectText tr-state.tags.footerShortcut, message
-  tr-injectText tr-state.tags.footerShortcut, shortcut
+this.tr-goFullscreen = ->
+  if document.body.requestFullScreen
+    document.body.requestFullScreen!
+  else if document.body.webkitRequestFullScreen
+    document.body.webkitRequestFullScreen!
+  else if document.body.mozRequestFullScreen
+    document.body.mozRequestFullScreen!
+  else if document.body.msRequestFullScreen
+    document.body.msRequestFullScreen!
+
   void
 
 
-this.tr-footerHideShortcut = ->
-  tr-injectText tr-state.tags.footerShortcut, ""
-  tr-injectText tr-state.tags.footerShortcut, ""
+this.tr-exitFullscreen = ->
+  if document.exitFullscreen
+    document.exitFullscreen!
+  else if document.mozCancelFullScreen
+    document.mozCancelFullScreen!
+  else if document.webkitExitFullscreen
+    document.webkitExitFullscreen!
+  else if document.msExitFullscreen
+    document.msExitFullscreen!
+
   void

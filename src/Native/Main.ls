@@ -8,6 +8,26 @@ this.tr-state =
   tags: null
 
 
+this.tr-setWindowInformation = (width, height, fullscreen) ->
+  tr-state.editor.ports.setWindowInformation.send {
+    dimensions: {
+      x: width
+      y: height
+    }
+    , fullscreen: fullscreen
+  }
+  void
+
+
+this.tr-onResize = ->
+  isFullscreen =
+    (window.fullScreen) || (window.innerWidth == screen.width && window.innerHeight == screen.height)
+
+  tr-setWindowInformation window.innerWidth, window.innerHeight, isFullscreen
+
+  void
+
+
 this.tr-main = ->
   zeroVector =
     x : 0
@@ -20,16 +40,13 @@ this.tr-main = ->
       setMouseButtonsDown : []
       setKeyboardButtonsDown : []
       setMouseWheel : zeroVector
-      setWindowSizeManual : zeroVector
+      setWindowInformation : { dimensions: zeroVector, fullscreen: false }
       setMousePosition : zeroVector
     }
   )
 
   # Set initial window dimensions
-  tr-state.editor.ports.setWindowSizeManual.send {
-    x : window.innerWidth
-    y : window.innerHeight
-    }
+  tr-setWindowInformation window.innerWidth, window.innerHeight, false
 
   # Gets called when updating the editor from Elm
   tr-state.editor.ports.updateEditor.subscribe tr-update

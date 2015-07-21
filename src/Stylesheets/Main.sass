@@ -58,3 +58,23 @@ body
 
 .tr-force-position-relative div
   position: relative !important
+
+=fullscreen()
+  &:-webkit-full-screen
+    @content
+
+  &:-mozilla-full-screen
+    @content
+
+  &:full-screen
+    @content
+
+
+body
+  @include fullscreen()
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    margin: 0

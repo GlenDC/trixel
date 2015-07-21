@@ -24,6 +24,7 @@ initialModel =
   , document = TrDocumentModel.initialModel
   , input = TrInputModel.initialModel
   , dimensions = TrVector.zeroVector
+  , isFullscreen = False
   , state = TrState.initialState
   }
 
@@ -33,5 +34,6 @@ type alias Model =
   , document : TrDocumentModel.Model
   , input : TrInputModel.Model
   , dimensions : TrVector.Vector
+  , isFullscreen : Bool
   , state : TrState.State
   }
