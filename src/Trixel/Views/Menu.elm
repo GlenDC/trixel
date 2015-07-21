@@ -117,7 +117,7 @@ viewRightMenu dimensions showLabels model =
       [ viewSvgButton
           ActionIcons.info_outline
           (viewLabel showLabels "About")
-          "Information regarding this editor."
+          "General information on Trixel."
           []
           (model.work.state == TrState.About)
           size model TrWork.address
@@ -125,7 +125,7 @@ viewRightMenu dimensions showLabels model =
       , viewSvgButton
           ActionIcons.help_outline
           (viewLabel showLabels "Help")
-          "Information on shortcuts and this editor."
+          "Information on shortcuts and how to use Trixel."
           [ TrKeyboard.alt, TrKeyboard.i ]
           (model.work.state == TrState.Help)
           size model TrWork.address
