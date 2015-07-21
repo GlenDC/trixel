@@ -125,7 +125,7 @@ viewRightMenu dimensions showLabels model =
       , viewSvgButton
           ActionIcons.help_outline
           (viewLabel showLabels "Help")
-          "Information regarding shortcuts and other relevant content."
+          "Information on shortcuts and this editor."
           [ TrKeyboard.alt, TrKeyboard.i ]
           (model.work.state == TrState.Help)
           size model TrWork.address

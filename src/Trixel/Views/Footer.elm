@@ -17,10 +17,10 @@ import Html.Attributes as Attributes
 viewLeftMenu : TrVector.Vector -> TrModel.Model -> Html.Html
 viewLeftMenu dimensions model =
   let size =
-        dimensions.y * 0.55
+        dimensions.y * 0.45
 
       padding =
-        dimensions.y * 0.1
+        dimensions.y * 0.15
   in
     Html.div
       [ Attributes.style
@@ -72,10 +72,10 @@ viewCenterMenu dimensions model =
 viewRightMenu : TrVector.Vector -> TrModel.Model -> Html.Html
 viewRightMenu dimensions model =
   let size =
-        dimensions.y * 0.55
+        dimensions.y * 0.45
 
       padding =
-        dimensions.y * 0.1
+        dimensions.y * 0.15
   in
     Html.div
       [ Attributes.style
