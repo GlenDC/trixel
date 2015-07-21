@@ -51,6 +51,51 @@ showMarkdown dimensions model markdown =
         Element.middle
 
 
+showDualMarkdown : TrVector.Vector -> TrModel.Model -> Html.Html -> Html.Html -> Element.Element
+showDualMarkdown dimensions model markdownLeft markdownRight =
+  let articleWidth =
+        580
+
+      totalWidth =
+        1265
+  in
+    Html.div
+      [ Attributes.style
+          [ ("color", TrColor.toString model.colorScheme.secondary.accentMid)
+          ]
+      , Attributes.class "tr-menu-article"
+      ]
+      [ Html.div
+          [ Attributes.style
+              [ ("height", (toString dimensions.y) ++ "px")
+              , ("width", (toString totalWidth) ++ "px")
+              , ("background-color", TrColor.toString model.colorScheme.document)
+              , ("padding", "0 " ++ (toString (articleWidth * 0.05)) ++ "px")
+              , ("overflow", "auto")
+              , ("position", "absolute")
+              ]
+          ]
+          [ Html.div
+              [ Attributes.style
+                  [ ("float", "left")
+                  , ("width", (toString articleWidth) ++ "px")
+                  ]
+              ] [ markdownLeft ]
+          , Html.div
+              [ Attributes.style
+                  [ ("float", "right")
+                  , ("width", (toString articleWidth) ++ "px")
+                  ]
+              ] [ markdownRight ]
+          ]
+      ]
+    |> Html.toElement (round totalWidth) (round dimensions.y)
+    |> Element.container
+        (round dimensions.x)
+        (round dimensions.y)
+        Element.middle
+
+
 viewHelp : TrVector.Vector -> TrModel.Model -> Element.Element
 viewHelp dimensions model =
   Markdown.toHtml TrArticles.help
@@ -59,8 +104,16 @@ viewHelp dimensions model =
 
 viewAbout : TrVector.Vector -> TrModel.Model -> Element.Element
 viewAbout dimensions model =
-  Markdown.toHtml TrArticles.about
-  |> showMarkdown dimensions model
+  if dimensions.x < 1280
+    then
+      Markdown.toHtml (TrArticles.about ++ TrArticles.license)
+      |> showMarkdown dimensions model
+    else
+      showDualMarkdown
+        dimensions
+        model
+        (Markdown.toHtml TrArticles.about)
+        (Markdown.toHtml TrArticles.license)
 
 
 view : TrVector.Vector -> TrLayout.Type -> TrModel.Model -> Element.Element

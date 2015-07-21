@@ -29,10 +29,10 @@ viewLogo { y } =
         TrVector.construct y y
   in
     TrGraphics.image
-      (TrVector.scale 0.8 dimensions)
+      (TrVector.scale 0.7 dimensions)
       (TrVector.construct
         (dimensions.x * 0.2)
-        (dimensions.y * 0.1)
+        (dimensions.y * 0.15)
       )
       "assets/logo.svg"
     |> TrGraphics.hoverable "Return back to your workspace." [ TrKeyboard.escape ]

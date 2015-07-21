@@ -31,7 +31,7 @@ Trixel is an open source free-to-use editor to make trixel art. Similar to pixel
 
 ## Subscribe to the newsletter
 
-The Trixel Updates Newsletter is send every 1 to 2 weeks. It gives an overview of what's upcomming and what has changed in the live patches since the last newsletter. This way you're always up to date with what has changed. You can subscribe [here](http://eepurl.com/brwmSn).
+The Trixel Updates Newsletter is send on a regular basis. It gives an overview of what's upcomming and what has changed in the live patches since the last newsletter. This way you're always up to date with what has changed. You can subscribe [here](http://eepurl.com/brwmSn).
 
 ## Opensource and Free
 
@@ -42,7 +42,10 @@ I'm a big believer of [free and open source software](https://en.wikipedia.org/w
 The editor is still quite young and there is a lot to do. Feel free to [contact me](mailto:contact@glendc.com) in case you want to start contributing to Trixel. You can also mail me any suggestions and feedback to the previously given e-mail.
 
 Additionally you can also just comment on an issue that you want to resolve, or open an issue related to a bug or feature you want. Once you're finished you can open a pull request, so that the review-and-merge process can begin.
+"""
 
+license : String
+license = """   
 ## License
 
 The MIT License (MIT)

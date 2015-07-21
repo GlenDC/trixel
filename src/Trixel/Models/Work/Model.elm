@@ -20,7 +20,7 @@ computeTitle model =
 
 initialModel : Model
 initialModel =
-  { unsavedProgress = True
+  { unsavedProgress = False
   , document = TrDocumentModel.initialModel
   , input = TrInputModel.initialModel
   , dimensions = TrVector.zeroVector
