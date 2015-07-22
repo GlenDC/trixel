@@ -4,6 +4,7 @@ import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Graphics as TrGraphics
 import Trixel.Types.Layout as TrLayout
+import Trixel.Types.State as TrState
 
 import Trixel.Views.Context.Toolbar as TrToolbar
 import Trixel.Views.Context.Workspace as TrWorkspace
@@ -24,19 +25,33 @@ computetePadding global dimensions =
     )
 
 
-computeToolbarDimensions : TrLayout.Type -> TrVector.Vector -> TrVector.Vector
-computeToolbarDimensions layout dimensions =
-  ( case layout of
+computeToolbarDimensions : TrLayout.Type -> TrModel.Model -> TrVector.Vector -> (TrVector.Vector, TrVector.Vector)
+computeToolbarDimensions layout model dimensions =
+  let baseHeight =
+        clamp 30 75 (dimensions.y * 0.035)
+  in
+    case layout of
       TrLayout.Horizontal ->
-        TrVector.construct
-          (max (dimensions.x * 0.125) 200)
-          dimensions.y
+        let width =
+              max (dimensions.x * 0.125) 200
+        in
+          ( TrVector.construct
+              width
+              dimensions.y
+          , TrVector.construct
+              width
+              baseHeight
+          )
 
       TrLayout.Vertical ->
-        TrVector.construct
-          dimensions.x
-          (dimensions.y * 0.1)
-  )
+        ( TrVector.construct
+            dimensions.x
+            (if model.work.state == TrState.Default
+              then (baseHeight * 2)
+              else baseHeight
+            )
+        , TrVector.zeroVector
+        )
 
 
 computeWorkspaceDimensions : TrLayout.Type -> TrVector.Vector -> TrVector.Vector -> (TrVector.Vector, TrVector.Vector)
@@ -70,8 +85,8 @@ view dimensions menuDimensions model =
   let layout =
         TrLayout.computeType dimensions
 
-      toolDimensions =
-        computeToolbarDimensions layout dimensions
+      (toolDimensions, toolElementDimensions) =
+        computeToolbarDimensions layout model dimensions
       (workDimensions, workPadding) =
         computeWorkspaceDimensions layout dimensions toolDimensions
   in
@@ -81,7 +96,7 @@ view dimensions menuDimensions model =
           dimensions
       , Element.flow
           (computeFlow layout)
-          [ TrToolbar.view toolDimensions menuDimensions layout model
+          [ TrToolbar.view toolDimensions toolElementDimensions layout model
           , TrWorkspace.view workDimensions layout model
               |> TrGraphics.applyPadding workDimensions workPadding
           ]
