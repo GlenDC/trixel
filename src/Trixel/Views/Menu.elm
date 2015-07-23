@@ -4,6 +4,7 @@ import Trixel.Math.Vector as TrVector
 import Trixel.Types.State as TrState
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Work.Model as TrWorkModel
 import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
 
@@ -84,36 +85,45 @@ viewLeftMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
 viewLeftMenu dimensions showLabels model =
   let size =
         dimensions.y * 0.95
+
+      buttons =
+        [ viewLogo dimensions
+          |> addBackgroundHover model
+        , viewSvgButton
+            ContentIcons.create
+            (viewLabel showLabels "New")
+            "Create a new document."
+            [ TrKeyboard.alt, TrKeyboard.n ]
+            (model.work.state == TrState.New)
+            size model TrWork.address
+            (TrWorkActions.SetState TrState.New)
+        , viewSvgButton
+            FileIcons.folder_open
+            (viewLabel showLabels "Open")
+            "Open an existing document."
+            [ TrKeyboard.alt, TrKeyboard.o ]
+            (model.work.state == TrState.Open)
+            size model TrWork.address
+            (TrWorkActions.SetState TrState.Open)
+        ]
   in
     Element.flow
       Element.right
-      [ viewLogo dimensions
-        |> addBackgroundHover model
-      , viewSvgButton
-          ContentIcons.create
-          (viewLabel showLabels "New")
-          "Create a new document."
-          [ TrKeyboard.alt, TrKeyboard.n ]
-          (model.work.state == TrState.New)
-          size model TrWork.address
-          (TrWorkActions.SetState TrState.New)
-      , viewSvgButton
-          FileIcons.folder_open
-          (viewLabel showLabels "Open")
-          "Open an existing document."
-          [ TrKeyboard.alt, TrKeyboard.o ]
-          (model.work.state == TrState.Open)
-          size model TrWork.address
-          (TrWorkActions.SetState TrState.Open)
-      , viewSvgButton
-          ContentIcons.save
-          (viewLabel showLabels "Save")
-          "Save current document."
-          [ TrKeyboard.alt, TrKeyboard.s ]
-          (model.work.state == TrState.Save)
-          size model TrWork.address
-          (TrWorkActions.SetState TrState.Save)
-      ]
+      ( if TrWorkModel.hasDocument model.work
+          then 
+            buttons ++
+              [ viewSvgButton
+                  ContentIcons.save
+                  (viewLabel showLabels "Save")
+                  "Save current document."
+                  [ TrKeyboard.alt, TrKeyboard.s ]
+                  (model.work.state == TrState.Save)
+                  size model TrWork.address
+                  (TrWorkActions.SetState TrState.Save)
+              ]
+          else
+           buttons
+      )
     |> Element.container -1 (round dimensions.y) Element.topLeft
     |> makeFlowRelative
 
