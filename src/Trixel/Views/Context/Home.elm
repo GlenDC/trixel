@@ -61,7 +61,7 @@ viewNormal dimensions model =
   in
     Html.div
       [ Attributes.style
-          [ ("color", TrColor.toString model.colorScheme.secondary.accentMid)
+          [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
           , ( "width", (toString totalWidth) ++ "px" )
           , ( "height", (toString dimensions.y) ++ "px" )
           , ( "position", "absolute" )
@@ -143,7 +143,7 @@ viewThin dimensions model =
   in
     Html.div
       [ Attributes.style
-          [ ("color", TrColor.toString model.colorScheme.secondary.accentMid)
+          [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
           , ( "width", (toString totalWidth) ++ "px" )
           , ( "height", (toString dimensions.y) ++ "px" )
           , ( "overflow", "auto" )
