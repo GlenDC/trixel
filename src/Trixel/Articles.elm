@@ -70,3 +70,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
+homeIntro : String
+homeIntro = """
+# Trixel
+
+Trixel is an open source free-to-use editor to make trixel art. Similar to pixel art, but using triangles instead of pixels.
+"""
+
+homeIntroExtra : String
+homeIntroExtra = """
+Learn more about Trixel by going to the About section. Shortcuts and quick tips can be found in the Help section.
+"""
+
+homeUpdateTitle : String
+homeUpdateTitle =
+  "## Updates"
+
+homeUpdateList : String
+homeUpdateList = """
++ **Release 0.1.9**: [newsletter](http://eepurl.com/brwkKr)
++ **Release 0.1.0**: [archives](https://github.com/GlenDC/trixel/releases/tag/v0.1.0)
+"""
+
+homeAction : String
+homeAction = """
+## Make Trixel Art
+
+Please select an action below, to continue or begin making _Trixel_ art.
+"""
