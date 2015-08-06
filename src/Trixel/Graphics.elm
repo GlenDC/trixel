@@ -4,7 +4,8 @@ import Trixel.Types.Color as TrColor
 import Trixel.Types.List as TrList
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Math.Vector as TrVector
+
+import Math.Vector2 as Vector
 
 import Graphics.Collage as Collage
 import Graphics.Element as Element
@@ -65,27 +66,29 @@ decorateText maybeLine =
     )
 
 
-text : String -> TrVector.Vector -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
+text : String -> Vector.Vec2 -> TrColor.RgbaColor -> Bool -> Bool -> Maybe Text.Line -> TextAlignment -> Element.Element
 text title dimensions color bold italic line alignment =
-  Html.div
-    [ Attributes.style
-        [ ("font-size", (toString (dimensions.y * 0.65)) ++ "px")
-        , ("font-style", (if italic then "italic" else "normal"))
-        , ("font-weight", (if bold then "bold" else "normal"))
-        , ("padding", (toString (dimensions.y * 0.1)) ++ "px")
-        , ("color", (TrColor.toString color))
-        , alignText alignment
-        , decorateText line
-        ]
-    ]
-    [ Html.text title]
-  |> Html.toElement (round dimensions.x) (round dimensions.y)
+  let (dimensionsX, dimensionsY) = Vector.toTuple dimensions
+  in
+    Html.div
+      [ Attributes.style
+          [ ("font-size", (toString (dimensionsY * 0.65)) ++ "px")
+          , ("font-style", (if italic then "italic" else "normal"))
+          , ("font-weight", (if bold then "bold" else "normal"))
+          , ("padding", (toString (dimensionsY * 0.1)) ++ "px")
+          , ("color", (TrColor.toString color))
+          , alignText alignment
+          , decorateText line
+          ]
+      ]
+      [ Html.text title]
+    |> Html.toElement (round dimensionsX) (round dimensionsY)
 
 
-computeDimensions : Element.Element -> TrVector.Vector
+computeDimensions : Element.Element -> Vector.Vec2
 computeDimensions element =
   let (x, y) = Element.sizeOf element
-  in TrVector.construct (toFloat x) (toFloat y)
+  in Vector.vec2 (toFloat x) (toFloat y)
 
 
 showShortcut : TrInput.Buttons -> String
@@ -214,15 +217,18 @@ svgButtonElement render maybeLabel size background color =
     |> Html.toElement -1 -1
 
 
-svgVerticalButtonElement : (Color -> Int -> Svg) -> String -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
+svgVerticalButtonElement : (Color -> Int -> Svg) -> String -> Vector.Vec2 -> TrColor.RgbaColor -> TrColor.RgbaColor -> Element.Element
 svgVerticalButtonElement render label dimensions background color =
-  let paddingVer =
-        (toString (dimensions.y * 0.15)) ++ "px "
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      paddingVer =
+        (toString (dimensionsY * 0.15)) ++ "px "
       paddingHor =
-        (toString (dimensions.y * 0.10)) ++ "px "
+        (toString (dimensionsY * 0.10)) ++ "px "
 
       iconSize =
-        dimensions.y * 0.8
+        dimensionsY * 0.8
   in
     Html.div
       [ Attributes.style
@@ -240,21 +246,21 @@ svgVerticalButtonElement render label dimensions background color =
             [ Attributes.style
                 [ ("width", (toString iconSize) ++ "px")
                 , ("height", (toString iconSize) ++ "px")
-                , ("padding", (toString  ((dimensions.y - iconSize) / 2)) ++ "px")
+                , ("padding", (toString  ((dimensionsY - iconSize) / 2)) ++ "px")
                 , ("float", "left")
                 ]
             ]
             [ render (TrColor.toColor color) (round iconSize) ]
           , Html.div
               [ Attributes.style
-                  [ ("font-size", (toString (dimensions.y * 0.5)) ++ "px")
+                  [ ("font-size", (toString (dimensionsY * 0.5)) ++ "px")
                   , ("padding", paddingVer ++ " " ++ paddingHor)
                   , ("float", "left")
                   ]
               ] [ Html.text label ]
           ]
       ]
-    |> Html.toElement (round dimensions.x) (round dimensions.y)
+    |> Html.toElement (round dimensionsX) (round dimensionsY)
 
 
 svgButton : (Color -> Int -> Svg) -> Maybe String -> String -> TrInput.Buttons -> Bool -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
@@ -271,7 +277,7 @@ svgButton render maybeLabel help shortcut selected size normal select normalBack
     |> hoverable help shortcut
 
 
-svgVerticalButton : (Color -> Int -> Svg) -> String -> String -> TrInput.Buttons -> Bool -> TrVector.Vector -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
+svgVerticalButton : (Color -> Int -> Svg) -> String -> String -> TrInput.Buttons -> Bool -> Vector.Vec2 -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Signal.Address a -> a -> Element.Element
 svgVerticalButton render label help shortcut selected dimensions normal select normalBackground selectBackground address action =
   let up = 
         svgVerticalButtonElement render label dimensions normalBackground normal
@@ -285,40 +291,40 @@ svgVerticalButton render label help shortcut selected dimensions normal select n
     |> hoverable help shortcut
 
 
-image : TrVector.Vector -> TrVector.Vector -> String -> Element.Element
+image : Vector.Vec2 -> Vector.Vec2 -> String -> Element.Element
 image dimensions padding src =
-  Element.image (round dimensions.x) (round dimensions.y) src
+  Element.image (round (Vector.getX dimensions)) (round (Vector.getY dimensions)) src
   |> applyPadding dimensions padding
 
 
-applyPadding : TrVector.Vector -> TrVector.Vector -> Element.Element -> Element.Element
+applyPadding : Vector.Vec2 -> Vector.Vec2 -> Element.Element -> Element.Element
 applyPadding dimensions padding element =
   Collage.toForm element
-  |> toElement (TrVector.add dimensions (TrVector.scale 2 padding))
+  |> toElement (Vector.add dimensions (Vector.scale 2 padding))
 
 
-toElement : TrVector.Vector -> Collage.Form -> Element.Element
+toElement : Vector.Vec2 -> Collage.Form -> Element.Element
 toElement dimensions form =
   collage dimensions [form]
 
 
-collage : TrVector.Vector -> List Collage.Form -> Element.Element
+collage : Vector.Vec2 -> List Collage.Form -> Element.Element
 collage dimensions forms =
   Collage.collage
-    (round dimensions.x)
-    (round dimensions.y)
+    (round (Vector.getX dimensions))
+    (round (Vector.getY dimensions))
     forms
 
 
-setDimensions : TrVector.Vector -> Element.Element -> Element.Element
+setDimensions : Vector.Vec2 -> Element.Element -> Element.Element
 setDimensions dimensions element =
   Element.size
-    (round dimensions.x)
-    (round dimensions.y)
+    (round (Vector.getX dimensions))
+    (round (Vector.getY dimensions))
     element
 
 
-background : TrColor.RgbaColor -> TrVector.Vector -> Collage.Form
+background : TrColor.RgbaColor -> Vector.Vec2 -> Collage.Form
 background color dimensions =
-  Collage.rect dimensions.x dimensions.y
+  Collage.rect (Vector.getX dimensions) (Vector.getY dimensions)
   |> Collage.filled (TrColor.toColor color)

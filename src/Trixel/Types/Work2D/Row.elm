@@ -10,7 +10,6 @@ module Trixel.Types.Work2D.Row
   )
   where
 
-import Trixel.Math.Vector as TrVector
 import Trixel.Math.Float as TrFloat
 import Trixel.Types.Trixel as TrTrixel
 import Trixel.Types.List as TrList
@@ -19,6 +18,7 @@ import Trixel.Types.Work2D.Column as TrColumn
 
 import List
 import Maybe exposing (..)
+import Math.Vector2 as Vector
 
 
 -- In a 2D environment Rows is the same as Grid
@@ -52,10 +52,12 @@ find position rows =
     rows
 
 
-findTrixel : TrVector.Vector -> Rows -> Maybe TrTrixel.Trixel
+findTrixel : Vector.Vec2 -> Rows -> Maybe TrTrixel.Trixel
 findTrixel position rows =
-  let (rows', result) =
-        erasePosition position.y rows
+  let (posX, posY) = Vector.toTuple position
+
+      (rows', result) =
+        erasePosition posY rows
   in
     case result of
       -- Couldn't find row, early return
@@ -63,7 +65,7 @@ findTrixel position rows =
         Nothing
 
       Just row ->
-        case TrColumn.find position.x row.columns of
+        case TrColumn.find posX row.columns of
       -- Couldn't find column in found row
           Nothing ->
             Nothing
@@ -75,14 +77,16 @@ findTrixel position rows =
 
 insertTrixel : TrTrixel.Trixel -> Rows -> Rows
 insertTrixel trixel rows =
-  let (rows', result) =
-        erasePosition trixel.position.y rows
+  let posY = Vector.getY trixel.position
+
+      (rows', result) =
+        erasePosition posY rows
   in
     let row =
       case result of
         Nothing ->
           TrColumn.insert trixel []
-          |> construct trixel.position.y
+          |> construct posY
 
         Just row' ->
           { row'
@@ -93,10 +97,12 @@ insertTrixel trixel rows =
       row :: rows'
 
 
-eraseTrixel : TrVector.Vector -> Rows -> Rows
+eraseTrixel : Vector.Vec2 -> Rows -> Rows
 eraseTrixel position rows =
-  let (rows', result) =
-        erasePosition position.y rows
+  let (posX, posY) = Vector.toTuple position
+
+      (rows', result) =
+        erasePosition posY rows
   in
     case result of
       -- Couldn't find row, returning original
@@ -106,7 +112,7 @@ eraseTrixel position rows =
       Just row ->
         -- Replacing column if possible
         let (columns', _) =
-              TrColumn.erasePosition position.x row.columns
+              TrColumn.erasePosition posX row.columns
         in
           { row | columns <- columns'}
           :: rows'

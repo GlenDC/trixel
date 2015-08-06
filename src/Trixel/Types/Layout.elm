@@ -1,6 +1,6 @@
 module Trixel.Types.Layout where
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
 
 
 type Type
@@ -8,8 +8,8 @@ type Type
   | Vertical
 
 
-computeType : TrVector.Vector -> Type
+computeType : Vector.Vec2 -> Type
 computeType dimensions =
-  if dimensions.x <= 970
+  if (Vector.getX dimensions) <= 970
     then Vertical
     else Horizontal

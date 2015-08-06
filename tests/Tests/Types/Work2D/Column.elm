@@ -5,8 +5,6 @@ import Tests.Types.Work2D.SharedTestVariables exposing (..)
 import Trixel.Types.Work2D.Column as TrColumn
 import Trixel.Types.Trixel as TrTrixel
 import Trixel.Types.Color as TrColor
-import Trixel.Math.Vector as TrVector
-
 
 import Maybe exposing (..)
 

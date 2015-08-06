@@ -5,8 +5,8 @@ import Tests.Types.Work2D.SharedTestVariables exposing (..)
 import Trixel.Types.Work2D.Row as TrRow
 import Trixel.Types.Trixel as TrTrixel
 import Trixel.Types.Color as TrColor
-import Trixel.Math.Vector as TrVector
 
+import Math.Vector2 as Vector
 
 import Maybe exposing (..)
 
@@ -33,17 +33,17 @@ findTrixelTests =
     [ test "found row"
         (assertEqual
           (Just trixelB)
-          (TrRow.findTrixel (TrVector.construct 4 2) rows)
+          (TrRow.findTrixel (Vector.vec2 4 2) rows)
           )
     , test "found nothing because of row"
         (assertEqual
           (Nothing)
-          (TrRow.findTrixel (TrVector.construct 2 0) rows)
+          (TrRow.findTrixel (Vector.vec2 2 0) rows)
           )
     , test "found nothing because of column"
         (assertEqual
           (Nothing)
-          (TrRow.findTrixel (TrVector.construct 0 1) rows)
+          (TrRow.findTrixel (Vector.vec2 0 1) rows)
           )
     ]
 

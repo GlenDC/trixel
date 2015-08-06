@@ -1,6 +1,5 @@
 module Trixel.Views.Context.Home (view) where
 
-import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 import Trixel.Articles as TrArticles
@@ -12,6 +11,7 @@ import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
 
 import Graphics.Element as Element
+import Math.Vector2 as Vector
 
 import Markdown
 import Html
@@ -38,32 +38,38 @@ viewButton render label help shortcuts selected dimensions model address action 
   |> Html.fromElement
 
 
-viewNormal : TrVector.Vector -> TrModel.Model -> Element.Element
+viewNormal : Vector.Vec2 -> TrModel.Model -> Element.Element
 viewNormal dimensions model =
-  let padding =
-        clamp 30 50 (dimensions.x * 0.025)
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      padding =
+        clamp 30 50 (dimensionsX * 0.025)
 
       leftWidth =
-        clamp 330 580 (dimensions.x * 0.5)
+        clamp 330 580 (dimensionsX * 0.5)
       rightWidth = 
-        clamp 230 400 (dimensions.x * 0.4)
+        clamp 230 400 (dimensionsX * 0.4)
 
       totalWidth =
         leftWidth + rightWidth + padding
 
+      buttonDimensionsY =
+        min 35 (dimensionsY * 0.2)
+
       buttonDimensions =
-        TrVector.construct
+        Vector.vec2
           rightWidth
-          (min 35 (dimensions.y * 0.2))
+          buttonDimensionsY
 
       buttonPadding =
-        buttonDimensions.y * 0.25
+        buttonDimensionsY * 0.25
   in
     Html.div
       [ Attributes.style
           [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
           , ( "width", (toString totalWidth) ++ "px" )
-          , ( "height", (toString dimensions.y) ++ "px" )
+          , ( "height", (toString dimensionsY) ++ "px" )
           , ( "position", "absolute" )
           , ( "overflow", "auto" )
           ]
@@ -73,7 +79,7 @@ viewNormal dimensions model =
           [ Attributes.style
               [ ( "float", "left" )
               , ( "width", (toString leftWidth) ++ "px" )
-              , ( "height", (toString dimensions.y) ++ "px" )
+              , ( "height", (toString dimensionsY) ++ "px" )
               , ( "position", "relative" )
               ]
           ]
@@ -91,14 +97,14 @@ viewNormal dimensions model =
           [ Attributes.style
               [ ( "float", "right" )
               , ( "width", (toString rightWidth) ++ "px" )
-              , ( "height", (toString dimensions.y) ++ "px" )
+              , ( "height", (toString dimensionsY) ++ "px" )
               , ( "position", "relative" )
               ]
           ]
           [ Markdown.toHtml TrArticles.homeAction
           , Element.spacer
               (round rightWidth)
-              (round (buttonDimensions.y * 0.25))
+              (round (buttonDimensionsY * 0.25))
             |> Html.fromElement
           , viewButton
               ContentIcons.create
@@ -110,7 +116,7 @@ viewNormal dimensions model =
               (TrWorkActions.SetState TrState.New)
           , Element.spacer
               (round rightWidth)
-              (round (buttonDimensions.y * 0.25))
+              (round (buttonDimensionsY * 0.25))
             |> Html.fromElement
           , viewButton
               FileIcons.folder_open
@@ -122,30 +128,36 @@ viewNormal dimensions model =
               (TrWorkActions.SetState TrState.Open)
           ]
       ]
-    |> Html.toElement (round totalWidth) (round dimensions.y)
+    |> Html.toElement (round totalWidth) (round dimensionsY)
 
 
-viewThin : TrVector.Vector -> TrModel.Model -> Element.Element
+viewThin : Vector.Vec2 -> TrModel.Model -> Element.Element
 viewThin dimensions model =
-  let width =
-        dimensions.x * 0.9
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      width =
+        dimensionsX * 0.9
 
       totalWidth =
-        dimensions.x * 0.95
+        dimensionsX * 0.95
+
+      buttonDimensionsY =
+        min 35 (dimensionsY * 0.2)
 
       buttonDimensions =
-        TrVector.construct
+        Vector.vec2
           width
-          (min 35 (dimensions.y * 0.2))
+          buttonDimensionsY
 
       buttonPadding =
-        buttonDimensions.y * 0.25
+        buttonDimensionsY * 0.25
   in
     Html.div
       [ Attributes.style
           [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
           , ( "width", (toString totalWidth) ++ "px" )
-          , ( "height", (toString dimensions.y) ++ "px" )
+          , ( "height", (toString dimensionsY) ++ "px" )
           , ( "overflow", "auto" )
           ]
       , Attributes.class "tr-menu-article"
@@ -153,7 +165,7 @@ viewThin dimensions model =
       [ Markdown.toHtml (TrArticles.homeIntro ++ TrArticles.homeAction)
       , Element.spacer
           (round width)
-          (round (buttonDimensions.y * 0.25))
+          (round (buttonDimensionsY * 0.25))
         |> Html.fromElement
       , viewButton
           ContentIcons.create
@@ -165,7 +177,7 @@ viewThin dimensions model =
           (TrWorkActions.SetState TrState.New)
       , Element.spacer
           (round width)
-          (round (buttonDimensions.y * 0.25))
+          (round (buttonDimensionsY * 0.25))
         |> Html.fromElement
       , viewButton
           FileIcons.folder_open
@@ -177,16 +189,19 @@ viewThin dimensions model =
           (TrWorkActions.SetState TrState.Open)
       , Markdown.toHtml (TrArticles.homeUpdateTitle ++ TrArticles.homeUpdateList)
       ]
-    |> Html.toElement (round totalWidth) (round dimensions.y)
+    |> Html.toElement (round totalWidth) (round dimensionsY)
 
 
-view : TrVector.Vector -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> TrModel.Model -> Element.Element
 view dimensions model =
-  ( if dimensions.x < 600
-        then viewThin dimensions model
-        else viewNormal dimensions model
-  )
-  |> Element.container
-    (round dimensions.x)
-    (round dimensions.y)
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+  in
+    ( if dimensionsX < 600
+          then viewThin dimensions model
+          else viewNormal dimensions model
+    )
+    |> Element.container
+    (round dimensionsX)
+    (round dimensionsY)
     Element.middle

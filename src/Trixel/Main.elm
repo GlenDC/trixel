@@ -3,8 +3,9 @@ module Trixel.Main where
 import Trixel.Types.Mouse as TrMouse
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.Input as TrInput
+import Trixel.Types.Vector as TrVector
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
 
 import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel

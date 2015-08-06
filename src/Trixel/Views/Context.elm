@@ -1,6 +1,5 @@
 module Trixel.Views.Context (view) where
 
-import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Model as TrWorkModel
 import Trixel.Graphics as TrGraphics
@@ -14,62 +13,79 @@ import Trixel.Views.Context.Home as TrHome
 import Graphics.Element as Element
 import Graphics.Collage as Collage
 
+import Math.Vector2 as Vector
 
-computetePadding : TrVector.Vector -> TrVector.Vector -> (TrVector.Vector, TrVector.Vector)
+
+computetePadding : Vector.Vec2 -> Vector.Vec2 -> (Vector.Vec2, Vector.Vec2)
 computetePadding global dimensions =
-  let paddingValue =
-        (min ((max global.x global.y) * 0.005) 5)
+  let (globalX, globalY) =
+        Vector.toTuple global
+
+      (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      paddingValue =
+        (min ((max globalX globalY) * 0.005) 5)
   in
-    ( TrVector.construct
-        (dimensions.x - (paddingValue * 2))
-        (dimensions.y - (paddingValue * 2))
-    , TrVector.construct paddingValue paddingValue
+    ( Vector.vec2
+        (dimensionsX - (paddingValue * 2))
+        (dimensionsY - (paddingValue * 2))
+    , Vector.vec2 paddingValue paddingValue
     )
 
 
-computeToolbarDimensions : TrLayout.Type -> TrModel.Model -> TrVector.Vector -> (TrVector.Vector, TrVector.Vector)
+computeToolbarDimensions : TrLayout.Type -> TrModel.Model -> Vector.Vec2 -> (Vector.Vec2, Vector.Vec2)
 computeToolbarDimensions layout model dimensions =
-  let baseHeight =
-        clamp 30 75 (dimensions.y * 0.035)
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      baseHeight =
+        clamp 30 75 (dimensionsY * 0.035)
   in
     case layout of
       TrLayout.Horizontal ->
         let width =
-              max (dimensions.x * 0.125) 200
+              max (dimensionsX * 0.125) 200
         in
-          ( TrVector.construct
+          ( Vector.vec2
               width
-              dimensions.y
-          , TrVector.construct
+              dimensionsY
+          , Vector.vec2
               width
               baseHeight
           )
 
       TrLayout.Vertical ->
-        ( TrVector.construct
-            dimensions.x
+        ( Vector.vec2
+            dimensionsX
             (if model.work.state == TrState.Default
               then (baseHeight * 2)
               else baseHeight
             )
-        , TrVector.zeroVector
+        , (Vector.vec2 0 0)
         )
 
 
-computeWorkspaceDimensions : TrLayout.Type -> TrVector.Vector -> TrVector.Vector -> (TrVector.Vector, TrVector.Vector)
+computeWorkspaceDimensions : TrLayout.Type -> Vector.Vec2 -> Vector.Vec2 -> (Vector.Vec2, Vector.Vec2)
 computeWorkspaceDimensions layout dimensions toolDimensions  =
-  ( case layout of
-      TrLayout.Horizontal ->
-        TrVector.construct
-          (dimensions.x - toolDimensions.x)
-          dimensions.y
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
 
-      TrLayout.Vertical ->
-        TrVector.construct
-          dimensions.x
-          (dimensions.y - toolDimensions.y)
-  )
-  |> computetePadding dimensions
+      (toolDimensionsX, toolDimensionsY) =
+        Vector.toTuple toolDimensions
+  in
+    ( case layout of
+        TrLayout.Horizontal ->
+          Vector.vec2
+            (dimensionsX - toolDimensionsX)
+            dimensionsY
+
+        TrLayout.Vertical ->
+          Vector.vec2
+            dimensionsX
+            (dimensionsY - toolDimensionsY)
+    )
+    |> computetePadding dimensions
 
 
 computeFlow : TrLayout.Type -> Element.Direction
@@ -82,7 +98,7 @@ computeFlow layout =
       Element.down
 
 
-view : TrVector.Vector -> TrVector.Vector -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> Vector.Vec2 -> TrModel.Model -> Element.Element
 view dimensions menuDimensions model =
   -- We don't have to render the toolbar/workspace when no document is open and we're in the default state
   if TrWorkModel.hasDocument model.work || model.work.state /= TrState.Default

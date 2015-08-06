@@ -3,7 +3,7 @@ module Trixel.Models.Work.Model where
 import Trixel.Models.Work.Document as TrDocumentModel
 import Trixel.Models.Work.Input as TrInputModel
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 exposing (vec2, Vec2)
 import Trixel.Types.State as TrState
 
 import Maybe exposing (..)
@@ -35,7 +35,7 @@ initialModel =
   { unsavedProgress = False
   , document = Nothing
   , input = TrInputModel.initialModel
-  , dimensions = TrVector.zeroVector
+  , dimensions = (vec2 0 0)
   , isFullscreen = False
   , state = TrState.initialState
   }
@@ -45,7 +45,7 @@ type alias Model =
   { unsavedProgress : Bool
   , document : Maybe TrDocumentModel.Model
   , input : TrInputModel.Model
-  , dimensions : TrVector.Vector
+  , dimensions : Vec2
   , isFullscreen : Bool
   , state : TrState.State
   }

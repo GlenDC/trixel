@@ -4,6 +4,8 @@ import Trixel.Math.Float as TrFloat
 import Trixel.Types.Trixel as TrTrixel
 import Trixel.Types.List as TrList
 
+import Math.Vector2 as Vector
+
 import List
 import Maybe exposing (..)
 
@@ -18,7 +20,7 @@ type alias Column =
 
 construct : TrTrixel.Trixel -> Column
 construct trixel =
-  { position = trixel.position.x
+  { position = (Vector.getX trixel.position)
   , content = TrTrixel.toContent trixel
   }
 

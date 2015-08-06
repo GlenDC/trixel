@@ -2,15 +2,17 @@ module Trixel.Models.Work.Actions where
 
 import Trixel.Types.Input as TrInput
 import Trixel.Types.State as TrState
-import Trixel.Math.Vector as TrVector
+import Trixel.Types.Vector as TrVector
+
+import Math.Vector2 as Vector
 
 
 -- All action related to the work environment
 type Action
   = None
   -- Input Actions
-  | SetMouseWheel TrVector.Vector
-  | SetMousePosition TrVector.Vector
+  | SetMouseWheel Vector.Vec2
+  | SetMousePosition Vector.Vec2
   | SetMouseButtons TrInput.Buttons
   | SetKeyboardButtons TrInput.Buttons
   -- Undo/Redo
@@ -21,8 +23,8 @@ type Action
   -- Hide/Show Grid
   | SetGridVisibility Bool
   -- Move/Set Work Offset
-  | MoveOffset TrVector.Vector
-  | SetOffset TrVector.Vector
+  | MoveOffset Vector.Vec2
+  | SetOffset Vector.Vec2
   -- Set Editor Window dimensions and fullscreen state
   | SetWindowInformation WindowContext
   -- Set Editor State

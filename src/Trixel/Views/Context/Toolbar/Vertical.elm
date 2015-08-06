@@ -1,6 +1,5 @@
 module Trixel.Views.Context.Toolbar.Vertical (view) where
 
-import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
@@ -11,6 +10,7 @@ import Trixel.Graphics as TrGraphics
 
 import Graphics.Element as Element
 import Graphics.Collage as Collage
+import Math.Vector2 as Vector
 
 import Material.Icons.Hardware as HardwareIcons
 
@@ -31,12 +31,12 @@ viewMenuButton render label help shortcut selected size model address action =
     action
 
 
-editorToolbar : TrVector.Vector -> TrModel.Model -> Element.Element
+editorToolbar : Vector.Vec2 -> TrModel.Model -> Element.Element
 editorToolbar dimensions model =
   Element.empty
 
 
-menuToolbar : TrVector.Vector -> TrModel.Model -> Element.Element
+menuToolbar : Vector.Vec2 -> TrModel.Model -> Element.Element
 menuToolbar dimensions model =
   Element.flow
     Element.right
@@ -46,7 +46,7 @@ menuToolbar dimensions model =
         "Return back to the editor."
         [ TrKeyboard.escape ]
         False
-        dimensions.y
+        (Vector.getY dimensions)
         model
         TrWork.address
         (TrWorkActions.SetState TrState.Default)
@@ -54,7 +54,7 @@ menuToolbar dimensions model =
   |> TrGraphics.setDimensions dimensions
 
 
-view : TrVector.Vector -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> TrModel.Model -> Element.Element
 view dimensions model =
   Collage.group
     [ TrGraphics.background model.colorScheme.secondary.main.fill dimensions

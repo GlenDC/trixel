@@ -1,6 +1,7 @@
 module Trixel.Views.Menu (view) where
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
+
 import Trixel.Types.State as TrState
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Model as TrModel
@@ -24,16 +25,16 @@ import Html
 import Html.Attributes as Attributes
 
 
-viewLogo : TrVector.Vector -> Element.Element
-viewLogo { y } =
-  let dimensions =
-        TrVector.construct y y
+viewLogo : Vector.Vec2 -> Element.Element
+viewLogo dimensions' =
+  let y = Vector.getY dimensions'
+      dimensions = Vector.vec2 y y
   in
     TrGraphics.image
-      (TrVector.scale 0.7 dimensions)
-      (TrVector.construct
-        (dimensions.x * 0.2)
-        (dimensions.y * 0.15)
+      (Vector.scale 0.7 dimensions)
+      (Vector.vec2
+        (y * 0.2)
+        (y * 0.15)
       )
       "assets/logo.svg"
     |> TrGraphics.hoverable "Return back to your workspace." [ TrKeyboard.escape ]
@@ -81,10 +82,10 @@ viewLabel showLabel label =
     else Nothing
 
 
-viewLeftMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
+viewLeftMenu : Vector.Vec2 -> Bool -> TrModel.Model -> Element.Element
 viewLeftMenu dimensions showLabels model =
   let size =
-        dimensions.y * 0.95
+        (Vector.getY dimensions) * 0.95
 
       buttons =
         [ viewLogo dimensions
@@ -124,14 +125,14 @@ viewLeftMenu dimensions showLabels model =
           else
            buttons
       )
-    |> Element.container -1 (round dimensions.y) Element.topLeft
+    |> Element.container -1 (round (Vector.getY dimensions)) Element.topLeft
     |> makeFlowRelative
 
 
-viewRightMenu : TrVector.Vector -> Bool -> TrModel.Model -> Element.Element
+viewRightMenu : Vector.Vec2 -> Bool -> TrModel.Model -> Element.Element
 viewRightMenu dimensions showLabels model =
   let size =
-        dimensions.y * 0.95
+        (Vector.getY dimensions) * 0.95
 
       (renderFullscreen, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
         if model.work.isFullscreen
@@ -174,7 +175,7 @@ viewRightMenu dimensions showLabels model =
           size model TrWork.address
           (TrWorkActions.SetState TrState.Settings)
       ]
-    |> Element.container -1 (round dimensions.y) Element.topRight
+    |> Element.container -1 (round (Vector.getY dimensions)) Element.topRight
     |> makeFlowRelative
 
 
@@ -194,20 +195,20 @@ groupMenus leftElement rightElement =
   |> Html.toElement -1 -1
 
 
-view : TrVector.Vector -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> TrModel.Model -> Element.Element
 view dimensions model =
   let leftMenuDimensions =
-        TrVector.construct
-          (dimensions.x * 0.4495)
-          dimensions.y
+        Vector.vec2
+          ((Vector.getX dimensions) * 0.4495)
+          (Vector.getY dimensions)
 
       rightMenuDimensions =
-        TrVector.construct
-          (dimensions.x * 0.5495)
-          dimensions.y
+        Vector.vec2
+          ((Vector.getX dimensions) * 0.5495)
+          (Vector.getY dimensions)
 
       showLabels =
-        dimensions.x > 640
+        (Vector.getX dimensions) > 640
   in
     groupMenus
       (viewLeftMenu leftMenuDimensions showLabels model)

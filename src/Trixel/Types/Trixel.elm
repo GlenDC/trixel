@@ -1,6 +1,6 @@
 module Trixel.Types.Trixel where
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
 import Trixel.Types.Color as TrColor
 
 
@@ -8,7 +8,7 @@ initialTrixel : Trixel
 initialTrixel =
   construct
     TrColor.initialColor
-    TrVector.negativeUnitVector
+    (Vector.vec2 0 0)
 
 
 initialContent : Content
@@ -17,7 +17,7 @@ initialContent =
     TrColor.initialColor
 
 
-toTrixel : Content -> TrVector.Vector -> Trixel
+toTrixel : Content -> Vector.Vec2 -> Trixel
 toTrixel content position =
   construct
     content.color
@@ -30,7 +30,7 @@ toContent trixel =
     trixel.color
 
 
-construct : TrColor.RgbaColor -> TrVector.Vector -> Trixel
+construct : TrColor.RgbaColor -> Vector.Vec2 -> Trixel
 construct color position =
   { color = color
   , position = position
@@ -44,7 +44,7 @@ constructContent color =
 
 
 type alias Trixel =
-  { position : TrVector.Vector
+  { position : Vector.Vec2
   , color : TrColor.RgbaColor
   }
 

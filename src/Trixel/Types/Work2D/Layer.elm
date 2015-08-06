@@ -1,7 +1,5 @@
 module Trixel.Types.Work2D.Layer where
 
-import Trixel.Math.Vector as TrVector
-
 import Trixel.Types.List as TrList
 import Trixel.Types.Trixel as TrTrixel
 
@@ -9,6 +7,7 @@ import Trixel.Types.Work2D.Row as TrRow
 
 import List
 import Maybe exposing (..)
+import Math.Vector2 as Vector
 
 
 type alias Layers = List Layer
@@ -39,7 +38,7 @@ construct identifier title =
   }
 
 
-findTrixel : Int -> TrVector.Vector -> Layers -> (Maybe TrTrixel.Trixel)
+findTrixel : Int -> Vector.Vec2 -> Layers -> (Maybe TrTrixel.Trixel)
 findTrixel identifier position layers =
   case find identifier layers of
     Nothing ->
@@ -49,7 +48,7 @@ findTrixel identifier position layers =
       TrRow.findTrixel position layer.grid
 
 
-eraseTrixel : Int -> TrVector.Vector -> Layers -> Layers
+eraseTrixel : Int -> Vector.Vec2 -> Layers -> Layers
 eraseTrixel identifier position layers =
   let (layers', result) =
         erase identifier layers

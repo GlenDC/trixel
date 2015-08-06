@@ -19,7 +19,8 @@ import Trixel.Models.Update.Shortcuts as TrShortcuts
 
 import Trixel.Types.State as TrState
 import Trixel.Types.Input exposing (Buttons)
-import Trixel.Math.Vector as TrVector
+import Trixel.Types.Vector as TrVector
+import Math.Vector2 exposing (Vec2, vec2)
 
 import Signal exposing (Signal)
 
@@ -37,14 +38,16 @@ mouseButtonsSignal signal =
 mousePositionSignal : Signal TrVector.Vector -> Signal Action
 mousePositionSignal signal =
   Signal.map
-    SetMousePosition
+    (\vec ->
+      SetMousePosition (vec2 vec.x vec.y))
     signal
 
 
 mouseWheelSignal : Signal TrVector.Vector -> Signal Action
 mouseWheelSignal signal =
   Signal.map
-    SetMouseWheel
+    (\vec ->
+      SetMouseWheel (vec2 vec.x vec.y))
     signal
 
 
@@ -111,7 +114,7 @@ update action model =
 
     SetWindowInformation context ->
       { model
-        | dimensions <- context.dimensions
+        | dimensions <- (vec2 context.dimensions.x context.dimensions.y)
         , isFullscreen <- context.fullscreen
       }
 

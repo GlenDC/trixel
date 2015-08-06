@@ -9,7 +9,7 @@ module Trixel.Models.Work.Input
   where
 
 import Trixel.Types.Input as TrInput
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
 
 import Maybe exposing (..)
 
@@ -30,7 +30,7 @@ setMouseButtons buttons model =
     }
 
 
-setMousePosition : TrVector.Vector -> Model -> Model
+setMousePosition : Vector.Vec2 -> Model -> Model
 setMousePosition position model =
   let mouseModel = model.mouse
   in
@@ -42,7 +42,7 @@ setMousePosition position model =
     }
 
 
-setMouseWheel : TrVector.Vector -> Model -> Model
+setMouseWheel : Vector.Vec2 -> Model -> Model
 setMouseWheel wheel model =
   let mouseModel = model.mouse
   in
@@ -67,17 +67,17 @@ type alias Model =
 initialMouseModel : MouseModel
 initialMouseModel =
   { buttons = initialButtonModel
-  , position = TrVector.zeroVector
-  , previousPosition = TrVector.zeroVector
-  , wheel = TrVector.zeroVector
+  , position = (Vector.vec2 0 0)
+  , previousPosition = (Vector.vec2 0 0)
+  , wheel = (Vector.vec2 0 0)
   }
 
 
 type alias MouseModel =
   { buttons : ButtonModel
-  , position : TrVector.Vector
-  , previousPosition : TrVector.Vector
-  , wheel : TrVector.Vector
+  , position : Vector.Vec2
+  , previousPosition : Vector.Vec2
+  , wheel : Vector.Vec2
   }
 
 

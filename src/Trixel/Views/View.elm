@@ -1,6 +1,7 @@
 module Trixel.Views.View (view) where
 
-import Trixel.Math.Vector as TrVector
+import Math.Vector2 as Vector
+
 import Trixel.Types.Color as TrColor
 import Trixel.Models.Model as TrModel
 
@@ -13,32 +14,40 @@ import Graphics.Element as Element
 import Graphics.Collage as Collage
 
 
-computeMenuDimensions : TrVector.Vector -> TrVector.Vector
+computeMenuDimensions : Vector.Vec2 -> Vector.Vec2
 computeMenuDimensions dimensions =
-  TrVector.construct
-    dimensions.x
-    (clamp 30 75 (dimensions.y * 0.035))
+  let (dimX, dimY) = Vector.toTuple dimensions
+  in
+    Vector.vec2
+      dimX
+      (clamp 30 75 (dimY * 0.035))
 
 
-computeFooterDimensions : TrVector.Vector -> TrVector.Vector
+computeFooterDimensions : Vector.Vec2 -> Vector.Vec2
 computeFooterDimensions dimensions =
-  TrVector.construct
-    dimensions.x
-    (clamp 29 50 (dimensions.y * 0.025))
+  let (dimX, dimY) = Vector.toTuple dimensions
+  in
+    Vector.vec2
+      dimX
+      (clamp 29 50 (dimY * 0.025))
 
 
-viewChildren : TrVector.Vector -> TrModel.Model -> List Element.Element
+viewChildren : Vector.Vec2 -> TrModel.Model -> List Element.Element
 viewChildren dimensions model =
-  let menuDimensions =
+  let (dimX, dimY) = Vector.toTuple dimensions
+
+      menuDimensions =
         computeMenuDimensions dimensions
+      menuDimY = Vector.getY menuDimensions
 
       footerDimensions =
         computeFooterDimensions dimensions
+      footerDimY = Vector.getY footerDimensions
 
       contextDimensions =
-        TrVector.construct
-          dimensions.x
-          (dimensions.y - menuDimensions.y - footerDimensions.y)
+        Vector.vec2
+          dimX
+          (dimY - menuDimY - footerDimY)
   in
     [ TrMenuView.view menuDimensions model
     , TrContextView.view contextDimensions menuDimensions model

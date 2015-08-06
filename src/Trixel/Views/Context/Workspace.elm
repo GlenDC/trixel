@@ -1,7 +1,6 @@
 module Trixel.Views.Context.Workspace (view) where
 
 import Trixel.Articles as TrArticles
-import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.State as TrState
@@ -9,13 +8,14 @@ import Trixel.Types.Color as TrColor
 import Trixel.Graphics as TrGraphics
 
 import Graphics.Element as Element
+import Math.Vector2 as Vector
 
 import Markdown
 import Html
 import Html.Attributes as Attributes
 
 
-viewEditor : TrVector.Vector -> TrModel.Model -> Element.Element
+viewEditor : Vector.Vec2 -> TrModel.Model -> Element.Element
 viewEditor dimensions model =
   TrGraphics.background
     model.colorScheme.document
@@ -23,10 +23,13 @@ viewEditor dimensions model =
   |> TrGraphics.toElement dimensions
 
 
-showMarkdown : TrVector.Vector -> TrModel.Model -> Html.Html -> Element.Element
+showMarkdown : Vector.Vec2 -> TrModel.Model -> Html.Html -> Element.Element
 showMarkdown dimensions model markdown =
-  let articleWidth =
-        min 580 dimensions.x
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      articleWidth =
+        min 580 dimensionsX
   in
     Html.div
       [ Attributes.style
@@ -36,7 +39,7 @@ showMarkdown dimensions model markdown =
       ]
       [ Html.div
           [ Attributes.style
-              [ ("height", (toString dimensions.y) ++ "px")
+              [ ("height", (toString dimensionsY) ++ "px")
               , ("width", (toString articleWidth) ++ "px")
               , ("background-color", TrColor.toString model.colorScheme.document)
               , ("padding", "0 " ++ (toString (articleWidth * 0.05)) ++ "px")
@@ -44,16 +47,19 @@ showMarkdown dimensions model markdown =
               ]
           ] [ markdown ]
       ]
-    |> Html.toElement (round articleWidth) (round dimensions.y)
+    |> Html.toElement (round articleWidth) (round dimensionsY)
     |> Element.container
-        (round dimensions.x)
-        (round dimensions.y)
+        (round dimensionsX)
+        (round dimensionsY)
         Element.middle
 
 
-showDualMarkdown : TrVector.Vector -> TrModel.Model -> Html.Html -> Html.Html -> Element.Element
+showDualMarkdown : Vector.Vec2 -> TrModel.Model -> Html.Html -> Html.Html -> Element.Element
 showDualMarkdown dimensions model markdownLeft markdownRight =
-  let articleWidth =
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      articleWidth =
         580
 
       totalWidth =
@@ -67,7 +73,7 @@ showDualMarkdown dimensions model markdownLeft markdownRight =
       ]
       [ Html.div
           [ Attributes.style
-              [ ("height", (toString dimensions.y) ++ "px")
+              [ ("height", (toString dimensionsY) ++ "px")
               , ("width", (toString totalWidth) ++ "px")
               , ("background-color", TrColor.toString model.colorScheme.document)
               , ("padding", "0 " ++ (toString (articleWidth * 0.05)) ++ "px")
@@ -89,22 +95,22 @@ showDualMarkdown dimensions model markdownLeft markdownRight =
               ] [ markdownRight ]
           ]
       ]
-    |> Html.toElement (round totalWidth) (round dimensions.y)
+    |> Html.toElement (round totalWidth) (round dimensionsY)
     |> Element.container
-        (round dimensions.x)
-        (round dimensions.y)
+        (round dimensionsX)
+        (round dimensionsY)
         Element.middle
 
 
-viewHelp : TrVector.Vector -> TrModel.Model -> Element.Element
+viewHelp : Vector.Vec2 -> TrModel.Model -> Element.Element
 viewHelp dimensions model =
   Markdown.toHtml TrArticles.help
   |> showMarkdown dimensions model
 
 
-viewAbout : TrVector.Vector -> TrModel.Model -> Element.Element
+viewAbout : Vector.Vec2 -> TrModel.Model -> Element.Element
 viewAbout dimensions model =
-  if dimensions.x < 1280
+  if (Vector.getX dimensions) < 1280
     then
       Markdown.toHtml (TrArticles.about ++ TrArticles.license)
       |> showMarkdown dimensions model
@@ -116,7 +122,7 @@ viewAbout dimensions model =
         (Markdown.toHtml TrArticles.license)
 
 
-view : TrVector.Vector -> TrLayout.Type -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> TrLayout.Type -> TrModel.Model -> Element.Element
 view dimensions layout model =
   case model.work.state of
     TrState.Default ->

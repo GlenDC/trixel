@@ -14,6 +14,7 @@
         , "TheSeamau5/elm-undo-redo": "2.0.0 <= v < 3.0.0"
         , "TheSeamau5/elm-material-icons": "1.0.0 <= v < 2.0.0"
         , "evancz/elm-svg": "1.0.0 <= v < 2.0.0"
+        , "johnpmayer/elm-linear-algebra": "2.0.0 <= v < 3.0.0"
     },
     "elm-version": "0.15.0 <= v < 0.16.0"
 }

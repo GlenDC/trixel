@@ -1,7 +1,6 @@
 module Trixel.Views.Footer (view) where
 
 import Trixel.Constants as TrConstants
-import Trixel.Math.Vector as TrVector
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Color as TrColor
 
@@ -9,18 +8,22 @@ import Trixel.Models.Model as TrModel
 
 import Trixel.Graphics as TrGraphics
 import Graphics.Element as Element
+import Math.Vector2 as Vector
 
 import Html
 import Html.Attributes as Attributes
 
 
-viewLeftMenu : TrVector.Vector -> TrModel.Model -> Html.Html
+viewLeftMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
 viewLeftMenu dimensions model =
-  let size =
-        dimensions.y * 0.45
+  let dimensionsY =
+        Vector.getY dimensions
+
+      size =
+        dimensionsY * 0.45
 
       padding =
-        dimensions.y * 0.15
+        dimensionsY * 0.15
   in
     Html.div
       [ Attributes.style
@@ -34,29 +37,32 @@ viewLeftMenu dimensions model =
       ] []
 
 
-viewCenterMenu : TrVector.Vector -> TrModel.Model -> Html.Html
+viewCenterMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
 viewCenterMenu dimensions model =
-  let size =
-        dimensions.y * 0.4
+  let (dimensionsX, dimensionsY) =
+        Vector.toTuple dimensions
+
+      size =
+        dimensionsY * 0.4
 
       padding =
-        dimensions.y * 0.2
+        dimensionsY * 0.2
   in
     Html.div
       [ Attributes.style
           [ ( "float", "left")
           , ( "position", "absolute")
           , ( "left", "50%")
-          , ( "height", (toString dimensions.y) ++ "px")
-          , ( "width", (toString (dimensions.x * 0.2)) ++ "px")
+          , ( "height", (toString dimensionsY) ++ "px")
+          , ( "width", (toString (dimensionsX * 0.2)) ++ "px")
           , ( "overflow", "initial")
           ]
       ]
       [ Html.div
           [ Attributes.style
               [ ( "float", "left" )
-              , ( "height", (toString dimensions.y) ++ "px")
-              , ( "width", (toString (dimensions.x * 0.2)) ++ "px")
+              , ( "height", (toString dimensionsY) ++ "px")
+              , ( "width", (toString (dimensionsX * 0.2)) ++ "px")
               , ( "position", "relative")
               , ( "left", "-50%")
               , ( "font-size", (toString size) ++ "px")
@@ -69,13 +75,16 @@ viewCenterMenu dimensions model =
       ]
 
 
-viewRightMenu : TrVector.Vector -> TrModel.Model -> Html.Html
+viewRightMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
 viewRightMenu dimensions model =
-  let size =
-        dimensions.y * 0.45
+  let dimensionsY =
+        Vector.getY dimensions
+
+      size =
+        dimensionsY * 0.45
 
       padding =
-        dimensions.y * 0.15
+        dimensionsY * 0.15
   in
     Html.div
       [ Attributes.style
@@ -89,19 +98,22 @@ viewRightMenu dimensions model =
       ] [ Html.text ("v" ++ TrConstants.version) ]
 
 
-view : TrVector.Vector -> TrModel.Model -> Element.Element
+view : Vector.Vec2 -> TrModel.Model -> Element.Element
 view dimensions model =
-  Html.div
-    [ Attributes.style
-        [ ( "position", "absolute" )
-        , ( "width", (toString dimensions.x) ++ "px")
-        , ( "height", (toString dimensions.y) ++ "px")
-        ]
-    ]
-    [ viewLeftMenu dimensions model
-    , if dimensions.x < 560
-        then Html.div [] []
-        else viewCenterMenu dimensions model
-    , viewRightMenu dimensions model
-    ]
-  |> Html.toElement (round dimensions.x) (round dimensions.y)
+  let dimensionsX = Vector.getX dimensions
+      dimensionsY = Vector.getY dimensions
+  in
+    Html.div
+      [ Attributes.style
+          [ ( "position", "absolute" )
+          , ( "width", (toString dimensionsX) ++ "px")
+          , ( "height", (toString dimensionsY) ++ "px")
+          ]
+      ]
+      [ viewLeftMenu dimensions model
+      , if dimensionsX < 560
+          then Html.div [] []
+          else viewCenterMenu dimensions model
+      , viewRightMenu dimensions model
+      ]
+    |> Html.toElement (round dimensionsX) (round dimensionsY)
