@@ -1,31 +1,21 @@
 module Trixel.Views.Menu (view) where
 
-import Math.Vector2 as Vector
 
-import Trixel.Types.State as TrState
-import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Model as TrModel
-import Trixel.Models.Work.Model as TrWorkModel
-import Trixel.Models.Work as TrWork
+import Trixel.Types.State as TrState
+import Trixel.Types.Color as TrColor
+import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Work.Actions as TrWorkActions
 
-import Trixel.Native as TrNative
-import Trixel.Graphics as TrGraphics
-import Graphics.Element as Element
-import Graphics.Input as Input
-
-import Signal
+import Trixel.Types.Layout as TrLayout
+import Trixel.Types.Layout.Input as TrLayoutInput
 
 import Material.Icons.Action as ActionIcons
 import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
 import Material.Icons.Navigation as NavigationIcons
 
-import Html
-import Html.Attributes as Attributes
-
-
-viewLogo : Vector.Vec2 -> Element.Element
+{-viewLogo : Vector.Vec2 -> Element.Element
 viewLogo dimensions' =
   let y = Vector.getY dimensions'
       dimensions = Vector.vec2 y y
@@ -214,3 +204,85 @@ view dimensions model =
       (viewLeftMenu leftMenuDimensions showLabels model)
       (viewRightMenu rightMenuDimensions showLabels model)
     |> TrGraphics.setDimensions dimensions
+-}
+
+
+viewLeftMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrLayout.Generator
+viewLeftMenu size padding color selectionColor =
+  TrLayout.equalGroup
+    TrLayout.row
+    TrLayout.noWrap
+    [ TrLayoutInput.imgButton
+        (TrWorkActions.SetState TrState.Default)
+        selectionColor
+        "assets/logo.svg"
+        "Return back to your workspace."
+        size padding
+        [ TrKeyboard.escape ]
+    , TrLayoutInput.svgButton
+        (TrWorkActions.SetState TrState.New)
+        selectionColor
+        ContentIcons.create
+        color
+        "Create a new document."
+        size padding
+        [ TrKeyboard.alt, TrKeyboard.n ]
+    , TrLayoutInput.svgButton
+        (TrWorkActions.SetState TrState.Open)
+        selectionColor
+        FileIcons.folder_open
+        color
+        "Open an existing document."
+        size padding
+        [ TrKeyboard.alt, TrKeyboard.o ]
+    ]
+
+
+viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrLayout.Generator
+viewRightMenu size padding color selectionColor =
+  TrLayout.equalGroup
+    TrLayout.rowReverse
+    TrLayout.noWrap
+    [ TrLayoutInput.svgButton
+        (TrWorkActions.SetState TrState.About)
+        selectionColor
+        ActionIcons.info_outline
+        color
+        "General information on Trixel."
+        size padding
+        []
+    , TrLayoutInput.svgButton
+        (TrWorkActions.SetState TrState.Help)
+        selectionColor
+        ActionIcons.help_outline
+        color
+        "Information on shortcuts and how to use Trixel."
+        size padding
+        [ TrKeyboard.alt, TrKeyboard.i ]
+    , TrLayoutInput.svgButton
+        (TrWorkActions.SetState TrState.Settings)
+        selectionColor
+        ActionIcons.settings
+        color
+        "View and modify your editor settings."
+        size padding
+        [ TrKeyboard.alt, TrKeyboard.s ]
+    ]
+
+
+view : Float -> TrModel.Model -> TrLayout.Generator
+view size' model =
+  let selectionColor =
+        model.colorScheme.selection.main.fill
+      color =
+        model.colorScheme.primary.accentHigh
+
+      size = size' * 0.8
+      padding = size' * 0.2
+  in
+    TrLayout.equalGroup
+      TrLayout.row
+      TrLayout.noWrap
+      [ viewLeftMenu size padding color selectionColor
+      , viewRightMenu size padding color selectionColor
+      ]
