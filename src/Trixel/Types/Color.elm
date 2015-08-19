@@ -4,6 +4,11 @@ import Trixel.Math.Float as TrFloat
 import Color exposing (Color)
 
 
+red = construct 255 0 0 1
+green = construct 0 255 0 1
+blue = construct 0 0 255 1
+
+
 initialColor : RgbaColor
 initialColor =
   construct 0 0 0 0

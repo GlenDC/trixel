@@ -6,114 +6,37 @@ import Trixel.Types.Color as TrColor
 
 import Trixel.Models.Model as TrModel
 
-import Trixel.Graphics as TrGraphics
-import Graphics.Element as Element
-import Math.Vector2 as Vector
-
 import Html
 import Html.Attributes as Attributes
 
-
-viewLeftMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
-viewLeftMenu dimensions model =
-  let dimensionsY =
-        Vector.getY dimensions
-
-      size =
-        dimensionsY * 0.45
-
-      padding =
-        dimensionsY * 0.15
-  in
-    Html.div
-      [ Attributes.style
-          [ ( "float", "left" )
-          , ( "font-size", (toString size) ++ "px")
-          , ( "padding", (toString padding) ++ "px")
-          , ( "position", "relative")
-          , ( "color", TrColor.toString model.colorScheme.primary.accentMid )
-          ]
-      , Attributes.id model.dom.tags.footerHelp
-      ] []
+import Trixel.Types.Layout as TrLayout
+import Trixel.Types.Layout.Text as TrText
 
 
-viewCenterMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
-viewCenterMenu dimensions model =
-  let (dimensionsX, dimensionsY) =
-        Vector.toTuple dimensions
-
-      size =
-        dimensionsY * 0.4
-
-      padding =
-        dimensionsY * 0.2
-  in
-    Html.div
-      [ Attributes.style
-          [ ( "float", "left")
-          , ( "position", "absolute")
-          , ( "left", "50%")
-          , ( "height", (toString dimensionsY) ++ "px")
-          , ( "width", (toString (dimensionsX * 0.2)) ++ "px")
-          , ( "overflow", "initial")
-          ]
-      ]
-      [ Html.div
-          [ Attributes.style
-              [ ( "float", "left" )
-              , ( "height", (toString dimensionsY) ++ "px")
-              , ( "width", (toString (dimensionsX * 0.2)) ++ "px")
-              , ( "position", "relative")
-              , ( "left", "-50%")
-              , ( "font-size", (toString size) ++ "px")
-              , ( "padding", (toString padding) ++ "px")
-              , ( "color", TrColor.toString model.colorScheme.primary.accentMid )
-              , ( "text-align", "center")
-              ]
-          , Attributes.id model.dom.tags.footerShortcut
-          ] []
-      ]
-
-
-viewRightMenu : Vector.Vec2 -> TrModel.Model -> Html.Html
-viewRightMenu dimensions model =
-  let dimensionsY =
-        Vector.getY dimensions
-
-      size =
-        dimensionsY * 0.45
-
-      padding =
-        dimensionsY * 0.15
-  in
-    Html.div
-      [ Attributes.style
-          [ ( "float", "right" )
-          , ( "font-size", (toString size) ++ "px")
-          , ( "font-weight", "bold" )
-          , ( "padding", (toString padding) ++ "px")
-          , ( "position", "relative")
-          , ( "color", TrColor.toString model.colorScheme.primary.accentLow )
-          ]
-      ] [ Html.text ("v" ++ TrConstants.version) ]
-
-
-view : Vector.Vec2 -> TrModel.Model -> Element.Element
-view dimensions model =
-  let dimensionsX = Vector.getX dimensions
-      dimensionsY = Vector.getY dimensions
-  in
-    Html.div
-      [ Attributes.style
-          [ ( "position", "absolute" )
-          , ( "width", (toString dimensionsX) ++ "px")
-          , ( "height", (toString dimensionsY) ++ "px")
-          ]
-      ]
-      [ viewLeftMenu dimensions model
-      , if dimensionsX < 560
-          then Html.div [] []
-          else viewCenterMenu dimensions model
-      , viewRightMenu dimensions model
-      ]
-    |> Html.toElement (round dimensionsX) (round dimensionsY)
+view : Float -> TrModel.Model -> TrLayout.Generator
+view size model =
+  TrLayout.group
+    TrLayout.row
+    TrLayout.noWrap
+    [ (0, TrText.nativeText
+            model.dom.tags.footerShortcut
+            (size * 0.4)
+            TrText.left
+            model.colorScheme.primary.accentMid
+      )
+    , (0, TrText.nativeText
+            model.dom.tags.footerHelp
+            (size * 0.45)
+            TrText.left
+            model.colorScheme.primary.accentMid
+          |> TrLayout.extend (TrLayout.paddingLeft (size * 0.25))
+      )
+    , (1, TrText.text
+            ("v" ++ TrConstants.version)
+            (size * 0.45)
+            TrText.right
+            model.colorScheme.primary.accentLow
+          |> TrLayout.extend TrText.bold
+      )
+    ]
+  |> TrLayout.extend (TrLayout.padding (size * 0.2))

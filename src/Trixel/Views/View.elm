@@ -1,19 +1,15 @@
 module Trixel.Views.View (view) where
 
 import Math.Vector2 as Vector
+import Html
 
 import Trixel.Types.Color as TrColor
 import Trixel.Models.Model as TrModel
+import Trixel.Types.Layout as TrLayout
 
-import Trixel.Views.Menu as TrMenuView
-import Trixel.Views.Context as TrContextView
 import Trixel.Views.Footer as TrFooterView
 
-import Trixel.Graphics as TrGraphics
-import Graphics.Element as Element
-import Graphics.Collage as Collage
-
-
+{-
 computeMenuDimensions : Vector.Vec2 -> Vector.Vec2
 computeMenuDimensions dimensions =
   let (dimX, dimY) = Vector.toTuple dimensions
@@ -53,20 +49,19 @@ viewChildren dimensions model =
     , TrContextView.view contextDimensions menuDimensions model
     , TrFooterView.view footerDimensions model
     ]
+-}
 
 
-view : TrModel.Model -> Element.Element
+view : TrModel.Model -> Html.Html
 view model =
-  let dimensions =
-        model.work.dimensions
-
-      children =
-        Element.flow
-          Element.down
-          (viewChildren dimensions model)
+  let y = Vector.getY model.work.dimensions
   in
-    Collage.group
-      [ TrGraphics.background model.colorScheme.primary.main.fill dimensions
-      , Collage.toForm children
+    TrLayout.group
+      TrLayout.column
+      TrLayout.noWrap
+      [ (35, TrLayout.dummy TrColor.red)
+      , (1000, TrLayout.dummy TrColor.blue)
+      , (0, TrFooterView.view (y * 0.025) model)
       ]
-    |> TrGraphics.toElement dimensions
+    |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
+    |> TrLayout.root
