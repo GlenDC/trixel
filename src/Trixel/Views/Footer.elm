@@ -18,6 +18,7 @@ view size model =
   TrLayout.group
     TrLayout.row
     TrLayout.noWrap
+    []
     [ (0, TrText.nativeText
             model.dom.tags.footerShortcut
             (size * 0.4)

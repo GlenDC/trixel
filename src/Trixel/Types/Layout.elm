@@ -2,6 +2,7 @@ module Trixel.Types.Layout where
 
 import Css
 import Css.Flex as Flex
+import Css.Display as Display
 import Css.Background as Background
 
 import Html
@@ -34,11 +35,13 @@ type alias Generator = Css.Styles -> Html.Html
 
 dummy : TrColor.RgbaColor -> Generator
 dummy color =
+  extend (background color) empty
+
+
+empty : Generator
+empty =
   (\styles ->
-    let style =
-          background color styles
-          |> Attributes.style
-    in Html.div [ style ] []
+    Html.div [ Attributes.style styles ] []
     )
 
 
@@ -50,24 +53,30 @@ root generator =
   ] |> generator
 
 
-equalGroup : Direction -> Wrap -> List Generator -> Generator
-equalGroup direction wrap children =
+equalGroup : Direction -> Wrap -> Css.Styles -> List Generator -> Generator
+equalGroup direction wrap childStyles children =
   List.map (\child -> (1, child)) children
-  |> group direction wrap
+  |> group direction wrap childStyles
 
 
-group : Direction -> Wrap -> List (Int, Generator) -> Generator
-group direction wrap children =
+autoGroup : Direction -> Wrap -> Css.Styles -> List Generator -> Generator
+autoGroup direction wrap childStyles children =
+  List.map (\child -> (0, child)) children
+  |> group direction wrap childStyles
+
+
+group : Direction -> Wrap -> Css.Styles -> List (Int, Generator) -> Generator
+group direction wrap childStyles children =
   let elements =
         List.map
           (\(grow, generator) ->
-            generator (Flex.grow grow [])
+            generator (Flex.grow grow childStyles)
             )
           children
   in
     (\styles ->
       let style =
-            (("display", "flex") :: styles)
+            Display.display Display.Flex styles
             |> Flex.flow direction wrap
             |> Attributes.style
       in Html.div [ style ] elements
@@ -94,6 +103,11 @@ padding px styles =
   ("padding", Css.px px) :: styles
 
 
+axisPadding : number -> number -> Css.Styles -> Css.Styles
+axisPadding hor ver styles =
+  ("padding", (Css.px hor) ++ " " ++ (Css.px ver)) :: styles
+
+
 paddingLeft : number -> Css.Styles -> Css.Styles
 paddingLeft px styles =
   ("padding-left", Css.px px) :: styles
@@ -102,6 +116,16 @@ paddingLeft px styles =
 paddingRight : number -> Css.Styles -> Css.Styles
 paddingRight px styles =
   ("padding-right", Css.px px) :: styles
+
+
+marginLeft : number -> Css.Styles -> Css.Styles
+marginLeft px styles =
+  ("margin-left", Css.px px) :: styles
+
+
+marginRight : number -> Css.Styles -> Css.Styles
+marginRight px styles =
+  ("margin-right", Css.px px) :: styles
 
 
 background : TrColor.RgbaColor -> Css.Styles -> Css.Styles

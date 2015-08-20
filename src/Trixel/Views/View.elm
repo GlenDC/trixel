@@ -18,9 +18,10 @@ view model =
     TrLayout.group
       TrLayout.column
       TrLayout.noWrap
-      [ (0, TrMenuView.view (y * 0.04) model)
+      []
+      [ (0, TrMenuView.view (max (y * 0.03) 35) model)
       , (1, TrLayout.dummy TrColor.blue)
-      , (0, TrFooterView.view (y * 0.0325) model)
+      , (0, TrFooterView.view (max (y * 0.025) 30) model)
       ]
     |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
     |> TrLayout.root
