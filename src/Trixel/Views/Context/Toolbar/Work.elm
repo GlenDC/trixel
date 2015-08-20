@@ -1,4 +1,4 @@
-module Trixel.Views.Context.Workspace (view) where
+module Trixel.Views.Context.Toolbar.Work (view) where
 
 import Trixel.Models.Model as TrModel
 

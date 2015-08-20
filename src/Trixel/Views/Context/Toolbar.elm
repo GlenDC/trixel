@@ -1,21 +1,15 @@
 module Trixel.Views.Context.Toolbar (view) where
 
 import Trixel.Models.Model as TrModel
+
+import Trixel.Types.State as TrState
 import Trixel.Types.Layout as TrLayout
 
-import Graphics.Element as Element
-import Math.Vector2 as Vector
+import Trixel.Views.Context.Toolbar.Menu as TrMenu
+import Trixel.Views.Context.Toolbar.Work as TrWork
 
-import Trixel.Views.Context.Toolbar.Horizontal as TrHorizontalToolbar
-import Trixel.Views.Context.Toolbar.Vertical as TrVerticalToolbar
-
-
-
-view : Vector.Vec2 -> Vector.Vec2 -> TrLayout.Type -> TrModel.Model -> Element.Element
-view dimensions elementDimensions layout model =
-  case layout of
-    TrLayout.Horizontal ->
-      TrHorizontalToolbar.view dimensions elementDimensions model
-
-    TrLayout.Vertical ->
-      TrVerticalToolbar.view dimensions model
+view : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+view model mode =
+  if model.work.state == TrState.Default
+    then TrWork.view model mode
+    else TrMenu.view model mode

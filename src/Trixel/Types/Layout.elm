@@ -30,6 +30,11 @@ type Align
   | Right
 
 
+type Mode
+  = Landscape
+  | Portrait
+
+
 type alias Generator = Css.Styles -> Html.Html
 
 
@@ -96,6 +101,16 @@ crossAlign align' styles =
           Right -> Flex.AIEnd
           Center -> Flex.AICenter
   in Flex.alignItems align styles
+
+
+justifyContent : Align -> Css.Styles -> Css.Styles
+justifyContent align' styles =
+  let align =
+        case align' of
+          Left -> Flex.JCStart
+          Right -> Flex.JCEnd
+          Center -> Flex.JCCenter
+  in Flex.justifyContent align styles
 
 
 padding : number -> Css.Styles -> Css.Styles

@@ -1,6 +1,6 @@
 module Trixel.Views.Context.Home (view) where
 
-import Trixel.Models.Model as TrModel
+{-import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 import Trixel.Articles as TrArticles
 import Trixel.Types.Color as TrColor
@@ -205,3 +205,13 @@ view dimensions model =
     (round dimensionsX)
     (round dimensionsY)
     Element.middle
+-}
+
+import Trixel.Models.Model as TrModel
+
+import Trixel.Types.Layout as TrLayout
+
+
+view : TrModel.Model -> TrLayout.Generator
+view model =
+  TrLayout.empty

@@ -7,8 +7,9 @@ import Trixel.Types.Color as TrColor
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 
-import Trixel.Views.Footer as TrFooterView
 import Trixel.Views.Menu as TrMenuView
+import Trixel.Views.Context as TrContext
+import Trixel.Views.Footer as TrFooterView
 
 
 view : TrModel.Model -> Html.Html
@@ -19,9 +20,9 @@ view model =
       TrLayout.column
       TrLayout.noWrap
       []
-      [ (0, TrMenuView.view (max (y * 0.03) 35) model)
-      , (1, TrLayout.dummy TrColor.blue)
-      , (0, TrFooterView.view (max (y * 0.025) 30) model)
+      [ (0, TrMenuView.view (min (max (y * 0.03) 35) 100) model)
+      , (1, TrContext.view model)
+      , (0, TrFooterView.view (min (max (y * 0.025) 30) 90) model)
       ]
     |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
     |> TrLayout.root
