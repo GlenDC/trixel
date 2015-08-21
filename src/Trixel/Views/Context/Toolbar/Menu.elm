@@ -54,10 +54,10 @@ view model mode =
       flow =
         case mode of
           TrLayout.Portrait ->
-            TrLayout.column
+            TrLayout.row
 
           TrLayout.Landscape ->
-            TrLayout.row
+            TrLayout.column
   in
     computeMenuChildren model color selectionColor size padding
     |> TrLayout.equalGroup flow TrLayout.wrap []

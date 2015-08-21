@@ -28,25 +28,18 @@ isNotOnHomeScreen model =
 viewContext : TrModel.Model -> TrLayout.Generator
 viewContext model =
   let mode = computeMode model
+      flow =
+        case mode of
+          TrLayout.Portrait -> TrLayout.column
+          TrLayout.Landscape -> TrLayout.row
   in
-    case mode of
-      TrLayout.Portrait ->
-        TrLayout.group
-          TrLayout.row
-          TrLayout.noWrap
-          []
-          [ (0, TrToolbar.view model mode)
-          , (1, TrWorkspace.view model mode)
-          ]
-
-      TrLayout.Landscape ->
-        TrLayout.group
-          TrLayout.column
-          TrLayout.noWrap
-          []
-          [ (0, TrToolbar.view model mode)
-          , (1, TrWorkspace.view model mode)
-          ]
+    TrLayout.group
+      flow
+      TrLayout.noWrap
+      []
+      [ (0, TrToolbar.view model mode)
+      , (1, TrWorkspace.view model mode)
+      ]
 
 
 view : TrModel.Model -> TrLayout.Generator

@@ -15,6 +15,9 @@ import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
 import Material.Icons.Navigation as NavigationIcons
 
+import Css.Border.Bottom as BorderBottom
+import Css.Border.Style as BorderStyle
+
 import Math.Vector2 as Vector
 
 
@@ -148,3 +151,6 @@ view size' model =
       [ viewLeftMenu size padding color selectionColor showLabels model
       , viewRightMenu size padding color selectionColor showLabels model
       ]
+    |> TrLayout.extend (BorderBottom.width (max 3 (min (size * 0.1) 9)))
+    |> TrLayout.extend (BorderBottom.color (TrColor.toColor model.colorScheme.primary.main.stroke))
+    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)

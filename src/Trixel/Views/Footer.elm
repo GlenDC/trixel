@@ -6,12 +6,14 @@ import Trixel.Types.Color as TrColor
 
 import Trixel.Models.Model as TrModel
 
-import Html
-import Html.Attributes as Attributes
-
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Text as TrText
 
+import Html
+import Html.Attributes as Attributes
+
+import Css.Border.Top as BorderTop
+import Css.Border.Style as BorderStyle
 
 view : Float -> TrModel.Model -> TrLayout.Generator
 view size model =
@@ -41,3 +43,6 @@ view size model =
       )
     ]
   |> TrLayout.extend (TrLayout.padding (size * 0.2))
+  |> TrLayout.extend (BorderTop.width (max 2 (min (size * 0.065) 5)))
+  |> TrLayout.extend (BorderTop.color (TrColor.toColor model.colorScheme.primary.main.stroke))
+  |> TrLayout.extend (BorderTop.style BorderStyle.Solid)
