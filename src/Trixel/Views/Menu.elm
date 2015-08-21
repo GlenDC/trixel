@@ -17,6 +17,7 @@ import Material.Icons.Navigation as NavigationIcons
 
 import Css.Border.Bottom as BorderBottom
 import Css.Border.Style as BorderStyle
+import Css.Dimension as Dimension
 
 import Math.Vector2 as Vector
 
@@ -72,6 +73,7 @@ viewLeftMenu size padding color selectionColor showLabels model =
             (model.work.state == TrState.Save)
           else TrLayout.empty
     ]
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
 viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool -> TrModel.Model -> TrLayout.Generator
@@ -129,6 +131,7 @@ viewRightMenu size padding color selectionColor showLabels model =
           showLabels
           (model.work.state == TrState.Settings)
       ]
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
 view : Float -> TrModel.Model -> TrLayout.Generator
@@ -138,7 +141,7 @@ view size' model =
       color =
         model.colorScheme.primary.accentHigh
 
-      size = size' * 0.7
+      size = size' * 0.85
       padding = size' * 0.25
 
       showLabels =
@@ -153,4 +156,5 @@ view size' model =
       ]
     |> TrLayout.extend (BorderBottom.width (max 3 (min (size * 0.1) 9)))
     |> TrLayout.extend (BorderBottom.color (TrColor.toColor model.colorScheme.primary.main.stroke))
-    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)
+    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+    |> TrLayout.extend (Dimension.minHeight (size + (padding * 2)))

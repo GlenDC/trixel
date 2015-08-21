@@ -16,6 +16,8 @@ import Material.Icons.Navigation as NavigationIcons
 
 import Math.Vector2 as Vector
 
+import Css.Dimension as Dimension
+
 
 responsiveButton : TrWorkActions.Action -> TrGraphics.SvgGenerator -> String -> String -> Float -> Float -> TrInput.Buttons -> TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 responsiveButton action generator message labelText size padding buttons model mode =
@@ -81,7 +83,7 @@ view model mode =
         case mode of
           TrLayout.Portrait ->
             ( TrLayout.row
-            , min (max (y * 0.03) 35) 100
+            , min (max (y * 0.025) 30) 80
             )
 
           TrLayout.Landscape ->
@@ -94,3 +96,4 @@ view model mode =
     computeMenuChildren model mode size padding
     |> TrLayout.equalGroup flow TrLayout.wrap []
     |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
+    |> TrLayout.extend (Dimension.minHeight (size + (padding * 2)))

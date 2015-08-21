@@ -20,9 +20,9 @@ view model =
       TrLayout.column
       TrLayout.noWrap
       []
-      [ (0, TrMenuView.view (min (max (y * 0.03) 35) 100) model)
+      [ (0, TrMenuView.view (min (max (y * 0.03) 30) 80) model)
       , (1, TrContext.view model)
-      , (0, TrFooterView.view (min (max (y * 0.025) 30) 90) model)
+      , (0, TrFooterView.view (min (max (y * 0.025) 28) 70) model)
       ]
     |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
     |> TrLayout.root
