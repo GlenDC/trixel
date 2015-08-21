@@ -63,7 +63,9 @@ button action hoverColor message buttons toggled generator =
               else styles
 
       in Html.div
-          [ Attributes.style buttonStyles ]
+          [ Attributes.style buttonStyles
+          , Attributes.class "tr-button-inherit"
+          ]
           [ element ]
       )
 
@@ -93,6 +95,7 @@ nativeButton (func, args) hoverColor message buttons toggled generator =
     in Html.div
         [ Attributes.style buttonStyles
         , TrNative.mouseClick func args
+        , Attributes.class "tr-button-inherit"
         ]
         [ element ]
     )

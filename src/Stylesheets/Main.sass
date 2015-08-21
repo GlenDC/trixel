@@ -70,6 +70,31 @@ body
     @content
 
 
+=flex-grow($value)
+  -webkit-box-flex: $value
+  -webkit-flex-grow: $value
+  -moz-flex-grow: $value
+  -ms-flex-positive: $value
+  flex-grow: $value
+
+
+.tr-button-inherit
+  display: inherit
+  @include flex-grow(inherit)
+  div
+    display: inherit
+    @include flex-grow(inherit)
+    div
+      display: inherit
+      @include flex-grow(inherit)
+      div
+        display: inherit
+        @include flex-grow(inherit)
+        div
+          display: inherit
+          @include flex-grow(inherit)
+
+
 body
   @include fullscreen()
     position: fixed
