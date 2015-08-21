@@ -1,217 +1,114 @@
 module Trixel.Views.Context.Home (view) where
 
-{-import Trixel.Models.Model as TrModel
-import Trixel.Types.Layout as TrLayout
-import Trixel.Articles as TrArticles
-import Trixel.Types.Color as TrColor
-import Trixel.Graphics as TrGraphics
-import Trixel.Types.State as TrState
-import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Models.Work as TrWork
+import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Actions as TrWorkActions
 
-import Graphics.Element as Element
-import Math.Vector2 as Vector
-
-import Markdown
-import Html
-import Html.Attributes as Attributes
+import Trixel.Types.Input as TrInput
+import Trixel.Types.Keyboard as TrKeyboard
+import Trixel.Types.State as TrState
+import Trixel.Types.Layout as TrLayout
+import Trixel.Types.Layout.Graphics as TrGraphics
+import Trixel.Types.Layout.Input as TrLayoutInput
+import Trixel.Types.Layout.Text as TrText
 
 import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
 
+import Css.Dimension as Dimension
 
-viewButton render label help shortcuts selected dimensions model address action =
-  TrGraphics.svgVerticalButton
-    render
-    label
-    help
-    shortcuts
-    selected
-    dimensions
-    model.colorScheme.primary.accentHigh
-    model.colorScheme.selection.accentHigh
-    model.colorScheme.primary.main.stroke
-    model.colorScheme.selection.main.fill
-    address
+import Math.Vector2 as Vector
+
+import Array
+import Random
+
+
+button : TrWorkActions.Action -> TrGraphics.SvgGenerator -> String -> String -> TrInput.Buttons -> Float -> Float -> TrModel.Model -> TrLayout.Generator
+button action generator message labelText buttons size padding model =
+  TrLayoutInput.verticalSvgButton
     action
-  |> Html.fromElement
+    model.colorScheme.selection.main.fill
+    generator
+    model.colorScheme.secondary.accentHigh
+    message
+    labelText
+    (size * 0.70)
+    (size * 0.14)
+    padding
+    buttons
+    False
+  |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
+  |> TrLayout.extend (TrLayout.margin (padding * 0.5))
 
 
-viewNormal : Vector.Vec2 -> TrModel.Model -> Element.Element
-viewNormal dimensions model =
-  let (dimensionsX, dimensionsY) =
-        Vector.toTuple dimensions
+viewButtons : Float -> Float -> TrModel.Model -> TrLayout.Generator
+viewButtons size padding model =
+  TrLayout.autoGroup
+    TrLayout.row
+    TrLayout.noWrap
+    []
+    [ button
+        (TrWorkActions.SetState TrState.New)
+        ContentIcons.create
+        "Create a new document."
+        "New Document"
+        [ TrKeyboard.alt, TrKeyboard.n ]
+        size padding
+        model
+    , button
+        (TrWorkActions.SetState TrState.Open)
+        FileIcons.folder_open
+        "Open an existing document."
+        "Open Document"
+        [ TrKeyboard.alt, TrKeyboard.o ]
+        size padding
+        model
+    ]
 
-      padding =
-        clamp 30 50 (dimensionsX * 0.025)
 
-      leftWidth =
-        clamp 330 580 (dimensionsX * 0.5)
-      rightWidth = 
-        clamp 230 400 (dimensionsX * 0.4)
+computeRandomTip : Random.Seed -> String
+computeRandomTip seed =
+  let defaultTip =
+        "don't forget to share your art on social media with the hashtag #trixelit" 
 
-      totalWidth =
-        leftWidth + rightWidth + padding
+      tips =
+        [ defaultTip
+        , "you can find a list of shortcuts on the help page"
+        , "find out more information about this editor on the about page"
+        ] |> Array.fromList
 
-      buttonDimensionsY =
-        min 35 (dimensionsY * 0.2)
-
-      buttonDimensions =
-        Vector.vec2
-          rightWidth
-          buttonDimensionsY
-
-      buttonPadding =
-        buttonDimensionsY * 0.25
+      (index, seed') = Random.generate (Random.int 0 2) seed
   in
-    Html.div
-      [ Attributes.style
-          [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
-          , ( "width", (toString totalWidth) ++ "px" )
-          , ( "height", (toString dimensionsY) ++ "px" )
-          , ( "position", "absolute" )
-          , ( "overflow", "auto" )
-          ]
-      , Attributes.class "tr-menu-article"
-      ]
-      [ Html.div
-          [ Attributes.style
-              [ ( "float", "left" )
-              , ( "width", (toString leftWidth) ++ "px" )
-              , ( "height", (toString dimensionsY) ++ "px" )
-              , ( "position", "relative" )
-              ]
-          ]
-          [ Markdown.toHtml (TrArticles.homeIntro ++ TrArticles.homeIntroExtra ++ TrArticles.homeUpdateTitle)
-          , Html.div
-              [ Attributes.style
-                  [ ( "overflow", "auto" )
-                  , ( "height", "30%")
-                  ]
-              ]
-              [ Markdown.toHtml TrArticles.homeUpdateList
-              ]
-          ]
-      , Html.div
-          [ Attributes.style
-              [ ( "float", "right" )
-              , ( "width", (toString rightWidth) ++ "px" )
-              , ( "height", (toString dimensionsY) ++ "px" )
-              , ( "position", "relative" )
-              ]
-          ]
-          [ Markdown.toHtml TrArticles.homeAction
-          , Element.spacer
-              (round rightWidth)
-              (round (buttonDimensionsY * 0.25))
-            |> Html.fromElement
-          , viewButton
-              ContentIcons.create
-              "New Document"
-              "Create a new Trixel Art Document."
-              [ TrKeyboard.alt, TrKeyboard.n ]
-              False
-              buttonDimensions model TrWork.address
-              (TrWorkActions.SetState TrState.New)
-          , Element.spacer
-              (round rightWidth)
-              (round (buttonDimensionsY * 0.25))
-            |> Html.fromElement
-          , viewButton
-              FileIcons.folder_open
-              "Open Document"
-              "Open an existing Trixel Art Document."
-              [ TrKeyboard.alt, TrKeyboard.o ]
-              False
-              buttonDimensions model TrWork.address
-              (TrWorkActions.SetState TrState.Open)
-          ]
-      ]
-    |> Html.toElement (round totalWidth) (round dimensionsY)
-
-
-viewThin : Vector.Vec2 -> TrModel.Model -> Element.Element
-viewThin dimensions model =
-  let (dimensionsX, dimensionsY) =
-        Vector.toTuple dimensions
-
-      width =
-        dimensionsX * 0.9
-
-      totalWidth =
-        dimensionsX * 0.95
-
-      buttonDimensionsY =
-        min 35 (dimensionsY * 0.2)
-
-      buttonDimensions =
-        Vector.vec2
-          width
-          buttonDimensionsY
-
-      buttonPadding =
-        buttonDimensionsY * 0.25
-  in
-    Html.div
-      [ Attributes.style
-          [ ("color", TrColor.toString model.colorScheme.secondary.accentHigh)
-          , ( "width", (toString totalWidth) ++ "px" )
-          , ( "height", (toString dimensionsY) ++ "px" )
-          , ( "overflow", "auto" )
-          ]
-      , Attributes.class "tr-menu-article"
-      ]
-      [ Markdown.toHtml (TrArticles.homeIntro ++ TrArticles.homeAction)
-      , Element.spacer
-          (round width)
-          (round (buttonDimensionsY * 0.25))
-        |> Html.fromElement
-      , viewButton
-          ContentIcons.create
-          "New Document"
-          "Create a new Trixel Art Document."
-          [ TrKeyboard.alt, TrKeyboard.n ]
-          False
-          buttonDimensions model TrWork.address
-          (TrWorkActions.SetState TrState.New)
-      , Element.spacer
-          (round width)
-          (round (buttonDimensionsY * 0.25))
-        |> Html.fromElement
-      , viewButton
-          FileIcons.folder_open
-          "Open Document"
-          "Open an existing Trixel Art Document."
-          [ TrKeyboard.alt, TrKeyboard.o ]
-          False
-          buttonDimensions model TrWork.address
-          (TrWorkActions.SetState TrState.Open)
-      , Markdown.toHtml (TrArticles.homeUpdateTitle ++ TrArticles.homeUpdateList)
-      ]
-    |> Html.toElement (round totalWidth) (round dimensionsY)
-
-
-view : Vector.Vec2 -> TrModel.Model -> Element.Element
-view dimensions model =
-  let (dimensionsX, dimensionsY) =
-        Vector.toTuple dimensions
-  in
-    ( if dimensionsX < 600
-          then viewThin dimensions model
-          else viewNormal dimensions model
-    )
-    |> Element.container
-    (round dimensionsX)
-    (round dimensionsY)
-    Element.middle
--}
-
-import Trixel.Models.Model as TrModel
-
-import Trixel.Types.Layout as TrLayout
+    case Array.get index tips of
+      Maybe.Just tip -> tip
+      Maybe.Nothing -> defaultTip
 
 
 view : TrModel.Model -> TrLayout.Generator
 view model =
-  TrLayout.empty
+  let y = Vector.getY model.work.dimensions
+      size = min 240 (y * 0.35)
+      padding = size * 0.2
+  in
+    TrLayout.autoGroup
+      TrLayout.column
+      TrLayout.noWrap
+      []
+      [ TrText.text
+          "trixel it"
+          (size * 0.5)
+          TrText.center
+          model.colorScheme.logo.fill
+          True
+        |> TrLayout.extend (TrText.bold)
+      , viewButtons size padding model
+      , TrText.text
+          (computeRandomTip model.seed)
+          (size * 0.1)
+          TrText.center
+          model.colorScheme.secondary.accentMid
+          True
+        |> TrLayout.extend (TrLayout.axisPadding 0 (size * 0.01))
+      ]
+    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+    |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+    |> TrLayout.extend (TrLayout.background model.colorScheme.document)

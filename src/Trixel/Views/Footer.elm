@@ -40,6 +40,7 @@ view size model =
             (size * 0.45)
             TrText.right
             model.colorScheme.primary.accentLow
+            True
           |> TrLayout.extend TrText.bold
       )
     ]

@@ -29,15 +29,19 @@ bold styles =
   ("font-weight", "bold") :: styles
 
 
-text : String -> Float -> Align -> TrColor.RgbaColor -> Generator
-text title px align color =
+text : String -> Float -> Align -> TrColor.RgbaColor -> Bool -> Generator
+text title px align color selectable =
   (\styles ->
     let style =
           Text.align align styles
           |> Text.color (TrColor.toColor color)
           |> size px
           |> Attributes.style
-    in Html.div [ style ] [ Html.text title ]
+    in Html.div
+        [ style
+        , Attributes.class ( if selectable then "tr-menu-article" else "")
+        ]
+        [ Html.text title ]
     )
 
 

@@ -49,7 +49,7 @@ viewSettings model mode =
     """
 Here you'll be able to modify your language, shortcuts and editor preferences...
 
-For now however, none of that is available yet.
+For now however, none of that is available.
     """
 
 

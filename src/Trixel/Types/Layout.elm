@@ -143,6 +143,11 @@ paddingTop px styles =
   ("padding-top", Css.px px) :: styles
 
 
+margin : number -> Css.Styles -> Css.Styles
+margin px styles =
+  ("margin", Css.px px) :: styles
+
+
 marginLeft : number -> Css.Styles -> Css.Styles
 marginLeft px styles =
   ("margin-left", Css.px px) :: styles
