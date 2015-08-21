@@ -8,6 +8,9 @@ import Html.Attributes as Attributes
 
 import Css
 import Css.Text as Text
+import Css.Dimension as Dimension
+
+import Markdown
 
 
 type alias Align = Text.Align
@@ -47,4 +50,17 @@ nativeText id px align color =
           |> size px
           |> Attributes.style
     in Html.div [ style, Attributes.id id ] []
+    )
+
+markdown : String -> (number, number) -> (number, number) -> Generator
+markdown content (minWidth, maxWidth) (minHeight, maxHeight) =
+  (\styles ->
+    let style =
+          Dimension.minWidth minWidth styles
+          |> Dimension.maxWidth maxWidth
+          |> Dimension.minHeight minHeight
+          |> Dimension.maxHeight maxHeight
+          |> Attributes.style
+    in
+      Html.div [ style ] [ Markdown.toHtml content ]
     )
