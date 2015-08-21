@@ -133,6 +133,16 @@ paddingRight px styles =
   ("padding-right", Css.px px) :: styles
 
 
+paddingBottom : number -> Css.Styles -> Css.Styles
+paddingBottom px styles =
+  ("padding-bottom", Css.px px) :: styles
+
+
+paddingTop : number -> Css.Styles -> Css.Styles
+paddingTop px styles =
+  ("padding-top", Css.px px) :: styles
+
+
 marginLeft : number -> Css.Styles -> Css.Styles
 marginLeft px styles =
   ("margin-left", Css.px px) :: styles

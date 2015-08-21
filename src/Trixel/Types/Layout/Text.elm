@@ -52,15 +52,21 @@ nativeText id px align color =
     in Html.div [ style, Attributes.id id ] []
     )
 
-markdown : String -> (number, number) -> (number, number) -> Generator
-markdown content (minWidth, maxWidth) (minHeight, maxHeight) =
+markdown : String -> (number, number) -> (number, number) -> TrColor.RgbaColor -> Generator
+markdown content (minWidth, maxWidth) (minHeight, maxHeight) color =
   (\styles ->
     let style =
           Dimension.minWidth minWidth styles
           |> Dimension.maxWidth maxWidth
           |> Dimension.minHeight minHeight
           |> Dimension.maxHeight maxHeight
+          |> Text.color (TrColor.toColor color)
           |> Attributes.style
     in
-      Html.div [ style ] [ Markdown.toHtml content ]
+      Html.div
+        [ style
+        , Attributes.class "tr-menu-article"
+        ]
+        [ Markdown.toHtml content
+        ]
     )

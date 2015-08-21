@@ -116,6 +116,22 @@ label description color size padding generator =
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
+verticalLabel : String -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator -> TrLayout.Generator
+verticalLabel description color size padding generator =
+  TrLayout.autoGroup
+    TrLayout.column
+    TrLayout.noWrap
+    []
+    [ generator
+      |> TrLayout.extend (TrLayout.paddingBottom padding)
+    , TrText.text description size TrText.left color
+    ]
+  |> TrLayout.extend (TrLayout.padding (padding * 0.5))
+  |> TrLayout.extend (Flex.justifyContent Flex.JCCenter)
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+
+
+
 imgButton : TrWorkActions.Action -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
 imgButton action hoverColor src message size padding buttons toggled =
   TrGraphics.image src message size padding
@@ -174,3 +190,10 @@ nativeSvgResponsiveButton (func, args) hoverColor generator color message labelT
   if predicate
     then nativeSvgLabelButton (func, args) hoverColor generator color message labelText size padding buttons toggled
     else nativeSvgButton (func, args) hoverColor generator color message size padding buttons toggled
+
+
+verticalSvgButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
+verticalSvgButton action hoverColor generator color message labelText size fontSize padding buttons toggled =
+  TrGraphics.svg generator color size 0
+  |> verticalLabel labelText color fontSize padding
+  |> button action hoverColor message buttons toggled

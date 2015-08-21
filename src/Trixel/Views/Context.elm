@@ -15,7 +15,7 @@ import Math.Vector2 as Vector
 
 computeMode : TrModel.Model -> TrLayout.Mode
 computeMode model =
-  if (Vector.getX model.work.dimensions) <= 970
+  if (Vector.getX model.work.dimensions) <= 1080
     then TrLayout.Portrait
     else TrLayout.Landscape
 

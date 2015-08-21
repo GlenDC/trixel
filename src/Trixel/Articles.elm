@@ -33,6 +33,8 @@ Trixel is an open source free-to-use editor to make trixel art. Similar to pixel
 
 The Trixel Updates Newsletter is send on a regular basis. It gives an overview of what's upcomming and what has changed in the live patches since the last newsletter. This way you're always up to date with what has changed. You can subscribe [here](http://eepurl.com/brwmSn).
 
+You can find the up-to-date changelog on [this wiki page](https://github.com/GlenDC/trixel/wiki/Changelog).
+
 ## Opensource and Free
 
 I'm a big believer of [free and open source software](https://en.wikipedia.org/wiki/Free_and_open-source_software). In the case of Trixel, the free is also gratis. The source code and issues of Trixel can be found at [GitHub](https://github.com/GlenDC/trixel).
@@ -45,7 +47,7 @@ Additionally you can also just comment on an issue that you want to resolve, or 
 """
 
 license : String
-license = """   
+license = """
 ## License
 
 The MIT License (MIT)
