@@ -26,22 +26,21 @@ view size model =
             model.dom.tags.footerShortcut
             (size * 0.4)
             TrText.left
-            model.colorScheme.primary.accentMid
+            model.colorScheme.primary.accentHigh
       )
     , (0, TrText.nativeText
             model.dom.tags.footerHelp
             (size * 0.45)
             TrText.left
-            model.colorScheme.primary.accentMid
+            model.colorScheme.primary.accentHigh
           |> TrLayout.extend (TrLayout.paddingLeft (size * 0.25))
       )
     , (1, TrText.text
             ("v" ++ TrConstants.version)
             (size * 0.45)
             TrText.right
-            model.colorScheme.primary.accentLow
+            model.colorScheme.primary.accentMid
             True
-          |> TrLayout.extend TrText.bold
       )
     ]
   |> TrLayout.extend (TrLayout.padding (size * 0.2))

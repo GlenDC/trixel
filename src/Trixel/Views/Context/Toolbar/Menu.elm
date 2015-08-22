@@ -79,16 +79,18 @@ view : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 view model mode =
   let y = Vector.getY model.work.dimensions
 
-      (flow, size) =
+      (flow, size, minFunc) =
         case mode of
           TrLayout.Portrait ->
             ( TrLayout.row
             , min (max (y * 0.025) 30) 80
+            , Dimension.minHeight
             )
 
           TrLayout.Landscape ->
             ( TrLayout.column
             , min (max (y * 0.075) 80) 200
+            , Dimension.minWidth
             )
 
       padding = size * 0.1
@@ -96,4 +98,4 @@ view model mode =
     computeMenuChildren model mode size padding
     |> TrLayout.equalGroup flow TrLayout.wrap []
     |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
-    |> TrLayout.extend (Dimension.minHeight (size + (padding * 2)))
+    |> TrLayout.extend (minFunc (size + (padding * 2)))

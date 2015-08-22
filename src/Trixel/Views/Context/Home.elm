@@ -18,6 +18,7 @@ import Material.Icons.Communication as CommunicationIcons
 import Material.Icons.File as FileIcons
 
 import Css.Dimension as Dimension
+import Css.Border as Border
 
 import Math.Vector2 as Vector
 
@@ -40,6 +41,7 @@ button action generator message labelText buttons size padding model =
     False
   |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
   |> TrLayout.extend (TrLayout.margin (padding * 0.5))
+  |> TrLayout.extend (TrLayout.borderRadius (size * 0.05))
 
 
 viewButtons : Float -> Float -> TrModel.Model -> TrLayout.Generator

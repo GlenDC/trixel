@@ -2,6 +2,7 @@ module Trixel.Types.Layout where
 
 import Css
 import Css.Flex as Flex
+import Css.Border as Border
 import Css.Display as Display
 import Css.Background as Background
 
@@ -111,6 +112,11 @@ justifyContent align' styles =
           Right -> Flex.JCEnd
           Center -> Flex.JCCenter
   in Flex.justifyContent align styles
+
+
+borderRadius : number -> Css.Styles -> Css.Styles
+borderRadius px styles =
+  Border.radius px px px px styles
 
 
 padding : number -> Css.Styles -> Css.Styles
