@@ -33,7 +33,7 @@ viewLeftMenu size padding color selectionColor showLabels model =
         selectionColor
         "assets/logo.svg"
         "Return back to your workspace."
-        size padding
+        (size * 1.1) (padding * 1.5)
         [ TrKeyboard.c ]
         False
     , TrLayoutInput.svgResponsiveButton

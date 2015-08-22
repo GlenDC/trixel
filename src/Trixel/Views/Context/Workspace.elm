@@ -49,7 +49,7 @@ viewSettings model mode =
     """
 No tweakable settings available for now.
 
-If you have any request for new settings you would like to tweak, please raise an issue on GitHub.
+If you have any request for new settings you would like to tweak, please raise an issue [on GitHub](https://github.com/GlenDC/trixel).
     """
 
 

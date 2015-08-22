@@ -6,8 +6,6 @@ import Trixel.Types.ColorScheme as TrColorScheme
 import Trixel.Types.Color as TrColor
 import Trixel.Types.State as TrState
 
-import Random
-
 
 type alias ModelSignal = Signal Action
 
@@ -17,7 +15,6 @@ initialModel =
   { dom = TrDom.initialModel
   , work = TrWorkModel.initialModel
   , colorScheme = TrColorScheme.nightColorScheme
-  , seed = Random.initialSeed 0
   }
 
 
@@ -25,7 +22,6 @@ type alias Model =
   { dom : TrDom.Model
   , work : TrWorkModel.Model
   , colorScheme : TrColorScheme.ColorScheme
-  , seed : Random.Seed
   }
 
 

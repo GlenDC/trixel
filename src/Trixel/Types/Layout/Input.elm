@@ -110,7 +110,7 @@ label description color size padding generator =
     [ generator
       |> TrLayout.extend (TrLayout.paddingRight padding)
     , TrText.text description (size * 0.75) TrText.left color False
-      |> TrLayout.extend (TrLayout.axisPadding (size * 0.2) 0)
+      |> TrLayout.extend (TrLayout.axisPadding padding 0)
     ]
   |> TrLayout.extend (TrLayout.padding (padding * 0.5))
   |> TrLayout.extend (Flex.justifyContent Flex.JCCenter)

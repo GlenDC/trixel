@@ -91,7 +91,7 @@ module.exports = function(grunt) {
     livescript: {
       src: {
         files: {
-         'src/Out/Native.js': 'src/Native/**/*.ls'
+         'src/Out/Native.js': 'src/Native/LiveScript/**/*.ls'
         }
       }
     },

@@ -11,7 +11,10 @@ import Trixel.Types.Layout.Graphics as TrGraphics
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.Text as TrText
 
+import Trixel.Glue.Random as TrRandom
+
 import Material.Icons.Content as ContentIcons
+import Material.Icons.Communication as CommunicationIcons
 import Material.Icons.File as FileIcons
 
 import Css.Dimension as Dimension
@@ -19,7 +22,6 @@ import Css.Dimension as Dimension
 import Math.Vector2 as Vector
 
 import Array
-import Random
 
 
 button : TrWorkActions.Action -> TrGraphics.SvgGenerator -> String -> String -> TrInput.Buttons -> Float -> Float -> TrModel.Model -> TrLayout.Generator
@@ -65,22 +67,44 @@ viewButtons size padding model =
     ]
 
 
-computeRandomTip : Random.Seed -> String
-computeRandomTip seed =
+computeRandomTip : TrModel.Model -> String
+computeRandomTip model =
   let defaultTip =
-        "don't forget to share your art on social media with the hashtag #trixelit" 
+        "share your art on social media with the hashtag #trixelit" 
 
       tips =
         [ defaultTip
-        , "you can find a list of shortcuts on the help page"
-        , "find out more information about this editor on the about page"
+        , "you can find the list of shortcuts on the help page"
+        , "get to know trixel better on the about page"
         ] |> Array.fromList
 
-      (index, seed') = Random.generate (Random.int 0 2) seed
+      index = TrRandom.randomInt 0 ((Array.length tips) - 1)
   in
     case Array.get index tips of
       Maybe.Just tip -> tip
       Maybe.Nothing -> defaultTip
+
+
+viewTip : Float -> Float -> TrModel.Model -> TrLayout.Generator
+viewTip size padding model =
+  TrLayout.autoGroup
+    TrLayout.row
+    TrLayout.noWrap
+    []
+    [ TrGraphics.svg
+        CommunicationIcons.live_help
+        model.colorScheme.secondary.accentMid
+        (size * 0.15) (padding * 0.1)
+    , TrText.text
+        (computeRandomTip model)
+        (size * 0.1)
+        TrText.center
+        model.colorScheme.secondary.accentMid
+        True
+      |> TrLayout.extend (TrLayout.padding (size * 0.01))
+    ]
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+  |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
 
 
 view : TrModel.Model -> TrLayout.Generator
@@ -101,13 +125,7 @@ view model =
           True
         |> TrLayout.extend (TrText.bold)
       , viewButtons size padding model
-      , TrText.text
-          (computeRandomTip model.seed)
-          (size * 0.1)
-          TrText.center
-          model.colorScheme.secondary.accentMid
-          True
-        |> TrLayout.extend (TrLayout.axisPadding 0 (size * 0.01))
+      , viewTip size padding model
       ]
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
