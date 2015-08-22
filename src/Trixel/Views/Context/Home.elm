@@ -109,8 +109,8 @@ viewTip size padding model =
 
 view : TrModel.Model -> TrLayout.Generator
 view model =
-  let y = Vector.getY model.work.dimensions
-      size = min 240 (y * 0.35)
+  let (x, y) = Vector.toTuple model.work.dimensions
+      size = ((((min x y ) * 3) + x + y) / 5) * 0.25
       padding = size * 0.2
   in
     TrLayout.autoGroup
