@@ -34,7 +34,7 @@ viewLeftMenu size padding color selectionColor showLabels model =
         "assets/logo.svg"
         "Return back to your workspace."
         size padding
-        [ TrKeyboard.escape ]
+        [ TrKeyboard.c ]
         False
     , TrLayoutInput.svgResponsiveButton
         (TrWorkActions.SetState TrState.New)
@@ -81,7 +81,7 @@ viewRightMenu size padding color selectionColor showLabels model =
   let (fullscreenIcon, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
         if model.work.isFullscreen
           then (NavigationIcons.fullscreen_exit, "Windowed", "trExitFullscreen", "Exit fullscreen mode.", [ TrKeyboard.escape ])
-          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", [ TrKeyboard.alt, TrKeyboard.enter ])
+          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", [])
   in
     TrLayout.autoGroup
       TrLayout.rowReverse
@@ -127,7 +127,7 @@ viewRightMenu size padding color selectionColor showLabels model =
           "View and modify your editor settings."
           "Settings"
           size padding
-          [ TrKeyboard.alt, TrKeyboard.s ]
+          [ TrKeyboard.alt, TrKeyboard.p ]
           showLabels
           (model.work.state == TrState.Settings)
       ]

@@ -23,7 +23,7 @@ initialModel =
       }
   , title = "Trixel"
   , exceptionalKeys =
-      [ TrKeyboard.escape
+      [ TrKeyboard.c
       ]
   , optionKeys =
       [ TrKeyboard.ctrl

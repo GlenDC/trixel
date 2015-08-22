@@ -65,7 +65,7 @@ computeMenuChildren model mode size padding =
             "Close"
             size
             padding
-            [ TrKeyboard.escape ]
+            [ TrKeyboard.c ]
             model
             mode
         ]

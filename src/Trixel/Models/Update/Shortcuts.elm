@@ -12,10 +12,41 @@ updateWorkspace model =
   model
 
 
+updateContextMenuOptionKeys : TrInput.Buttons -> Maybe TrState.State
+updateContextMenuOptionKeys buttons =
+   if | TrInput.containsButton TrKeyboard.o buttons ->
+          Maybe.Just TrState.Open
+
+      | TrInput.containsButton TrKeyboard.n buttons ->
+          Maybe.Just TrState.New
+
+      | TrInput.containsButton TrKeyboard.i buttons ->
+          Maybe.Just TrState.Help
+
+      | TrInput.containsButton TrKeyboard.p buttons ->
+          Maybe.Just TrState.Settings
+
+      | otherwise ->
+          Nothing
+
+
+updateCommon : TrWorkModel.Model -> TrWorkModel.Model
+updateCommon model =
+  if | TrInput.containsButton
+         TrKeyboard.alt
+         model.input.keyboard.down ->
+       case updateContextMenuOptionKeys model.input.keyboard.pressed of
+         Maybe.Nothing -> model
+         Maybe.Just newState -> { model | state <- newState }
+
+     | otherwise ->
+          model
+
+
 updateContextMenu : TrWorkModel.Model -> TrWorkModel.Model
 updateContextMenu model =
   if | TrInput.containsButton
-          TrKeyboard.escape
+          TrKeyboard.c
           model.input.keyboard.pressed ->
         { model | state <- TrState.Default }
 
@@ -25,9 +56,10 @@ updateContextMenu model =
 
 update : TrWorkModel.Model -> TrWorkModel.Model
 update model =
-  case model.state of
-    TrState.Default ->
-      updateWorkspace model
+  ( case model.state of
+      TrState.Default ->
+        updateWorkspace model
 
-    _ ->
-      updateContextMenu model
+      _ ->
+        updateContextMenu model
+  ) |> updateCommon

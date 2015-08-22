@@ -47,9 +47,9 @@ viewSettings : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewSettings model mode =
   viewMarkdown model
     """
-Here you'll be able to modify your language, shortcuts and editor preferences...
+No tweakable settings available for now.
 
-For now however, none of that is available.
+If you have any request for new settings you would like to tweak, please raise an issue on GitHub.
     """
 
 

@@ -65,32 +65,45 @@ this.tr-isExceptionalKey = (key, keys) ->
 
 
 this.tr-optionKeyIsDown = (keys, key) ->
+  for y in keys
+      if y == key
+        return true
+
   for x in keys
     for y in tr-state.keyboard.buttonsDown
       if x == y
         return true
 
-  for y in keys
-      if y == key
-        return true
-
   false
+
+
+tr-normalKeyDownBehaviour = (editorPorts, exceptionalKeys, optionKeys) ->
+  (event) ->
+    optionKeyIsDown = tr-optionKeyIsDown optionKeys, event.keyCode
+    if optionKeyIsDown || (tr-isExceptionalKey event.keyCode, exceptionalKeys)
+      if optionKeyIsDown
+        tr-disableBehaviour event
+      tr-state.keyboard.buttonsDown.push event.keyCode
+      editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
+    void
+
+
+tr-limitKeyDownBehaviour = (editorPorts, exceptionalKeys, optionKeys) ->
+  (event) ->
+    if (tr-optionKeyIsDown optionKeys, event.keyCode)
+      then
+        tr-disableBehaviour event
+        tr-state.keyboard.buttonsDown.push event.keyCode
+        editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
+      else tr-disableBehaviour
 
 
 # attach all wanted keyboard events for the html document
 this.tr-attachKeyboardEventsToHtmlDocument = (editorPorts, limitInput, exceptionalKeys, optionKeys) ->
   document.onkeydown =
     if limitInput
-      then tr-disableBehaviour
-      else (event) ->
-        optionKeyIsDown = tr-optionKeyIsDown optionKeys, event.keyCode
-        if optionKeyIsDown || (tr-isExceptionalKey event.keyCode, exceptionalKeys)
-          if optionKeyIsDown
-            tr-disableBehaviour event
-          tr-state.keyboard.buttonsDown.push event.keyCode
-          editorPorts.setKeyboardButtonsDown.send tr-state.keyboard.buttonsDown
-
-        void
+      then (tr-limitKeyDownBehaviour editorPorts, exceptionalKeys, optionKeys)
+      else (tr-normalKeyDownBehaviour editorPorts, exceptionalKeys, optionKeys)
 
   document.onkeyup = (event) ->
     if limitInput || (tr-optionKeyIsDown optionKeys, event.keyCode)
