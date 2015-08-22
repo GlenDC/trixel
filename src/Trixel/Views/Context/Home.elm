@@ -3,10 +3,13 @@ module Trixel.Views.Context.Home (view) where
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Actions as TrWorkActions
 
+import Trixel.Constants as TrConstants
+
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.State as TrState
 import Trixel.Types.Layout as TrLayout
+import Trixel.Types.Layout.UserActions as TrUserActions
 import Trixel.Types.Layout.Graphics as TrGraphics
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.Text as TrText
@@ -25,20 +28,16 @@ import Math.Vector2 as Vector
 import Array
 
 
-button : TrWorkActions.Action -> TrGraphics.SvgGenerator -> String -> String -> TrInput.Buttons -> Float -> Float -> TrModel.Model -> TrLayout.Generator
-button action generator message labelText buttons size padding model =
+button : TrUserActions.UserAction -> TrGraphics.SvgGenerator -> Float -> Float -> TrModel.Model -> TrLayout.Generator
+button userAction generator size padding model =
   TrLayoutInput.verticalSvgButton
-    action
     model.colorScheme.selection.main.fill
     generator
     model.colorScheme.secondary.accentHigh
-    message
-    labelText
     (size * 0.70)
     (size * 0.14)
     padding
-    buttons
-    False
+  |> TrUserActions.viewLongLabel model userAction
   |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
   |> TrLayout.extend (TrLayout.margin (padding * 0.5))
   |> TrLayout.extend (TrLayout.borderRadius (size * 0.05))
@@ -48,25 +47,21 @@ viewButtons : Float -> Float -> TrModel.Model -> TrLayout.Generator
 viewButtons size padding model =
   TrLayout.autoGroup
     TrLayout.row
-    TrLayout.noWrap
+    TrLayout.wrap
     []
     [ button
-        (TrWorkActions.SetState TrState.New)
+        TrUserActions.newDoc
         ContentIcons.create
-        "Create a new document."
-        "New Document"
-        [ TrKeyboard.alt, TrKeyboard.n ]
         size padding
         model
     , button
-        (TrWorkActions.SetState TrState.Open)
+        TrUserActions.openDoc
         FileIcons.folder_open
-        "Open an existing document."
-        "Open Document"
-        [ TrKeyboard.alt, TrKeyboard.o ]
         size padding
         model
     ]
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+  |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
 
 
 computeRandomTip : TrModel.Model -> String
@@ -91,7 +86,7 @@ viewTip : Float -> Float -> TrModel.Model -> TrLayout.Generator
 viewTip size padding model =
   TrLayout.autoGroup
     TrLayout.row
-    TrLayout.noWrap
+    TrLayout.wrap
     []
     [ TrGraphics.svg
         CommunicationIcons.live_help
@@ -115,19 +110,27 @@ view model =
       size = ((((min x y ) * 3) + x + y) / 5) * 0.25
       padding = size * 0.2
   in
-    TrLayout.autoGroup
+    TrLayout.group
       TrLayout.column
       TrLayout.noWrap
       []
-      [ TrText.text
-          "trixel it"
-          (size * 0.5)
-          TrText.center
-          model.colorScheme.logo.fill
-          True
-        |> TrLayout.extend (TrText.bold)
-      , viewButtons size padding model
-      , viewTip size padding model
+      [ (5, TrLayout.autoGroup
+              TrLayout.column
+              TrLayout.noWrap
+              []
+              [ TrText.text
+                  TrConstants.homeTitle
+                  (size * 0.5)
+                  TrText.center
+                  model.colorScheme.logo.fill
+                  True
+                |> TrLayout.extend (TrText.bold)
+              , viewButtons size padding model
+              ]
+            |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+            |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+        )
+      , (3, viewTip size padding model)
       ]
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)

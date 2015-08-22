@@ -1,14 +1,13 @@
 module Trixel.Views.Menu (view) where
 
 import Trixel.Models.Model as TrModel
-import Trixel.Types.State as TrState
 import Trixel.Types.Color as TrColor
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Work.Model as TrWorkModel
-import Trixel.Models.Work.Actions as TrWorkActions
 
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Input as TrLayoutInput
+import Trixel.Types.Layout.UserActions as TrUserActions
 
 import Material.Icons.Action as ActionIcons
 import Material.Icons.Content as ContentIcons
@@ -29,49 +28,34 @@ viewLeftMenu size padding color selectionColor showLabels model =
     TrLayout.noWrap
     (TrLayout.marginRight (padding * 0.45) [])
     [ TrLayoutInput.imgButton
-        (TrWorkActions.SetState TrState.Default)
         selectionColor
         "assets/logo.svg"
-        "Return back to your workspace."
         size padding
-        [ TrKeyboard.c ]
-        False
+      |> TrUserActions.view model TrUserActions.close
     , TrLayoutInput.svgResponsiveButton
-        (TrWorkActions.SetState TrState.New)
         selectionColor
         ContentIcons.create
         color
-        "Create a new document."
-        "New"
         size padding
-        [ TrKeyboard.alt, TrKeyboard.n ]
         showLabels
-        (model.work.state == TrState.New)
+      |> TrUserActions.viewLabel model TrUserActions.newDoc
     , TrLayoutInput.svgResponsiveButton
-        (TrWorkActions.SetState TrState.Open)
         selectionColor
         FileIcons.folder_open
         color
-        "Open an existing document."
-        "Open"
         size padding
-        [ TrKeyboard.alt, TrKeyboard.o ]
         showLabels
-        (model.work.state == TrState.Open)
+      |> TrUserActions.viewLabel model TrUserActions.openDoc
     , if TrWorkModel.hasDocument model.work
         then
           TrLayoutInput.svgResponsiveButton
-            (TrWorkActions.SetState TrState.Save)
             selectionColor
             ContentIcons.save
             color
-            "Save current document."
-            "Save"
             size padding
-            [ TrKeyboard.alt, TrKeyboard.s ]
             showLabels
-            (model.work.state == TrState.Save)
-          else TrLayout.empty
+          |> TrUserActions.viewLabel model TrUserActions.saveDoc
+        else TrLayout.empty
     ]
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
@@ -88,48 +72,37 @@ viewRightMenu size padding color selectionColor showLabels model =
       TrLayout.noWrap
       (TrLayout.marginLeft (padding * 0.45) [])
       [ TrLayoutInput.nativeSvgResponsiveButton
-          (functionFullscreen, [])
           selectionColor
           fullscreenIcon
           color
+          size padding
+          showLabels
+          (functionFullscreen, [])
+          shortcutFullscreen
           descriptionFullscreen
           labelFullscreen
-          size padding
-          shortcutFullscreen
-          showLabels
           False
       , TrLayoutInput.svgResponsiveButton
-          (TrWorkActions.SetState TrState.About)
           selectionColor
           ActionIcons.info_outline
           color
-          "General information on Trixel."
-          "About"
           size padding
-          [] showLabels
-          (model.work.state == TrState.About)
+          showLabels
+        |> TrUserActions.viewLabel model TrUserActions.gotoAbout
       , TrLayoutInput.svgResponsiveButton
-          (TrWorkActions.SetState TrState.Help)
           selectionColor
           ActionIcons.help_outline
           color
-          "Information on shortcuts and how to use Trixel."
-          "Help"
           size padding
-          [ TrKeyboard.alt, TrKeyboard.i ]
           showLabels
-          (model.work.state == TrState.Help)
+        |> TrUserActions.viewLabel model TrUserActions.gotoHelp
       , TrLayoutInput.svgResponsiveButton
-          (TrWorkActions.SetState TrState.Settings)
           selectionColor
           ActionIcons.settings
           color
-          "View and modify your editor settings."
-          "Settings"
           size padding
-          [ TrKeyboard.alt, TrKeyboard.p ]
           showLabels
-          (model.work.state == TrState.Settings)
+        |> TrUserActions.viewLabel model TrUserActions.gotoSettings
       ]
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 

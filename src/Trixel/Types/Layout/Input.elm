@@ -131,68 +131,68 @@ verticalLabel description color size padding generator =
 
 
 
-imgButton : TrWorkActions.Action -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-imgButton action hoverColor src message size padding buttons toggled =
+imgButton : TrColor.RgbaColor -> String -> Float -> Float -> TrWorkActions.Action -> TrInput.Buttons -> String -> Bool -> TrLayout.Generator
+imgButton hoverColor src size padding action buttons message toggled =
   TrGraphics.image src message size padding
   |> button action hoverColor message buttons toggled
 
 
-imgLabelButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrColor.RgbaColor -> String -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-imgLabelButton action hoverColor color src message labelText size padding buttons toggled =
+imgLabelButton : TrColor.RgbaColor -> TrColor.RgbaColor -> String -> Float -> Float -> TrWorkActions.Action -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+imgLabelButton hoverColor color src size padding action buttons message labelText toggled =
   TrGraphics.image src message size 0
   |> label labelText color size padding
   |> button action hoverColor message buttons toggled
 
 
-imgResponsiveButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrColor.RgbaColor -> String -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool ->  Bool -> TrLayout.Generator
-imgResponsiveButton action hoverColor color src message labelText size padding buttons predicate toggled =
+imgResponsiveButton : TrColor.RgbaColor -> TrColor.RgbaColor -> String -> Float -> Float ->  Bool -> TrWorkActions.Action -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+imgResponsiveButton hoverColor color src size padding predicate action buttons message labelText toggled =
   if predicate
-    then imgLabelButton action hoverColor color src message labelText size padding buttons toggled
-    else imgButton action hoverColor src message size padding buttons toggled
+    then imgLabelButton hoverColor color src size padding action buttons message labelText toggled
+    else imgButton hoverColor src size padding action buttons message toggled
 
 
-svgButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-svgButton action hoverColor generator color message size padding buttons toggled =
+svgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> TrWorkActions.Action -> TrInput.Buttons -> String -> Bool -> TrLayout.Generator
+svgButton hoverColor generator color size padding action buttons message toggled =
   TrGraphics.svg generator color size padding
   |> button action hoverColor message buttons toggled
 
 
-svgLabelButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-svgLabelButton action hoverColor generator color message labelText size padding buttons toggled =
+svgLabelButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> TrWorkActions.Action -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+svgLabelButton hoverColor generator color size padding action buttons message labelText toggled =
   TrGraphics.svg generator color size 0
   |> label labelText color size padding
   |> button action hoverColor message buttons toggled
 
 
-svgResponsiveButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> Bool -> TrLayout.Generator
-svgResponsiveButton action hoverColor generator color message labelText size padding buttons predicate toggled =
+svgResponsiveButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Bool -> TrWorkActions.Action -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+svgResponsiveButton hoverColor generator color size padding predicate action buttons message labelText toggled =
   if predicate
-    then svgLabelButton action hoverColor generator color message labelText size padding buttons toggled
-    else svgButton action hoverColor generator color message size padding buttons toggled
+    then svgLabelButton hoverColor generator color size padding action buttons message labelText toggled
+    else svgButton hoverColor generator color size padding action buttons message toggled
 
 
-nativeSvgButton : (String, List String) -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-nativeSvgButton (func, args) hoverColor generator color message size padding buttons toggled =
+nativeSvgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> (String, List String) -> TrInput.Buttons -> String -> Bool -> TrLayout.Generator
+nativeSvgButton hoverColor generator color size padding (func, args) buttons message toggled =
   TrGraphics.svg generator color size padding
   |> nativeButton (func, args) hoverColor message buttons toggled
 
 
-nativeSvgLabelButton : (String, List String) -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-nativeSvgLabelButton (func, args) hoverColor generator color message labelText size padding buttons toggled =
+nativeSvgLabelButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> (String, List String) -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+nativeSvgLabelButton hoverColor generator color size padding (func, args) buttons message labelText toggled =
   TrGraphics.svg generator color size 0
   |> label labelText color size padding
   |> nativeButton (func, args) hoverColor message buttons toggled
 
 
-nativeSvgResponsiveButton : (String, List String) -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> TrInput.Buttons -> Bool -> Bool -> TrLayout.Generator
-nativeSvgResponsiveButton (func, args) hoverColor generator color message labelText size padding buttons predicate toggled =
+nativeSvgResponsiveButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Bool -> (String, List String) -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+nativeSvgResponsiveButton hoverColor generator color size padding predicate (func, args) buttons message labelText toggled  =
   if predicate
-    then nativeSvgLabelButton (func, args) hoverColor generator color message labelText size padding buttons toggled
-    else nativeSvgButton (func, args) hoverColor generator color message size padding buttons toggled
+    then nativeSvgLabelButton hoverColor generator color size padding (func, args) buttons message labelText toggled
+    else nativeSvgButton hoverColor generator color size padding (func, args) buttons message toggled
 
 
-verticalSvgButton : TrWorkActions.Action -> TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> String -> String -> Float -> Float -> Float -> TrInput.Buttons -> Bool -> TrLayout.Generator
-verticalSvgButton action hoverColor generator color message labelText size fontSize padding buttons toggled =
+verticalSvgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Float -> TrWorkActions.Action -> TrInput.Buttons -> String -> String -> Bool -> TrLayout.Generator
+verticalSvgButton hoverColor generator color size fontSize padding action buttons message labelText toggled =
   TrGraphics.svg generator color size 0
   |> verticalLabel labelText color fontSize padding
   |> button action hoverColor message buttons toggled

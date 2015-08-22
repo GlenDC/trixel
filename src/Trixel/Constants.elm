@@ -21,6 +21,11 @@ editorURL =
   "http://trixel.it"
 
 
+homeTitle : String
+homeTitle =
+  "trixel it"
+
+
 email : String
 email =
   "contact@glendc.com"

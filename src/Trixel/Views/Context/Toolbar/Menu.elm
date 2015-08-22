@@ -9,6 +9,7 @@ import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.Graphics as TrGraphics
+import Trixel.Types.Layout.UserActions as TrUserActions
 
 import Trixel.Models.Work.Actions as TrWorkActions
 
@@ -19,35 +20,27 @@ import Math.Vector2 as Vector
 import Css.Dimension as Dimension
 
 
-responsiveButton : TrWorkActions.Action -> TrGraphics.SvgGenerator -> String -> String -> Float -> Float -> TrInput.Buttons -> TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
-responsiveButton action generator message labelText size padding buttons model mode =
+responsiveButton : TrUserActions.UserAction -> TrGraphics.SvgGenerator -> Float -> Float -> TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+responsiveButton userAction generator size padding model mode =
   case mode of
     TrLayout.Portrait ->
       TrLayoutInput.svgLabelButton
-        action
         model.colorScheme.selection.main.fill
         generator
         model.colorScheme.secondary.accentHigh
-        message
-        labelText
         size
         padding
-        buttons
-        False
+      |> TrUserActions.viewLabel model userAction
 
     TrLayout.Landscape ->
       TrLayoutInput.verticalSvgButton
-        action
         model.colorScheme.selection.main.fill
         generator
         model.colorScheme.secondary.accentHigh
-        message
-        labelText
         size
         (size * 0.2)
         padding
-        buttons
-        False
+      |> TrUserActions.viewLabel model userAction
 
 
 computeSettingsChildren : TrModel.Model -> TrLayout.Mode -> Float -> Float -> List TrLayout.Generator -> List TrLayout.Generator
@@ -59,13 +52,10 @@ computeMenuChildren : TrModel.Model -> TrLayout.Mode -> Float -> Float -> List T
 computeMenuChildren model mode size padding =
   let commonChildren =
         [ responsiveButton
-            (TrWorkActions.SetState TrState.Default)
+            TrUserActions.close
             NavigationIcons.close
-            "Return back to the editor."
-            "Close"
             size
             padding
-            [ TrKeyboard.c ]
             model
             mode
         ]
