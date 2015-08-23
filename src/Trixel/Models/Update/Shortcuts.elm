@@ -2,9 +2,9 @@ module Trixel.Models.Update.Shortcuts (update) where
 
 import Trixel.Models.Work.Model as TrWorkModel
 
+import Trixel.Types.Layout.UserActions as TrUserActions
+
 import Trixel.Types.State as TrState
-import Trixel.Types.Input as TrInput
-import Trixel.Types.Keyboard as TrKeyboard
 
 
 updateWorkspace : TrWorkModel.Model -> TrWorkModel.Model
@@ -12,46 +12,33 @@ updateWorkspace model =
   model
 
 
-updateContextMenuOptionKeys : TrInput.Buttons -> Maybe TrState.State
-updateContextMenuOptionKeys buttons =
-   if | TrInput.containsButton TrKeyboard.o buttons ->
-          Maybe.Just TrState.Open
-
-      | TrInput.containsButton TrKeyboard.n buttons ->
-          Maybe.Just TrState.New
-
-      | TrInput.containsButton TrKeyboard.i buttons ->
-          Maybe.Just TrState.Help
-
-      | TrInput.containsButton TrKeyboard.p buttons ->
-          Maybe.Just TrState.Settings
-
-      | otherwise ->
-          Nothing
+applyShortcuts : TrWorkModel.Model -> TrUserActions.UserActions -> TrWorkModel.Model
+applyShortcuts model userActions =
+  List.foldl
+    (\userAction model ->
+      TrUserActions.applyShortcut userAction model
+      )
+    model
+    userActions
 
 
 updateCommon : TrWorkModel.Model -> TrWorkModel.Model
 updateCommon model =
-  if | TrInput.containsButton
-         TrKeyboard.alt
-         model.input.keyboard.down ->
-       case updateContextMenuOptionKeys model.input.keyboard.pressed of
-         Maybe.Nothing -> model
-         Maybe.Just newState -> { model | state <- newState }
-
-     | otherwise ->
-          model
+  applyShortcuts
+    model
+    [ TrUserActions.openDoc
+    , TrUserActions.newDoc
+    , TrUserActions.gotoHelp
+    , TrUserActions.gotoSettings
+    ]
 
 
 updateContextMenu : TrWorkModel.Model -> TrWorkModel.Model
 updateContextMenu model =
-  if | TrInput.containsButton
-          TrKeyboard.c
-          model.input.keyboard.pressed ->
-        { model | state <- TrState.Default }
-
-      | otherwise ->
-          model
+  applyShortcuts
+    model
+    [ TrUserActions.close
+    ]
 
 
 update : TrWorkModel.Model -> TrWorkModel.Model

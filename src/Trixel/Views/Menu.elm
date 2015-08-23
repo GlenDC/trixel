@@ -2,6 +2,7 @@ module Trixel.Views.Menu (view) where
 
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Color as TrColor
+import Trixel.Types.Input as TrInput
 import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Models.Work.Model as TrWorkModel
 
@@ -64,8 +65,8 @@ viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool
 viewRightMenu size padding color selectionColor showLabels model =
   let (fullscreenIcon, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
         if model.work.isFullscreen
-          then (NavigationIcons.fullscreen_exit, "Windowed", "trExitFullscreen", "Exit fullscreen mode.", [ TrKeyboard.escape ])
-          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", [])
+          then (NavigationIcons.fullscreen_exit, "Windowed", "trExitFullscreen", "Exit fullscreen mode.", TrInput.simpleShortcut [ TrKeyboard.escape ] )
+          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", TrInput.emptyShortcut)
   in
     TrLayout.autoGroup
       TrLayout.rowReverse
