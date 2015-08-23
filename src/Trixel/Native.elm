@@ -36,21 +36,25 @@ constructNativeCall function arguments =
 
 
 
+mouseEnter : String -> List String -> Html.Attribute
 mouseEnter function arguments =
   constructNativeCall function arguments
   |> Attributes.attribute "onmouseenter"
 
 
+mouseLeave : String -> List String -> Html.Attribute
 mouseLeave function arguments =
   constructNativeCall function arguments
   |> Attributes.attribute "onmouseleave"
 
 
+mouseClick : String -> List String -> Html.Attribute
 mouseClick function arguments =
   constructNativeCall function arguments
   |> Attributes.attribute "onclick"
 
 
+hoverBackground : TrColor.RgbaColor -> Html.Html -> Html.Html
 hoverBackground color element =
   let clojureGenerator =
         (\color -> "this.style.backgroundColor='" ++ color ++ "';")

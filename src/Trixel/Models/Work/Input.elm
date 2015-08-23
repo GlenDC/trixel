@@ -11,8 +11,6 @@ module Trixel.Models.Work.Input
 import Trixel.Types.Input as TrInput
 import Math.Vector2 as Vector
 
-import Maybe exposing (..)
-
 
 setKeyboardButtons : TrInput.Buttons -> Model -> Model
 setKeyboardButtons buttons model =

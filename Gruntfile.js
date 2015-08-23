@@ -25,7 +25,7 @@ module.exports = function(grunt) {
     shell: {
         source: {
           command: function() {
-            return 'cd src && elm-make Trixel/Main.elm --output Out/Trixel.js';
+            return 'cd src && elm-make Trixel/Main.elm --output Out/Trixel.js --warn';
           }
         },
         tests: {

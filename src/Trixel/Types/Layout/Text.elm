@@ -14,8 +14,14 @@ import Markdown
 
 
 type alias Align = Text.Align
+
+left : Align
 left = Text.Left
+
+right : Align
 right = Text.Right
+
+center : Align
 center = Text.Center
 
 

@@ -2,7 +2,6 @@ module Trixel.Views.Context.Workspace (view) where
 
 import Trixel.Models.Model as TrModel
 
-import Trixel.Types.Color as TrColor
 import Trixel.Types.State as TrState
 
 import Trixel.Types.Layout as TrLayout
@@ -11,8 +10,6 @@ import Trixel.Types.Layout.Text as TrText
 import Trixel.Articles as TrArticles
 
 import Css.Position as Position
-
-import Math.Vector2 as Vector
 
 
 viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator

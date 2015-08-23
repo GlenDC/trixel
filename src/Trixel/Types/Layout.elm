@@ -13,15 +13,29 @@ import Trixel.Types.Color as TrColor
 
 
 type alias Direction = Flex.Direction
+
+row : Direction
 row = Flex.Row
+
+column : Direction
 column = Flex.Column
+
+rowReverse : Direction
 rowReverse = Flex.RowReverse
+
+columnReverse : Direction
 columnReverse = Flex.ColumnReverse
 
 
 type alias Wrap = Flex.Wrap
+
+noWrap : Wrap
 noWrap = Flex.NoWrap
+
+wrap : Wrap
 wrap = Flex.Wrap
+
+wrapReverse : Wrap
 wrapReverse = Flex.WrapReverse
 
 

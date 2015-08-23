@@ -3,8 +3,6 @@ module Trixel.Models.Model where
 import Trixel.Models.Dom as TrDom
 import Trixel.Models.Work.Model as TrWorkModel
 import Trixel.Types.ColorScheme as TrColorScheme
-import Trixel.Types.Color as TrColor
-import Trixel.Types.State as TrState
 
 
 type alias ModelSignal = Signal Action
@@ -35,9 +33,11 @@ mailbox : Signal.Mailbox Action
 mailbox =
   Signal.mailbox None
 
+address : Signal.Address Action
 address =
   mailbox.address
 
+signal : Signal Action
 signal =
   mailbox.signal
 

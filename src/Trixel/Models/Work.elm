@@ -17,7 +17,6 @@ import Trixel.Models.Work.Model exposing (..)
 
 import Trixel.Models.Update.Shortcuts as TrShortcuts
 
-import Trixel.Types.State as TrState
 import Trixel.Types.Input exposing (Buttons)
 import Trixel.Types.Vector as TrVector
 import Math.Vector2 exposing (Vec2, vec2)
@@ -70,6 +69,7 @@ mailbox =
   Signal.mailbox None
 
 
+address : Signal.Address Action
 address =
   mailbox.address
 

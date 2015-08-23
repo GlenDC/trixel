@@ -1,13 +1,9 @@
 module Trixel.Views.Context.Home (view) where
 
 import Trixel.Models.Model as TrModel
-import Trixel.Models.Work.Actions as TrWorkActions
 
 import Trixel.Constants as TrConstants
 
-import Trixel.Types.Input as TrInput
-import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Types.State as TrState
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.UserActions as TrUserActions
 import Trixel.Types.Layout.Graphics as TrGraphics
@@ -19,9 +15,6 @@ import Trixel.Glue.Random as TrRandom
 import Material.Icons.Content as ContentIcons
 import Material.Icons.Communication as CommunicationIcons
 import Material.Icons.File as FileIcons
-
-import Css.Dimension as Dimension
-import Css.Border as Border
 
 import Math.Vector2 as Vector
 

@@ -6,7 +6,6 @@ import Trixel.Types.Color as TrColor
 import Html
 import Html.Attributes as Attributes
 
-import Css
 import Css.Dimension as Dimension
 
 import Svg exposing (Svg)

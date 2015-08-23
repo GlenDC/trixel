@@ -1,11 +1,7 @@
 module Trixel.Main where
 
-import Trixel.Types.Mouse as TrMouse
-import Trixel.Types.Keyboard as TrKeyboard
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Vector as TrVector
-
-import Math.Vector2 as Vector
 
 import Trixel.Models.Dom as TrDomModel
 import Trixel.Models.Model as TrModel
@@ -14,6 +10,8 @@ import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Views.View as TrView
+
+import Html
 
 
 -- Incoming Javascript Ports
@@ -63,6 +61,7 @@ signal =
 
 
 -- Main Function
+main : Signal Html.Html
 main =
   Signal.map
     TrView.view

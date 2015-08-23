@@ -3,15 +3,10 @@ module Trixel.Views.Context.Toolbar.Menu (view) where
 import Trixel.Models.Model as TrModel
 
 import Trixel.Types.State as TrState
-import Trixel.Types.Color as TrColor
 import Trixel.Types.Layout as TrLayout
-import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Types.Input as TrInput
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.Graphics as TrGraphics
 import Trixel.Types.Layout.UserActions as TrUserActions
-
-import Trixel.Models.Work.Actions as TrWorkActions
 
 import Material.Icons.Navigation as NavigationIcons
 

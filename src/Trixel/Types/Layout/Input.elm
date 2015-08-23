@@ -16,7 +16,6 @@ import Trixel.Models.Work.Actions as TrWorkActions
 import Html
 import Html.Attributes as Attributes
 
-import Css
 import Css.Flex as Flex
 
 import Graphics.Input as Input

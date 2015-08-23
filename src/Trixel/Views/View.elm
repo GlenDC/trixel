@@ -3,7 +3,6 @@ module Trixel.Views.View (view) where
 import Math.Vector2 as Vector
 import Html
 
-import Trixel.Types.Color as TrColor
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 

@@ -9,9 +9,6 @@ import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Text as TrText
 
-import Html
-import Html.Attributes as Attributes
-
 import Css.Border.Top as BorderTop
 import Css.Border.Style as BorderStyle
 import Css.Dimension as Dimension
