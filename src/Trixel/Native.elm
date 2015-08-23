@@ -74,7 +74,7 @@ mouseLeave =
 
 mouseClick : Function -> Html.Attribute
 mouseClick =
-  functionAttribute "onmouseleave"
+  functionAttribute "onclick"
 
 
 drop : Function -> Html.Attribute
