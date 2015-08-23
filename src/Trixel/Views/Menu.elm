@@ -10,6 +10,8 @@ import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.UserActions as TrUserActions
 
+import Trixel.Native as TrNative
+
 import Material.Icons.Action as ActionIcons
 import Material.Icons.Content as ContentIcons
 import Material.Icons.File as FileIcons
@@ -39,14 +41,14 @@ viewLeftMenu size padding color selectionColor showLabels model =
         color
         size padding
         showLabels
-      |> TrUserActions.viewLabel model TrUserActions.newDoc
+      |> TrUserActions.viewLabel model TrUserActions.gotoNew
     , TrLayoutInput.svgResponsiveButton
         selectionColor
         FileIcons.folder_open
         color
         size padding
         showLabels
-      |> TrUserActions.viewLabel model TrUserActions.openDoc
+      |> TrUserActions.viewLabel model TrUserActions.gotoOpen
     , if TrWorkModel.hasDocument model.work
         then
           TrLayoutInput.svgResponsiveButton
@@ -55,7 +57,7 @@ viewLeftMenu size padding color selectionColor showLabels model =
             color
             size padding
             showLabels
-          |> TrUserActions.viewLabel model TrUserActions.saveDoc
+          |> TrUserActions.viewLabel model TrUserActions.gotoSave
         else TrLayout.empty
     ]
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
@@ -65,8 +67,20 @@ viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool
 viewRightMenu size padding color selectionColor showLabels model =
   let (fullscreenIcon, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
         if model.work.isFullscreen
-          then (NavigationIcons.fullscreen_exit, "Windowed", "trExitFullscreen", "Exit fullscreen mode.", TrInput.simpleShortcut [ TrKeyboard.escape ] )
-          else (NavigationIcons.fullscreen, "Fullscreen", "trGoFullscreen", "Enter fullscreen mode.", TrInput.emptyShortcut)
+          then
+            ( NavigationIcons.fullscreen_exit
+            , "Windowed"
+            , "trExitFullscreen"
+            , "Exit fullscreen mode."
+            , TrInput.simpleShortcut [ TrKeyboard.escape ]
+            )
+          else
+            ( NavigationIcons.fullscreen
+            , "Fullscreen"
+            , "trGoFullscreen"
+            , "Enter fullscreen mode."
+            , TrInput.emptyShortcut
+            )
   in
     TrLayout.autoGroup
       TrLayout.rowReverse
@@ -78,7 +92,7 @@ viewRightMenu size padding color selectionColor showLabels model =
           color
           size padding
           showLabels
-          (functionFullscreen, [])
+          (TrNative.function functionFullscreen [])
           shortcutFullscreen
           descriptionFullscreen
           labelFullscreen
@@ -130,5 +144,6 @@ view size' model =
       ]
     |> TrLayout.extend (BorderBottom.width (max 3 (min (size * 0.1) 9)))
     |> TrLayout.extend (BorderBottom.color (TrColor.toColor model.colorScheme.primary.main.stroke))
-    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)
+    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
     |> TrLayout.extend (Dimension.minHeight (size + (padding * 2)))

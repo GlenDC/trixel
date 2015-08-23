@@ -36,6 +36,11 @@ svgType =
   "image/svg+xml"
 
 
+maxReadableWidth : number
+maxReadableWidth =
+  580
+
+
 sqrt3 : Float
 sqrt3 =
   sqrt 3

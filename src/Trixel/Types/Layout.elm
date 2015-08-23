@@ -69,8 +69,9 @@ root : Generator -> Html.Html
 root generator =
   [ ("width", "100vw")
   , ("height", "100vh")
-  , ("display", "flex")
-  ] |> generator
+  ]
+  |> Display.display Display.Flex
+  |> generator
 
 
 equalGroup : Direction -> Wrap -> Css.Styles -> List Generator -> Generator
@@ -176,6 +177,16 @@ marginLeft px styles =
 marginRight : number -> Css.Styles -> Css.Styles
 marginRight px styles =
   ("margin-right", Css.px px) :: styles
+
+
+marginBottom : number -> Css.Styles -> Css.Styles
+marginBottom px styles =
+  ("margin-bottom", Css.px px) :: styles
+
+
+marginTop : number -> Css.Styles -> Css.Styles
+marginTop px styles =
+  ("margin-top", Css.px px) :: styles
 
 
 background : TrColor.RgbaColor -> Css.Styles -> Css.Styles

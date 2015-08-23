@@ -26,8 +26,8 @@ updateCommon : TrWorkModel.Model -> TrWorkModel.Model
 updateCommon model =
   applyShortcuts
     model
-    [ TrUserActions.openDoc
-    , TrUserActions.newDoc
+    [ TrUserActions.gotoOpen
+    , TrUserActions.gotoNew
     , TrUserActions.gotoHelp
     , TrUserActions.gotoSettings
     ]

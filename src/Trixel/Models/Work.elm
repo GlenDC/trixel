@@ -14,6 +14,7 @@ module Trixel.Models.Work
 import Trixel.Models.Work.Input as TrInputModel
 import Trixel.Models.Work.Actions exposing (..)
 import Trixel.Models.Work.Model exposing (..)
+import Trixel.Models.Work.Update exposing (..)
 
 import Trixel.Models.Update.Shortcuts as TrShortcuts
 
@@ -102,6 +103,15 @@ update action model =
 
     Reset ->
       model -- todo
+
+    NewDocument ->
+      newDocument model
+
+    OpenDocument ->
+      openDocument model
+
+    SaveDocument ->
+      saveDocument model
 
     SetGridVisibility isVisible ->
       model -- todo

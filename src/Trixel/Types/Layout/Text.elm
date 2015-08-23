@@ -1,6 +1,6 @@
 module Trixel.Types.Layout.Text where
 
-import Trixel.Types.Layout exposing (Generator, extend)
+import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Color as TrColor
 
 import Html
@@ -35,7 +35,7 @@ bold styles =
   ("font-weight", "bold") :: styles
 
 
-text : String -> Float -> Align -> TrColor.RgbaColor -> Bool -> Generator
+text : String -> Float -> Align -> TrColor.RgbaColor -> Bool -> TrLayout.Generator
 text title px align color selectable =
   (\styles ->
     let style =
@@ -51,7 +51,18 @@ text title px align color selectable =
     )
 
 
-nativeText : String -> Float -> Align -> TrColor.RgbaColor -> Generator
+centerVertically : TrLayout.Generator -> TrLayout.Generator
+centerVertically generator =
+  TrLayout.autoGroup
+    TrLayout.column
+    TrLayout.noWrap
+    []
+    [ generator ]
+  |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+
+
+nativeText : String -> Float -> Align -> TrColor.RgbaColor -> TrLayout.Generator
 nativeText id px align color =
   (\styles ->
     let style =
@@ -62,7 +73,7 @@ nativeText id px align color =
     in Html.div [ style, Attributes.id id ] []
     )
 
-markdown : String -> (number, number) -> (number, number) -> TrColor.RgbaColor -> Generator
+markdown : String -> (number, number) -> (number, number) -> TrColor.RgbaColor -> TrLayout.Generator
 markdown content (minWidth, maxWidth) (minHeight, maxHeight) color =
   (\styles ->
     let style =

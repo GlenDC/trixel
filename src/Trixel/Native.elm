@@ -1,7 +1,15 @@
 module Trixel.Native
-  ( mouseEnter
+  ( Function
+  , function
+  , mouseEnter
   , mouseLeave
   , mouseClick
+  , drop
+  , dragOver
+  , dragStart
+  , dragEnd
+  , dragEnter
+  , dragLeave
   , hoverBackground
   )
   where
@@ -14,15 +22,27 @@ import Html.Attributes as Attributes
 import Html
 
 
+type alias Function =
+  { name : String
+  , arguments : List String
+  }
+
+function : String -> List String -> Function
+function name arguments =
+  { name = name
+  , arguments = arguments
+  }
+
+
 sanitizeArgument : String -> String
 sanitizeArgument argument =
   "'" ++ argument ++ "'"
 
 
-constructNativeCall : String -> List String -> String
-constructNativeCall function arguments =
+constructNativeCall : Function -> String
+constructNativeCall function =
   let aux = 
-        TrList.head arguments ""
+        TrList.head function.arguments ""
         |> sanitizeArgument
 
       argumentString =
@@ -30,28 +50,61 @@ constructNativeCall function arguments =
           (\item result ->
             result ++ "," ++ (sanitizeArgument item))
           aux
-          (TrList.tail arguments)
+          (TrList.tail function.arguments)
   in
-    function ++ "(" ++ argumentString ++ ");"
+    function.name ++ "(" ++ argumentString ++ ");"
 
 
+functionAttribute : String -> (Function -> Html.Attribute)
+functionAttribute name =
+  (\function ->
+    constructNativeCall function
+    |> Attributes.attribute name
+  )
 
-mouseEnter : String -> List String -> Html.Attribute
-mouseEnter function arguments =
-  constructNativeCall function arguments
-  |> Attributes.attribute "onmouseenter"
+mouseEnter : Function -> Html.Attribute
+mouseEnter =
+  functionAttribute "onmouseenter"
 
 
-mouseLeave : String -> List String -> Html.Attribute
-mouseLeave function arguments =
-  constructNativeCall function arguments
-  |> Attributes.attribute "onmouseleave"
+mouseLeave : Function -> Html.Attribute
+mouseLeave =
+  functionAttribute "onmouseleave"
 
 
-mouseClick : String -> List String -> Html.Attribute
-mouseClick function arguments =
-  constructNativeCall function arguments
-  |> Attributes.attribute "onclick"
+mouseClick : Function -> Html.Attribute
+mouseClick =
+  functionAttribute "onmouseleave"
+
+
+drop : Function -> Html.Attribute
+drop =
+  functionAttribute "ondrop"
+
+
+dragOver : Function -> Html.Attribute
+dragOver =
+  functionAttribute "ondragover"
+
+
+dragStart : Function -> Html.Attribute
+dragStart =
+  functionAttribute "ondragstart"
+
+
+dragEnd : Function -> Html.Attribute
+dragEnd =
+  functionAttribute "ondragend"
+
+
+dragEnter : Function -> Html.Attribute
+dragEnter =
+  functionAttribute "ondragenter"
+
+
+dragLeave : Function -> Html.Attribute
+dragLeave =
+  functionAttribute "ondragleave"
 
 
 hoverBackground : TrColor.RgbaColor -> Html.Html -> Html.Html

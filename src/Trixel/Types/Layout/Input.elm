@@ -16,7 +16,10 @@ import Trixel.Models.Work.Actions as TrWorkActions
 import Html
 import Html.Attributes as Attributes
 
+import Css.Display as Display
 import Css.Flex as Flex
+import Css.Border as Border
+import Css.Border.Style as BorderStyle
 
 import Graphics.Input as Input
 
@@ -48,8 +51,10 @@ button action hoverColor message buttons toggled generator =
             Html.div
               [ Attributes.class "tr-hoverable"
               , Attributes.title message
-              , TrNative.mouseEnter "trFooterShowHelp" [message, shortcut]
-              , TrNative.mouseLeave "trFooterHideHelp" []
+              , TrNative.function "trFooterShowHelp" [message, shortcut]
+                |> TrNative.mouseEnter
+              , TrNative.function "trFooterHideHelp" []
+                |> TrNative.mouseLeave
               ] [ generator [] ]
             |> TrNative.hoverBackground hoverColor
             |> Html.toElement -1 -1
@@ -69,8 +74,8 @@ button action hoverColor message buttons toggled generator =
       )
 
 
-nativeButton : (String, List String) -> TrColor.RgbaColor ->  String -> TrInput.Shortcut -> Bool -> TrLayout.Generator -> TrLayout.Generator
-nativeButton (func, args) hoverColor message buttons toggled generator =
+nativeButton : TrNative.Function -> TrColor.RgbaColor ->  String -> TrInput.Shortcut -> Bool -> TrLayout.Generator -> TrLayout.Generator
+nativeButton function hoverColor message buttons toggled generator =
   let shortcut =
     if List.isEmpty buttons.otherKeys
       then ""
@@ -81,8 +86,10 @@ nativeButton (func, args) hoverColor message buttons toggled generator =
           Html.div
             [ Attributes.class "tr-hoverable"
             , Attributes.title message
-            , TrNative.mouseEnter "trFooterShowHelp" [message, shortcut]
-            , TrNative.mouseLeave "trFooterHideHelp" []
+            , TrNative.function "trFooterShowHelp" [message, shortcut]
+              |> TrNative.mouseEnter
+            , TrNative.function "trFooterHideHelp" []
+              |> TrNative.mouseLeave
             ] [ generator [] ]
           |> TrNative.hoverBackground hoverColor
 
@@ -93,7 +100,7 @@ nativeButton (func, args) hoverColor message buttons toggled generator =
 
     in Html.div
         [ Attributes.style buttonStyles
-        , TrNative.mouseClick func args
+        , TrNative.mouseClick function
         , Attributes.class "tr-button-inherit"
         ]
         [ element ]
@@ -170,24 +177,24 @@ svgResponsiveButton hoverColor generator color size padding predicate action but
     else svgButton hoverColor generator color size padding action buttons message toggled
 
 
-nativeSvgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> (String, List String) -> TrInput.Shortcut -> String -> Bool -> TrLayout.Generator
-nativeSvgButton hoverColor generator color size padding (func, args) buttons message toggled =
+nativeSvgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> TrNative.Function -> TrInput.Shortcut -> String -> Bool -> TrLayout.Generator
+nativeSvgButton hoverColor generator color size padding function buttons message toggled =
   TrGraphics.svg generator color size padding
-  |> nativeButton (func, args) hoverColor message buttons toggled
+  |> nativeButton function hoverColor message buttons toggled
 
 
-nativeSvgLabelButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> (String, List String) -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator
-nativeSvgLabelButton hoverColor generator color size padding (func, args) buttons message labelText toggled =
+nativeSvgLabelButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> TrNative.Function -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator
+nativeSvgLabelButton hoverColor generator color size padding function buttons message labelText toggled =
   TrGraphics.svg generator color size 0
   |> label labelText color size padding
-  |> nativeButton (func, args) hoverColor message buttons toggled
+  |> nativeButton function hoverColor message buttons toggled
 
 
-nativeSvgResponsiveButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Bool -> (String, List String) -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator
-nativeSvgResponsiveButton hoverColor generator color size padding predicate (func, args) buttons message labelText toggled  =
+nativeSvgResponsiveButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Bool -> TrNative.Function -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator
+nativeSvgResponsiveButton hoverColor generator color size padding predicate function buttons message labelText toggled  =
   if predicate
-    then nativeSvgLabelButton hoverColor generator color size padding (func, args) buttons message labelText toggled
-    else nativeSvgButton hoverColor generator color size padding (func, args) buttons message toggled
+    then nativeSvgLabelButton hoverColor generator color size padding function buttons message labelText toggled
+    else nativeSvgButton hoverColor generator color size padding function buttons message toggled
 
 
 verticalSvgButton : TrColor.RgbaColor -> TrGraphics.SvgGenerator -> TrColor.RgbaColor -> Float -> Float -> Float -> TrWorkActions.Action -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator
@@ -195,3 +202,22 @@ verticalSvgButton hoverColor generator color size fontSize padding action button
   TrGraphics.svg generator color size 0
   |> verticalLabel labelText color fontSize padding
   |> button action hoverColor message buttons toggled
+
+
+dropzone : number -> number -> TrColor.RgbaColor -> TrLayout.Generator -> TrLayout.Generator
+dropzone width radius color child =
+  (\styles ->
+    let style =
+          Border.width width width width width styles
+          |> Border.radius radius radius radius radius
+          |> Border.color (TrColor.toColor color)
+          |> Border.style BorderStyle.Dashed
+          |> Display.display Display.Flex
+          |> Attributes.style
+    in
+      Html.div
+        [ style
+        , Attributes.class "tr-hoverable"
+        ]
+        [ child [] ]
+    )

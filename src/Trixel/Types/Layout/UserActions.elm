@@ -10,6 +10,7 @@ import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Models.Work.Actions as TrWorkActions
+import Trixel.Models.Work.Update as TrUpdateWork
 
 
 {-| Nice constant interface for UserAction.
@@ -95,7 +96,6 @@ constructStateUserAction state shortcut label longLabel description =
         )
   }
 
-
 close : UserAction
 close =
   constructStateUserAction
@@ -105,8 +105,8 @@ close =
     "Close"
     "Return back to the editor."
 
-newDoc : UserAction
-newDoc =
+gotoNew : UserAction
+gotoNew =
   constructStateUserAction
     TrState.New
     { optionKeys = [ TrKeyboard.alt ]
@@ -116,8 +116,8 @@ newDoc =
     "New Document"
     "Create a new document."
 
-openDoc : UserAction
-openDoc =
+gotoOpen : UserAction
+gotoOpen =
   constructStateUserAction
     TrState.Open
     { optionKeys = [ TrKeyboard.alt ]
@@ -127,16 +127,16 @@ openDoc =
     "Open Document"
     "Open an existing document."
 
-saveDoc : UserAction
-saveDoc =
+gotoSave : UserAction
+gotoSave =
   constructStateUserAction
     TrState.Save
-    { optionKeys = [ TrKeyboard.alt ]
+    { optionKeys = [ TrKeyboard.alt, TrKeyboard.shift ]
     , otherKeys = [ TrKeyboard.s ]
     }
-    "Save"
-    "Save Document"
-    "Save current document."
+    "Save As"
+    "Save Document As"
+    "Save current document as a new document."
 
 gotoAbout : UserAction
 gotoAbout =
@@ -163,8 +163,48 @@ gotoSettings =
   constructStateUserAction
     TrState.Settings
     { optionKeys = [ TrKeyboard.alt ]
-    , otherKeys = [ TrKeyboard.o ]
+    , otherKeys = [ TrKeyboard.p ]
     }
     "Settings"
     "Settings"
     "View and modify your editor editings."
+
+
+{-| Document related user-actions
+-}
+
+saveDoc : UserAction
+saveDoc =
+  { action = TrWorkActions.SaveDocument
+  , modelAction = TrUpdateWork.saveDocument
+  , shortcut =
+      { optionKeys = [ TrKeyboard.alt ]
+      , otherKeys = [ TrKeyboard.s ]
+      }
+  , label = "Save"
+  , longLabel = "Save Document"
+  , description = "Save current document."
+  , toggleCheck = (\model -> False)
+  }
+
+newDoc : UserAction
+newDoc =
+  { action = TrWorkActions.NewDocument
+  , modelAction = TrUpdateWork.newDocument
+  , shortcut = TrInput.emptyShortcut
+  , label = "Create"
+  , longLabel = "Create Document"
+  , description = "Create a new document."
+  , toggleCheck = (\model -> False)
+  }
+
+openDoc : UserAction
+openDoc =
+  { action = TrWorkActions.OpenDocument
+  , modelAction = TrUpdateWork.openDocument
+  , shortcut = TrInput.emptyShortcut
+  , label = "Open"
+  , longLabel = "Open Document"
+  , description = "Open the selected document."
+  , toggleCheck = (\model -> False)
+  }

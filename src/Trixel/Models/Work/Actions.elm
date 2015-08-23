@@ -20,6 +20,10 @@ type Action
   | Redo
   -- Reset Work Progress
   | Reset
+  -- new-/open-/save-document
+  | NewDocument
+  | OpenDocument
+  | SaveDocument
   -- Hide/Show Grid
   | SetGridVisibility Bool
   -- Move/Set Work Offset

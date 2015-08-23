@@ -43,12 +43,12 @@ viewButtons size padding model =
     TrLayout.wrap
     []
     [ button
-        TrUserActions.newDoc
+        TrUserActions.gotoNew
         ContentIcons.create
         size padding
         model
     , button
-        TrUserActions.openDoc
+        TrUserActions.gotoOpen
         FileIcons.folder_open
         size padding
         model
