@@ -11,6 +11,7 @@ module.exports = function(grunt) {
           'src/*.html',
           'src/**/*.sass',
           'src/Native/**/*.ls',
+          'src/Assets/**/*',
           'tests/Tests/**/*.elm',
           ],
         tasks: ['deploy'],

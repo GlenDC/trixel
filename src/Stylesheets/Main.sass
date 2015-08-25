@@ -2,6 +2,21 @@
 $font_main: 'Open Sans'
 $font_backup: 'sans-serif'
 
+// Font Stuff
+@font-face
+  font-family: $font_main
+  src: url('assets/OpenSans-Regular.ttf')
+
+@font-face
+  font-family: $font_main
+  src: url('assets/OpenSans-Bold.ttf')
+  font-weight: bold
+
+@font-face
+  font-family: $font_main
+  src: url('assets/OpenSans-Italic.ttf')
+  font-style: italic
+
 
 // imports
 @import "compass/css3/user-interface"
@@ -34,7 +49,7 @@ div
 
 
 body
-  font-family: $font_main, $font_backup
+  font-family: $font_main
   @include user-select(none)
   cursor: default
 
