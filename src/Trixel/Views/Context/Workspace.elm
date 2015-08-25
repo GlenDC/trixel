@@ -110,28 +110,29 @@ viewOpenDoc model mode =
 viewHelp : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewHelp model mode =
   viewMarkdown model TrArticles.help
-  |> TrLayout.extend ((::) ("height", "100%"))
-  |> TrLayout.extend ((::) ("width", "100%"))
+  |> TrLayout.extend (Flex.alignItems Flex.AIStart)
+  |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
 viewAbout : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewAbout model mode =
-  case mode of
-    TrLayout.Portrait ->
-      TrArticles.about ++ TrArticles.license
-      |> viewMarkdown model
+  ( case mode of
+      TrLayout.Portrait ->
+        TrArticles.about ++ TrArticles.license
+        |> viewMarkdown model
 
-    TrLayout.Landscape ->
-      TrLayout.autoGroup
-        TrLayout.row
-        TrLayout.noWrap
-        (TrLayout.axisPadding 0 10 [])
-        [ viewMarkdown model TrArticles.about
-        , viewMarkdown model TrArticles.license
-        ]
-      |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
-      |> TrLayout.extend ((::) ("height", "100%"))
-      |> TrLayout.extend ((::) ("width", "100%"))
+      TrLayout.Landscape ->
+        TrLayout.autoGroup
+          TrLayout.row
+          TrLayout.noWrap
+          (TrLayout.axisPadding 0 10 [])
+          [ viewMarkdown model TrArticles.about
+          , viewMarkdown model TrArticles.license
+          ]
+        |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+  )
+  |> TrLayout.extend (Flex.alignItems Flex.AIStart)
+  |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
 viewSettings : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
@@ -142,8 +143,8 @@ No tweakable settings available for now.
 
 If you have any request for new settings you would like to tweak, please raise an issue [on GitHub](https://github.com/GlenDC/trixel).
     """
-  |> TrLayout.extend ((::) ("height", "100%"))
-  |> TrLayout.extend ((::) ("width", "100%"))
+  |> TrLayout.extend (Flex.alignItems Flex.AIStart)
+  |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
 viewMarkdown : TrModel.Model -> String -> TrLayout.Generator
