@@ -60,12 +60,13 @@ viewButtons size padding model =
 computeRandomTip : TrModel.Model -> String
 computeRandomTip model =
   let defaultTip =
-        "share your art on social media with the hashtag #trixelit" 
+        "share your art on social media with the hashtag #trixelit"
 
       tips =
         [ defaultTip
         , "you can find the list of shortcuts on the help page"
         , "get to know trixel better on the about page"
+        , "try updating your browser when experiencing issues :)"
         ] |> Array.fromList
 
       index = TrRandom.randomInt 0 ((Array.length tips) - 1)
