@@ -105,12 +105,13 @@ viewOpenDoc model mode =
     ]
   |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
-  |> TrLayout.extend (Position.overflow Position.Hidden)
 
 
 viewHelp : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewHelp model mode =
   viewMarkdown model TrArticles.help
+  |> TrLayout.extend ((::) ("height", "100%"))
+  |> TrLayout.extend ((::) ("width", "100%"))
 
 
 viewAbout : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
@@ -129,6 +130,8 @@ viewAbout model mode =
         , viewMarkdown model TrArticles.license
         ]
       |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+      |> TrLayout.extend ((::) ("height", "100%"))
+      |> TrLayout.extend ((::) ("width", "100%"))
 
 
 viewSettings : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
@@ -139,6 +142,8 @@ No tweakable settings available for now.
 
 If you have any request for new settings you would like to tweak, please raise an issue [on GitHub](https://github.com/GlenDC/trixel).
     """
+  |> TrLayout.extend ((::) ("height", "100%"))
+  |> TrLayout.extend ((::) ("width", "100%"))
 
 
 viewMarkdown : TrModel.Model -> String -> TrLayout.Generator
@@ -163,7 +168,6 @@ view model mode =
 
       elementStyles =
         TrLayout.padding 5 []
-        |> Position.overflow Position.AutoOverflow
   in
     TrLayout.equalGroup
       TrLayout.row
@@ -173,3 +177,4 @@ view model mode =
     |> TrLayout.extend (TrLayout.padding 5)
     |> TrLayout.extend (TrLayout.background model.colorScheme.document)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+    |> TrLayout.extend (Position.overflow Position.AutoOverflow)
