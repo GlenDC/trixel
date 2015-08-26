@@ -24,6 +24,10 @@ import Math.Vector2 as Vector
 
 import Material.Icons.File as FileIcons
 
+import String
+import Result
+import Maybe
+
 
 viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewEditor model mode =
@@ -33,28 +37,93 @@ viewEditor model mode =
 updateOpenDocTitle : TrModel.Model -> (String -> TrWorkActions.Action)
 updateOpenDocTitle model =
   let openDocScratch = model.work.scratch.openDoc
-  in 
+  in
     (\title ->
       TrWorkActions.SetOpenDocScratch
         (TrDocument.updateTitle openDocScratch title)
     )
 
 
-viewNewDocChildren : TrModel.Model -> TrLayout.Mode -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
-viewNewDocChildren model mode color size padding =
-  TrLayout.autoGroup
-    TrLayout.column
-    TrLayout.noWrap
-    (TrLayout.padding padding [])
-    [ TrLayoutInput.field
-        TrLayoutInput.Text
-        (updateOpenDocTitle model)
-        "Name"
-        (TrScratch.computeOpenDocTitle model.work.scratch)
-         color
-         size
-         padding
-    ]
+updateOpenDocDimension : TrModel.Model -> (TrDocument.Model -> Float -> TrDocument.Model) -> (String -> TrWorkActions.Action)
+updateOpenDocDimension model updateFunction =
+  let openDocScratch = model.work.scratch.openDoc
+  in
+    (\valueString ->
+      let value =
+            String.toFloat valueString
+            |> Result.toMaybe
+            |> Maybe.withDefault 1
+      in
+        TrWorkActions.SetOpenDocScratch
+          (updateFunction openDocScratch value)
+    )
+
+
+viewNewDocChildren : TrModel.Model -> TrLayout.Mode -> TrColor.RgbaColor -> Float -> Float -> Float -> TrLayout.Generator
+viewNewDocChildren model mode color width size padding =
+  let labelSize = size * 0.78
+
+      widthField =
+        TrLayoutInput.field
+          (TrLayoutInput.Number (1, 99999999))
+          (updateOpenDocDimension model TrDocument.updateWidth)
+          "Width:"
+          "Document Width"
+          (TrScratch.computeWidthString model.work.scratch)
+           color
+           labelSize
+           size
+
+      heightField =
+        TrLayoutInput.field
+          (TrLayoutInput.Number (1, 99999999))
+          (updateOpenDocDimension model TrDocument.updateHeight)
+          "Height:"
+          "Document Height"
+          (TrScratch.computeHeightString model.work.scratch)
+           color
+           labelSize
+           size
+  in
+    TrLayout.autoGroup
+      TrLayout.column
+      TrLayout.noWrap
+      ( TrLayout.padding padding []
+        |> Dimension.width width
+      )
+      [ TrLayoutInput.field
+          TrLayoutInput.Text
+          (updateOpenDocTitle model)
+          "Name:"
+          "Document Name"
+          (TrScratch.computeOpenDocTitle model.work.scratch)
+           color
+           labelSize
+           size
+      , ( if width < TrConstants.maxReadableWidth
+            then
+              TrLayout.equalGroup
+                TrLayout.column
+                TrLayout.noWrap
+                []
+                [ widthField
+                , heightField
+                ]
+            else
+              TrLayout.equalGroup
+                TrLayout.row
+                TrLayout.noWrap
+                []
+                [ widthField
+                  |> TrLayout.extend (TrLayout.alignSelf TrLayout.Left)
+                  |> TrLayout.extend (TrLayout.marginRight padding)
+                , heightField
+                  |> TrLayout.extend (TrLayout.alignSelf TrLayout.Right)
+                  |> TrLayout.extend (TrLayout.marginLeft padding)
+                ]
+          )
+          |> TrLayout.extend (Dimension.width width)
+      ]
 
 
 viewNewDoc : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
@@ -65,10 +134,11 @@ viewNewDoc model mode =
         model.colorScheme.secondary.accentHigh
 
       (x, y) = Vector.toTuple model.work.dimensions
-      size = ((((min x y ) * 3) + x + y) / 5) * 0.05
+      size = (min (((((min x y ) * 3) + x + y) / 5) * 0.05) 50)
       padding = size * 0.25
 
-      inputSizeFactor = 0.6
+      inputsize =
+        max (size *  0.6) 14
 
       width =
         ( case mode of
@@ -76,17 +146,18 @@ viewNewDoc model mode =
             TrLayout.Portrait -> 0.98
         )
         |> (*) x
-        |> min TrConstants.maxReadableWidth
+        |> min (TrConstants.maxReadableWidth * 1.2)
   in
     TrLayout.group
       TrLayout.column
       TrLayout.noWrap
       []
-      [ (10, viewNewDocChildren
+      [ (0, viewNewDocChildren
                model mode
                color
-               (size * inputSizeFactor)
-               (padding * inputSizeFactor)
+               width
+               inputsize
+               (inputsize * 0.25)
         )
       , (1, TrLayoutInput.svgResponsiveButton
               selectionColor
@@ -98,12 +169,12 @@ viewNewDoc model mode =
             |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
             |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
             |> TrLayout.extend (Dimension.width width)
+            |> TrLayout.extend (TrLayout.marginTop (padding * 2))
+            |> TrLayout.extend (Dimension.maxHeight (size + (padding * 2)))
         )
       ]
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
-    |> TrLayout.extend (Flex.alignItems Flex.AIStart)
-    |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
 viewDragzoneChildren : TrModel.Model -> TrLayout.Mode -> Float -> Float -> TrLayout.Generator
@@ -147,7 +218,7 @@ viewOpenDoc model mode =
         model.colorScheme.secondary.accentHigh
 
       (x, y) = Vector.toTuple model.work.dimensions
-      size = ((((min x y ) * 3) + x + y) / 5) * 0.05
+      size = (min (((((min x y ) * 3) + x + y) / 5) * 0.05) 50)
       padding = size * 0.25
 
       width =
@@ -156,7 +227,7 @@ viewOpenDoc model mode =
             TrLayout.Portrait -> 0.98
         )
         |> (*) x
-        |> min TrConstants.maxReadableWidth
+        |> min (TrConstants.maxReadableWidth * 1.2)
   in
     TrLayout.group
       TrLayout.column
@@ -180,6 +251,8 @@ viewOpenDoc model mode =
             |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
             |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
             |> TrLayout.extend (Dimension.width width)
+            |> TrLayout.extend (Dimension.maxHeight (size + (padding * 2)))
+
         )
       ]
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)

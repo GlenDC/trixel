@@ -227,35 +227,55 @@ dropzone width radius color child =
 {-| Work with templates for color, size & possitioning stuff to generate elements -}
 
 
-field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
-field fieldType toAction label value color size padding =
+field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> String -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
+field fieldType toAction label help value color labelSize size =
   TrLayout.autoGroup
     TrLayout.column
     TrLayout.noWrap
     []
-    [ TrText.text label size TrText.left color True
+    [ TrText.text label labelSize TrText.left color True
     , (\inputStyles ->
-        Html.input
-          [ Attributes.type' (computeFieldTypeString fieldType)
-          , Attributes.placeholder label
-          , Attributes.value value
-          , Attributes.style inputStyles
-          , HtmlEvents.on
-              "input"
-              HtmlEvents.targetValue
-              (\string ->
-                toAction string
-                |> Signal.message TrWork.address
-              )
-          ] []
+        let styles =
+              TrText.size size inputStyles
+
+            attributes =
+              [ Attributes.placeholder help
+              , Attributes.value value
+              , Attributes.style styles
+              , HtmlEvents.on
+                  "input"
+                  HtmlEvents.targetValue
+                  (\string ->
+                    toAction string
+                    |> Signal.message TrWork.address
+                  )
+              ]
+            |> applyFieldType fieldType
+        in Html.input attributes []
       )
     ]
-  |> TrLayout.extend (TrLayout.padding padding)
 
 
 type FieldType
   = Text
   | Password
+  | Number (Int,Int)
+
+
+applyFieldType: FieldType -> List Html.Attribute -> List Html.Attribute
+applyFieldType fieldType attributes =
+  let attributes' =
+        (Attributes.type' (computeFieldTypeString fieldType))
+        :: attributes
+  in
+    case fieldType of
+      Number (min, max) ->
+        (Attributes.min (toString min))
+        :: (Attributes.max (toString max))
+        :: attributes'
+
+      _ ->
+        attributes'
 
 
 computeFieldTypeString : FieldType -> String
@@ -263,3 +283,4 @@ computeFieldTypeString fieldType =
   case fieldType of
     Text -> "text"
     Password -> "password"
+    Number (_, _) -> "number"

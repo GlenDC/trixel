@@ -109,6 +109,16 @@ extend style generator =
   generator << style
 
 
+alignSelf : Align -> Css.Styles -> Css.Styles
+alignSelf align' styles =
+  let align =
+        case align' of
+          Left -> Flex.AIStart
+          Right -> Flex.AIEnd
+          Center -> Flex.AICenter
+  in Flex.alignSelf align styles
+
+
 crossAlign : Align -> Css.Styles -> Css.Styles
 crossAlign align' styles =
   let align =
