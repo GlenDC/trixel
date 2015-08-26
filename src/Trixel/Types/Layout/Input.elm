@@ -14,6 +14,7 @@ import Trixel.Models.Work as TrWork
 import Trixel.Models.Work.Actions as TrWorkActions
 
 import Html
+import Html.Events as HtmlEvents
 import Html.Attributes as Attributes
 
 import Css.Display as Display
@@ -221,3 +222,44 @@ dropzone width radius color child =
         ]
         [ child [] ]
     )
+
+
+{-| Work with templates for color, size & possitioning stuff to generate elements -}
+
+
+field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
+field fieldType toAction label value color size padding =
+  TrLayout.autoGroup
+    TrLayout.column
+    TrLayout.noWrap
+    []
+    [ TrText.text label size TrText.left color True
+    , (\inputStyles ->
+        Html.input
+          [ Attributes.type' (computeFieldTypeString fieldType)
+          , Attributes.placeholder label
+          , Attributes.value value
+          , Attributes.style inputStyles
+          , HtmlEvents.on
+              "input"
+              HtmlEvents.targetValue
+              (\string ->
+                toAction string
+                |> Signal.message TrWork.address
+              )
+          ] []
+      )
+    ]
+  |> TrLayout.extend (TrLayout.padding padding)
+
+
+type FieldType
+  = Text
+  | Password
+
+
+computeFieldTypeString : FieldType -> String
+computeFieldTypeString fieldType =
+  case fieldType of
+    Text -> "text"
+    Password -> "password"

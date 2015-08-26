@@ -100,7 +100,9 @@ close : UserAction
 close =
   constructStateUserAction
     TrState.Default
-    (TrInput.simpleShortcut [ TrKeyboard.c ])
+    { optionKeys = [ TrKeyboard.alt ]
+    , otherKeys = [ TrKeyboard.c ]
+    }
     "Close"
     "Close"
     "Return back to the editor."

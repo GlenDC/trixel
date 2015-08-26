@@ -14,6 +14,7 @@ module Trixel.Models.Work
 import Trixel.Models.Work.Input as TrInputModel
 import Trixel.Models.Work.Actions exposing (..)
 import Trixel.Models.Work.Model exposing (..)
+import Trixel.Models.Work.Scratch as TrScratch
 import Trixel.Models.Work.Update exposing (..)
 
 import Trixel.Models.Update.Shortcuts as TrShortcuts
@@ -131,6 +132,14 @@ update action model =
     SetState state ->
       { model | state <- state }
 
+
+    SetOpenDocScratch docModel ->
+      let scratch = model.scratch
+      in
+        { scratch | openDoc <- docModel }
+        |> updateScratch model
+
+
     None ->
       model
 
@@ -138,3 +147,8 @@ update action model =
 updateInput : Model -> TrInputModel.Model -> Model
 updateInput model inputModel =
   { model | input <- inputModel }
+
+
+updateScratch : Model -> TrScratch.Model -> Model
+updateScratch model scratchModel =
+  { model | scratch <- scratchModel }

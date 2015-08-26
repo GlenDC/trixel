@@ -1,8 +1,12 @@
 module Trixel.Views.Context.Workspace (view) where
 
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Work.Actions as TrWorkActions
+import Trixel.Models.Work.Scratch as TrScratch
+import Trixel.Models.Work.Document as TrDocument
 
 import Trixel.Types.State as TrState
+import Trixel.Types.Color as TrColor
 
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Text as TrText
@@ -24,6 +28,82 @@ import Material.Icons.File as FileIcons
 viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewEditor model mode =
   TrLayout.empty
+
+
+updateOpenDocTitle : TrModel.Model -> (String -> TrWorkActions.Action)
+updateOpenDocTitle model =
+  let openDocScratch = model.work.scratch.openDoc
+  in 
+    (\title ->
+      TrWorkActions.SetOpenDocScratch
+        (TrDocument.updateTitle openDocScratch title)
+    )
+
+
+viewNewDocChildren : TrModel.Model -> TrLayout.Mode -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
+viewNewDocChildren model mode color size padding =
+  TrLayout.autoGroup
+    TrLayout.column
+    TrLayout.noWrap
+    (TrLayout.padding padding [])
+    [ TrLayoutInput.field
+        TrLayoutInput.Text
+        (updateOpenDocTitle model)
+        "Name"
+        (TrScratch.computeOpenDocTitle model.work.scratch)
+         color
+         size
+         padding
+    ]
+
+
+viewNewDoc : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewNewDoc model mode =
+  let selectionColor =
+        model.colorScheme.selection.main.fill
+      color =
+        model.colorScheme.secondary.accentHigh
+
+      (x, y) = Vector.toTuple model.work.dimensions
+      size = ((((min x y ) * 3) + x + y) / 5) * 0.05
+      padding = size * 0.25
+
+      inputSizeFactor = 0.6
+
+      width =
+        ( case mode of
+            TrLayout.Landscape -> 0.89
+            TrLayout.Portrait -> 0.98
+        )
+        |> (*) x
+        |> min TrConstants.maxReadableWidth
+  in
+    TrLayout.group
+      TrLayout.column
+      TrLayout.noWrap
+      []
+      [ (10, viewNewDocChildren
+               model mode
+               color
+               (size * inputSizeFactor)
+               (padding * inputSizeFactor)
+        )
+      , (1, TrLayoutInput.svgResponsiveButton
+              selectionColor
+              FileIcons.folder_open
+              color
+              size padding
+              True
+            |> TrUserActions.viewLongLabel model TrUserActions.newDoc
+            |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
+            |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
+            |> TrLayout.extend (Dimension.width width)
+        )
+      ]
+    |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+    |> TrLayout.extend (Flex.alignItems Flex.AIStart)
+    |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
 viewDragzoneChildren : TrModel.Model -> TrLayout.Mode -> Float -> Float -> TrLayout.Generator
@@ -59,7 +139,6 @@ viewDragzoneChildren model mode size padding =
     |> TrLayout.extend (Flex.grow 1)
 
 
-
 viewOpenDoc : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewOpenDoc model mode =
   let selectionColor =
@@ -77,34 +156,34 @@ viewOpenDoc model mode =
             TrLayout.Portrait -> 0.98
         )
         |> (*) x
-        |> min (TrConstants.maxReadableWidth * 1.1)
+        |> min TrConstants.maxReadableWidth
   in
-  TrLayout.group
-    TrLayout.column
-    TrLayout.noWrap
-    []
-    [ (15, TrLayoutInput.dropzone
-            (size * 0.08)
-            (size * 0.2)
-            color
-            (viewDragzoneChildren model mode size padding)
-          |> TrLayout.extend (TrLayout.marginBottom (size * 0.35))
-          |> TrLayout.extend (Dimension.width width)
-      )
-    , (1, TrLayoutInput.svgResponsiveButton
-            selectionColor
-            FileIcons.folder_open
-            color
-            size padding
-            True
-          |> TrUserActions.viewLongLabel model TrUserActions.openDoc
-          |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
-          |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
-          |> TrLayout.extend (Dimension.width width)
-      )
-    ]
-  |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
-  |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+    TrLayout.group
+      TrLayout.column
+      TrLayout.noWrap
+      []
+      [ (15, TrLayoutInput.dropzone
+              (size * 0.08)
+              (size * 0.2)
+              color
+              (viewDragzoneChildren model mode size padding)
+            |> TrLayout.extend (TrLayout.marginBottom (size * 0.35))
+            |> TrLayout.extend (Dimension.width width)
+        )
+      , (1, TrLayoutInput.svgResponsiveButton
+              selectionColor
+              FileIcons.folder_open
+              color
+              size padding
+              True
+            |> TrUserActions.viewLongLabel model TrUserActions.openDoc
+            |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
+            |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
+            |> TrLayout.extend (Dimension.width width)
+        )
+      ]
+    |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
 viewHelp : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
@@ -165,6 +244,7 @@ view model mode =
           TrState.About -> viewAbout
           TrState.Settings -> viewSettings
           TrState.Open -> viewOpenDoc
+          TrState.New -> viewNewDoc
           _ -> (\ a b -> TrLayout.empty)
 
       elementStyles =

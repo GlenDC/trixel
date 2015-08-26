@@ -1,6 +1,7 @@
 module Trixel.Models.Work.Model where
 
 import Trixel.Models.Work.Document as TrDocumentModel
+import Trixel.Models.Work.Scratch as TrScratchModel
 import Trixel.Models.Work.Input as TrInputModel
 
 import Math.Vector2 exposing (vec2, Vec2)
@@ -34,6 +35,7 @@ initialModel : Model
 initialModel =
   { unsavedProgress = False
   , document = Nothing
+  , scratch = TrScratchModel.initialModel
   , input = TrInputModel.initialModel
   , dimensions = (vec2 0 0)
   , isFullscreen = False
@@ -44,6 +46,7 @@ initialModel =
 type alias Model =
   { unsavedProgress : Bool
   , document : Maybe TrDocumentModel.Model
+  , scratch: TrScratchModel.Model
   , input : TrInputModel.Model
   , dimensions : Vec2
   , isFullscreen : Bool
