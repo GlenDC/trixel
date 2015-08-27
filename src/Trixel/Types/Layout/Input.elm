@@ -52,9 +52,9 @@ button action hoverColor message buttons toggled generator =
             Html.div
               [ Attributes.class "tr-hoverable"
               , Attributes.title message
-              , TrNative.function "trFooterShowHelp" [message, shortcut]
+              , TrNative.function "footerShowHelp" [message, shortcut]
                 |> TrNative.mouseEnter
-              , TrNative.function "trFooterHideHelp" []
+              , TrNative.function "footerHideHelp" []
                 |> TrNative.mouseLeave
               ] [ generator [] ]
             |> TrNative.hoverBackground hoverColor
@@ -87,9 +87,9 @@ nativeButton function hoverColor message buttons toggled generator =
           Html.div
             [ Attributes.class "tr-hoverable"
             , Attributes.title message
-            , TrNative.function "trFooterShowHelp" [message, shortcut]
+            , TrNative.function "footerShowHelp" [message, shortcut]
               |> TrNative.mouseEnter
-            , TrNative.function "trFooterHideHelp" []
+            , TrNative.function "footerHideHelp" []
               |> TrNative.mouseLeave
             ] [ generator [] ]
           |> TrNative.hoverBackground hoverColor

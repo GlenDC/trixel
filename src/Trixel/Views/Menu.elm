@@ -70,14 +70,14 @@ viewRightMenu size padding color selectionColor showLabels model =
           then
             ( NavigationIcons.fullscreen_exit
             , "Windowed"
-            , "trExitFullscreen"
+            , "exitFullscreen"
             , "Exit fullscreen mode."
             , TrInput.simpleShortcut [ TrKeyboard.escape ]
             )
           else
             ( NavigationIcons.fullscreen
             , "Fullscreen"
-            , "trGoFullscreen"
+            , "goFullscreen"
             , "Enter fullscreen mode."
             , TrInput.emptyShortcut
             )

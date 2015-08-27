@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           'src/Trixel/**/*.elm',
           'src/*.html',
           'src/**/*.sass',
-          'src/Native/**/*.ls',
+          'src/Native/**/*.coffee',
           'src/Assets/**/*',
           'tests/Tests/**/*.elm',
           ],
@@ -89,10 +89,18 @@ module.exports = function(grunt) {
       }
     },
 
-    livescript: {
+    coffee: {
       src: {
+        options: {
+          bare: true,
+          join: true
+        },
         files: {
-         'src/Out/Native.js': 'src/Native/LiveScript/**/*.ls'
+          'src/Out/Native.js': [
+            'src/Native/CoffeeScript/Core/Inner/*.coffee',
+            'src/Native/CoffeeScript/Core/*.coffee',
+            'src/Native/CoffeeScript/*.coffee'
+          ]
         }
       }
     },
@@ -147,7 +155,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-sass');
-  grunt.loadNpmTasks('grunt-livescript');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-shell');
 
@@ -167,7 +175,7 @@ module.exports = function(grunt) {
       , 'sass'
       , 'cssmin'
       , 'copy'
-      , 'livescript'
+      , 'coffee'
       , 'uglify:' + target
       ])
   });

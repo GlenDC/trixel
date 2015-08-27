@@ -24,13 +24,17 @@ applyShortcuts model userActions =
 
 updateCommon : TrWorkModel.Model -> TrWorkModel.Model
 updateCommon model =
-  applyShortcuts
-    model
-    [ TrUserActions.gotoOpen
-    , TrUserActions.gotoNew
-    , TrUserActions.gotoHelp
-    , TrUserActions.gotoSettings
-    ]
+  let shortcuts =
+        [ TrUserActions.gotoOpen
+        , TrUserActions.gotoNew
+        , TrUserActions.gotoHelp
+        , TrUserActions.gotoSettings
+        ]
+  in
+    ( if TrWorkModel.hasDocument model
+        then TrUserActions.gotoSave :: shortcuts
+        else shortcuts
+    ) |> applyShortcuts model
 
 
 updateContextMenu : TrWorkModel.Model -> TrWorkModel.Model

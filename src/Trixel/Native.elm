@@ -52,7 +52,9 @@ constructNativeCall function =
           aux
           (TrList.tail function.arguments)
   in
-    function.name ++ "(" ++ argumentString ++ ");"
+    "trNative."
+      ++ function.name
+      ++ "(" ++ argumentString ++ ");"
 
 
 functionAttribute : String -> (Function -> Html.Attribute)
