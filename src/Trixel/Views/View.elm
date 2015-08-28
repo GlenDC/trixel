@@ -2,6 +2,7 @@ module Trixel.Views.View (view) where
 
 import Math.Vector2 as Vector
 import Html
+import Html.Lazy as Lazy
 
 import Trixel.Models.Model as TrModel
 import Trixel.Types.Layout as TrLayout
@@ -11,8 +12,8 @@ import Trixel.Views.Context as TrContext
 import Trixel.Views.Footer as TrFooterView
 
 
-view : TrModel.Model -> Html.Html
-view model =
+lazyView : TrModel.Model -> Html.Html
+lazyView model =
   let y = Vector.getY model.work.dimensions
   in
     TrLayout.group
@@ -25,3 +26,8 @@ view model =
       ]
     |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
     |> TrLayout.root
+
+
+view : TrModel.Model -> Html.Html
+view =
+  Lazy.lazy lazyView
