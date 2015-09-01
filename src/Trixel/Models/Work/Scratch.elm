@@ -20,7 +20,7 @@ computeOpenDocTitle : Model -> String
 computeOpenDocTitle model =
   case model.openDoc.title of
     Just name -> name
-    Nothing -> "Untitled"
+    Nothing -> ""
 
 
 computeWidthString : Model -> String

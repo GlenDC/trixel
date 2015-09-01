@@ -19,6 +19,7 @@ import Html.Attributes as Attributes
 
 import Css.Display as Display
 import Css.Flex as Flex
+import Css.Text as Text
 import Css.Border as Border
 import Css.Border.Style as BorderStyle
 
@@ -40,6 +41,13 @@ showShortcut shortcut =
       (TrList.tail descriptions)
 
 
+clickable : Signal.Address a -> a -> Html.Html -> Html.Html
+clickable address action element =
+  Html.toElement -1 -1 element
+  |> Input.clickable (Signal.message address action)
+  |> Html.fromElement
+
+
 button : TrWorkActions.Action -> TrColor.RgbaColor ->  String -> TrInput.Shortcut -> Bool -> TrLayout.Generator -> TrLayout.Generator
 button action hoverColor message buttons toggled generator =
   let shortcut =
@@ -58,9 +66,7 @@ button action hoverColor message buttons toggled generator =
                 |> TrNative.mouseLeave
               ] [ generator [] ]
             |> TrNative.hoverBackground hoverColor
-            |> Html.toElement -1 -1
-            |> Input.clickable (Signal.message TrWork.address action)
-            |> Html.fromElement
+            |> clickable TrWork.address action
 
           buttonStyles =
             if toggled
@@ -227,8 +233,8 @@ dropzone width radius color child =
 {-| Work with templates for color, size & possitioning stuff to generate elements -}
 
 
-field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> String -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
-field fieldType toAction label help value color labelSize size =
+field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> String -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
+field fieldType toAction label help value color inputColor inputBackground inputBorder labelSize size =
   TrLayout.autoGroup
     TrLayout.column
     TrLayout.noWrap
@@ -237,6 +243,9 @@ field fieldType toAction label help value color labelSize size =
     , (\inputStyles ->
         let styles =
               TrText.size size inputStyles
+              |> Border.color (TrColor.toColor inputBorder)
+              |> TrLayout.background inputBackground
+              |> Text.color (TrColor.toColor inputColor)
 
             attributes =
               [ Attributes.placeholder help

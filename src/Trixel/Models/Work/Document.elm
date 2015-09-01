@@ -41,7 +41,7 @@ computeFileName model =
 
 updateTitle : Model -> String -> Model
 updateTitle model title =
-  { model | title <- Just title }
+  { model | title <- if title == "" then Nothing else Just title }
 
 
 resetTitle : Model -> Model

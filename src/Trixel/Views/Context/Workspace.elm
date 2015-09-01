@@ -6,7 +6,6 @@ import Trixel.Models.Work.Scratch as TrScratch
 import Trixel.Models.Work.Document as TrDocument
 
 import Trixel.Types.State as TrState
-import Trixel.Types.Color as TrColor
 
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Text as TrText
@@ -59,18 +58,25 @@ updateOpenDocDimension model updateFunction =
     )
 
 
-viewNewDocChildren : TrModel.Model -> TrLayout.Mode -> TrColor.RgbaColor -> Float -> Float -> Float -> TrLayout.Generator
-viewNewDocChildren model mode color width size padding =
+viewNewDocInputFields : TrModel.Model -> TrLayout.Mode -> Float -> Float -> Float -> TrLayout.Generator
+viewNewDocInputFields model mode width size padding =
   let labelSize = size * 0.78
+
+
+      labelColor = model.colorScheme.secondary.accentMid
+      inputColor = model.colorScheme.secondary.accentHigh
+      fieldColors = model.colorScheme.secondary.main
 
       widthField =
         TrLayoutInput.field
           (TrLayoutInput.Number (1, 99999999))
           (updateOpenDocDimension model TrDocument.updateWidth)
           "Width:"
-          "Document Width"
+          "1"
           (TrScratch.computeWidthString model.work.scratch)
-           color
+           labelColor inputColor
+           fieldColors.fill
+           fieldColors.stroke
            labelSize
            size
 
@@ -79,9 +85,11 @@ viewNewDocChildren model mode color width size padding =
           (TrLayoutInput.Number (1, 99999999))
           (updateOpenDocDimension model TrDocument.updateHeight)
           "Height:"
-          "Document Height"
+          "1"
           (TrScratch.computeHeightString model.work.scratch)
-           color
+           labelColor inputColor
+           fieldColors.fill
+           fieldColors.stroke
            labelSize
            size
   in
@@ -97,7 +105,9 @@ viewNewDocChildren model mode color width size padding =
           "Name:"
           "Document Name"
           (TrScratch.computeOpenDocTitle model.work.scratch)
-           color
+           labelColor inputColor
+           fieldColors.fill
+           fieldColors.stroke
            labelSize
            size
       , ( if width < TrConstants.maxReadableWidth
@@ -152,9 +162,9 @@ viewNewDoc model mode =
       TrLayout.column
       TrLayout.noWrap
       []
-      [ (0, viewNewDocChildren
-               model mode
-               color
+      [ (0, viewNewDocInputFields
+               model
+               mode
                width
                inputsize
                (inputsize * 0.25)
