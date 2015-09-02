@@ -12,9 +12,13 @@ trMain =
 
   onResize: ->
     isFullscreen =
-      window.fullScreen or (window.innerWidth is screen.width and window.innerHeight is screen.height)
+      window.fullScreen or
+      ( window.innerWidth is screen.width \
+        and window.innerHeight is screen.height
+      )
 
-    trMain.setWindowInformation window.innerWidth, window.innerHeight, isFullscreen
+    trMain.setWindowInformation window.innerWidth,
+      window.innerHeight, isFullscreen
 
     null
 

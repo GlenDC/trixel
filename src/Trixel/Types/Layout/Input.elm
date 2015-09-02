@@ -230,16 +230,13 @@ dropzone width radius color child =
     )
 
 
-{-| Work with templates for color, size & possitioning stuff to generate elements -}
-
-
 field : FieldType -> (String -> TrWorkActions.Action) -> String -> String -> String -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> TrColor.RgbaColor -> Float -> Float -> TrLayout.Generator
-field fieldType toAction label help value color inputColor inputBackground inputBorder labelSize size =
+field fieldType toAction label help value labelColor inputColor inputBackground inputBorder labelSize size =
   TrLayout.autoGroup
     TrLayout.column
     TrLayout.noWrap
     []
-    [ TrText.text label labelSize TrText.left color True
+    [ TrText.text label labelSize TrText.left labelColor True
     , (\inputStyles ->
         let styles =
               TrText.size size inputStyles
