@@ -133,10 +133,10 @@ update action model =
       { model | state <- state }
 
 
-    SetOpenDocScratch docModel ->
+    SetNewDocScratch docModel ->
       let scratch = model.scratch
       in
-        { scratch | openDoc <- docModel }
+        { scratch | newDoc <- docModel }
         |> updateScratch model
 
 

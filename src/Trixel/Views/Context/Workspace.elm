@@ -30,21 +30,21 @@ viewEditor model mode =
 
 updateOpenDocTitle : TrModel.Model -> (String -> TrWorkActions.Action)
 updateOpenDocTitle model =
-  let openDocScratch = model.work.scratch.openDoc
+  let newDocScratch = model.work.scratch.newDoc
   in
     (\title ->
-      TrWorkActions.SetOpenDocScratch
-        (TrScratch.newTitle openDocScratch title)
+      TrWorkActions.SetNewDocScratch
+        (TrScratch.newTitle newDocScratch title)
     )
 
 
-updateOpenDocDimension : TrModel.Model -> (TrScratch.DocumentSpecs -> String -> TrScratch.DocumentSpecs) -> (String -> TrWorkActions.Action)
+updateOpenDocDimension : TrModel.Model -> (TrScratch.DocumentForm -> String -> TrScratch.DocumentForm) -> (String -> TrWorkActions.Action)
 updateOpenDocDimension model updateFunction =
-  let openDocScratch = model.work.scratch.openDoc
+  let newDocScratch = model.work.scratch.newDoc
   in
     (\valueString ->
-      TrWorkActions.SetOpenDocScratch
-        (updateFunction openDocScratch valueString)
+      TrWorkActions.SetNewDocScratch
+        (updateFunction newDocScratch valueString)
     )
 
 

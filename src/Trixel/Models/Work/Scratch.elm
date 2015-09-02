@@ -2,86 +2,80 @@ module Trixel.Models.Work.Scratch where
 
 import Trixel.Models.Work.Document as TrDocument
 
+import Trixel.Types.Layout.Form as TrForm
+
 import Math.Vector2 as Vector
-import Maybe exposing (..)
-import Result
-import String
 
 
 initialModel : Model
 initialModel =
-  { openDoc = initialDocumentSpecs
+  { newDoc = initialDocumentForm
   }
 
 
 type alias Model =
-  { openDoc : DocumentSpecs
+  { newDoc : DocumentForm
   }
 
 
-initialDocumentSpecs : DocumentSpecs
-initialDocumentSpecs =
-  { title = Nothing
-  , width = Just 10
-  , height = Just 10
+initialDocumentForm : DocumentForm
+initialDocumentForm =
+  { title = TrForm.textField Nothing False
+  , width = TrForm.integerField (Just 10) 1 99999 True
+  , height = TrForm.integerField (Just 10) 1 99999 True
   }
 
 
-type alias DocumentSpecs =
-  { title : Maybe String
-  , width : Maybe Int
-  , height : Maybe Int
+type alias DocumentForm =
+  { title : TrForm.TextField
+  , width : TrForm.IntegerField
+  , height : TrForm.IntegerField
   }
+
 
 computeOpenDocTitle : Model -> String
 computeOpenDocTitle model =
-  case model.openDoc.title of
-    Just name -> name
-    Nothing -> ""
+  TrForm.getText model.newDoc.title
 
 
 computeWidthString : Model -> String
 computeWidthString model =
-  case model.openDoc.width of
-    Just width -> toString width
-    Nothing -> ""
+  TrForm.stringValue model.newDoc.width
 
 
 computeHeightString : Model -> String
 computeHeightString model =
-  case model.openDoc.height of
-    Just height -> toString height
-    Nothing -> ""
+  TrForm.stringValue model.newDoc.height
 
 
 newDocument : Model -> TrDocument.Model
 newDocument model =
-  let x = Maybe.withDefault 1 model.openDoc.width |> toFloat
-      y = Maybe.withDefault 1 model.openDoc.height |> toFloat
+  let x = TrForm.getInteger model.newDoc.width |> toFloat
+      y = TrForm.getInteger model.newDoc.height |> toFloat
   in
-    { title = model.openDoc.title
+    { title = model.newDoc.title.value
     , dimensions = Vector.vec2 x y
     }
 
 
-newTitle : DocumentSpecs -> String -> DocumentSpecs
-newTitle model title =
-  { model | title <- if title == "" then Nothing else Just title }
+newDocumentIsValid : Model -> Bool
+newDocumentIsValid model =
+  TrForm.isValid model.newDoc.title
+  && TrForm.isValid model.newDoc.width
+  && TrForm.isValid model.newDoc.height
 
 
-newWidth : DocumentSpecs -> String -> DocumentSpecs
-newWidth model rawWidth =
-  let width =
-        if rawWidth == ""
-          then Nothing
-          else String.toInt rawWidth |> Result.toMaybe
-  in { model | width <- width }
+
+newTitle : DocumentForm -> String -> DocumentForm
+newTitle form title =
+  { form | title <- TrForm.setText form.title title }
 
 
-newHeight : DocumentSpecs -> String -> DocumentSpecs
-newHeight model rawHeight =
-  let height =
-        if rawHeight == ""
-          then Nothing
-          else String.toInt rawHeight |> Result.toMaybe
-  in { model | height <- height }
+newWidth : DocumentForm -> String -> DocumentForm
+newWidth form width =
+  { form | width <- TrForm.setInteger form.width width }
+
+
+newHeight : DocumentForm -> String -> DocumentForm
+newHeight form height =
+  { form | height <- TrForm.setInteger form.height height }

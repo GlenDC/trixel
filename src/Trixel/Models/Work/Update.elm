@@ -8,15 +8,18 @@ import Trixel.Models.Work.Scratch as TrScratch
 
 newDocument : TrWorkModel.Model -> TrWorkModel.Model
 newDocument model =
-  let scratch = model.scratch
-      document = scratch.openDoc
+  if not (TrScratch.newDocumentIsValid model.scratch)
+    then model
+    else
+      let scratch = model.scratch
+          document = scratch.newDoc
 
-  in { model
-        | document <- Just (TrScratch.newDocument scratch)
-        , state <- TrState.Default
-        , scratch <-
-            { scratch | openDoc <- TrScratch.initialDocumentSpecs }
-     }
+      in { model
+            | document <- Just (TrScratch.newDocument scratch)
+            , state <- TrState.Default
+            , scratch <-
+                { scratch | newDoc <- TrScratch.initialDocumentForm }
+         }
 
 
 openDocument : TrWorkModel.Model -> TrWorkModel.Model

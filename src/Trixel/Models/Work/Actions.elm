@@ -36,7 +36,7 @@ type Action
   -- Set Editor State
   | SetState TrState.State
   -- Update Scratch
-  | SetOpenDocScratch TrScratch.DocumentSpecs
+  | SetNewDocScratch TrScratch.DocumentForm
 
 
 type alias WindowContext =
