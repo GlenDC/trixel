@@ -3,7 +3,7 @@ module Trixel.Models.Work.Update where
 import Trixel.Types.State as TrState
 
 import Trixel.Models.Work.Model as TrWorkModel
-import Trixel.Models.Work.Document as TrDocument
+import Trixel.Models.Work.Scratch as TrScratch
 
 
 newDocument : TrWorkModel.Model -> TrWorkModel.Model
@@ -12,10 +12,10 @@ newDocument model =
       document = scratch.openDoc
 
   in { model
-        | document <- Just document
+        | document <- Just (TrScratch.newDocument scratch)
         , state <- TrState.Default
         , scratch <-
-            { scratch | openDoc <- TrDocument.initialModel }
+            { scratch | openDoc <- TrScratch.initialDocumentSpecs }
      }
 
 

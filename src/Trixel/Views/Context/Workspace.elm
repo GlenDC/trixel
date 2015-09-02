@@ -3,7 +3,6 @@ module Trixel.Views.Context.Workspace (view) where
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Models.Work.Scratch as TrScratch
-import Trixel.Models.Work.Document as TrDocument
 
 import Trixel.Types.State as TrState
 
@@ -23,10 +22,6 @@ import Math.Vector2 as Vector
 
 import Material.Icons.File as FileIcons
 
-import String
-import Result
-import Maybe
-
 
 viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewEditor model mode =
@@ -39,29 +34,23 @@ updateOpenDocTitle model =
   in
     (\title ->
       TrWorkActions.SetOpenDocScratch
-        (TrDocument.updateTitle openDocScratch title)
+        (TrScratch.newTitle openDocScratch title)
     )
 
 
-updateOpenDocDimension : TrModel.Model -> (TrDocument.Model -> Float -> TrDocument.Model) -> (String -> TrWorkActions.Action)
+updateOpenDocDimension : TrModel.Model -> (TrScratch.DocumentSpecs -> String -> TrScratch.DocumentSpecs) -> (String -> TrWorkActions.Action)
 updateOpenDocDimension model updateFunction =
   let openDocScratch = model.work.scratch.openDoc
   in
     (\valueString ->
-      let value =
-            String.toFloat valueString
-            |> Result.toMaybe
-            |> Maybe.withDefault 1
-      in
-        TrWorkActions.SetOpenDocScratch
-          (updateFunction openDocScratch value)
+      TrWorkActions.SetOpenDocScratch
+        (updateFunction openDocScratch valueString)
     )
 
 
 viewNewDocInputFields : TrModel.Model -> TrLayout.Mode -> Float -> Float -> Float -> TrLayout.Generator
 viewNewDocInputFields model mode width size padding =
   let labelSize = size * 0.78
-
 
       labelColor = model.colorScheme.secondary.accentMid
       inputColor = model.colorScheme.secondary.accentHigh
@@ -70,9 +59,9 @@ viewNewDocInputFields model mode width size padding =
       widthField =
         TrLayoutInput.field
           (TrLayoutInput.Number (1, 99999999))
-          (updateOpenDocDimension model TrDocument.updateWidth)
+          (updateOpenDocDimension model TrScratch.newWidth)
           "Width:"
-          "1"
+          "Width of Document"
           (TrScratch.computeWidthString model.work.scratch)
            labelColor inputColor
            fieldColors.fill
@@ -83,9 +72,9 @@ viewNewDocInputFields model mode width size padding =
       heightField =
         TrLayoutInput.field
           (TrLayoutInput.Number (1, 99999999))
-          (updateOpenDocDimension model TrDocument.updateHeight)
+          (updateOpenDocDimension model TrScratch.newHeight)
           "Height:"
-          "1"
+          "Height of Document"
           (TrScratch.computeHeightString model.work.scratch)
            labelColor inputColor
            fieldColors.fill
@@ -103,7 +92,7 @@ viewNewDocInputFields model mode width size padding =
           TrLayoutInput.Text
           (updateOpenDocTitle model)
           "Name:"
-          "Document Name"
+          "Name of Document"
           (TrScratch.computeOpenDocTitle model.work.scratch)
            labelColor inputColor
            fieldColors.fill

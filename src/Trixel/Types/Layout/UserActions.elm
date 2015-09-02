@@ -193,7 +193,7 @@ newDoc : UserAction
 newDoc =
   { action = TrWorkActions.NewDocument
   , modelAction = TrUpdateWork.newDocument
-  , shortcut = TrInput.emptyShortcut
+  , shortcut = TrInput.simpleShortcut [ TrKeyboard.enter ]
   , label = "Create"
   , longLabel = "Create Document"
   , description = "Create a new document."
@@ -204,7 +204,7 @@ openDoc : UserAction
 openDoc =
   { action = TrWorkActions.OpenDocument
   , modelAction = TrUpdateWork.openDocument
-  , shortcut = TrInput.emptyShortcut
+  , shortcut = TrInput.simpleShortcut [ TrKeyboard.enter ]
   , label = "Open"
   , longLabel = "Open Document"
   , description = "Open the selected document."

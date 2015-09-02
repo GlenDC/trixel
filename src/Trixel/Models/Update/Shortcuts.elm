@@ -45,11 +45,35 @@ updateContextMenu model =
     ]
 
 
+updateNewDocument : TrWorkModel.Model -> TrWorkModel.Model
+updateNewDocument model =
+  applyShortcuts
+    model
+    [ TrUserActions.newDoc
+    ]
+  |> updateContextMenu
+
+
+updateOpenDocument : TrWorkModel.Model -> TrWorkModel.Model
+updateOpenDocument model =
+  applyShortcuts
+    model
+    [ TrUserActions.openDoc
+    ]
+  |> updateContextMenu
+
+
 update : TrWorkModel.Model -> TrWorkModel.Model
 update model =
   ( case model.state of
       TrState.Default ->
         updateWorkspace model
+
+      TrState.New ->
+        updateNewDocument model
+
+      TrState.Open ->
+        updateOpenDocument model
 
       _ ->
         updateContextMenu model

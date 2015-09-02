@@ -4,7 +4,7 @@ import Trixel.Types.Input as TrInput
 import Trixel.Types.State as TrState
 import Trixel.Types.Vector as TrVector
 
-import Trixel.Models.Work.Document as TrDocument
+import Trixel.Models.Work.Scratch as TrScratch
 
 import Math.Vector2 as Vector
 
@@ -36,7 +36,7 @@ type Action
   -- Set Editor State
   | SetState TrState.State
   -- Update Scratch
-  | SetOpenDocScratch TrDocument.Model
+  | SetOpenDocScratch TrScratch.DocumentSpecs
 
 
 type alias WindowContext =
