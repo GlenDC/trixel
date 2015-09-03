@@ -87,7 +87,12 @@ autoGroup direction wrap childStyles children =
 
 
 group : Direction -> Wrap -> Css.Styles -> List (Int, Generator) -> Generator
-group direction wrap childStyles children =
+group =
+  identifierGroup ""
+
+
+identifierGroup : String -> Direction -> Wrap -> Css.Styles -> List (Int, Generator) -> Generator
+identifierGroup id direction wrap childStyles children =
   let elements =
         List.map
           (\(grow, generator) ->
@@ -100,7 +105,7 @@ group direction wrap childStyles children =
             Display.display Display.Flex styles
             |> Flex.flow direction wrap
             |> Attributes.style
-      in Html.div [ style ] elements
+      in Html.div [ style, Attributes.id id] elements
       )
 
 

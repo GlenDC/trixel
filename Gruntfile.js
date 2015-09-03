@@ -11,6 +11,7 @@ module.exports = function(grunt) {
           'src/*.html',
           'src/**/*.sass',
           'src/Native/**/*.coffee',
+          'src/Native/**/*.js',
           'src/Assets/**/*',
           'tests/Tests/**/*.elm',
           ],

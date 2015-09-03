@@ -1,5 +1,7 @@
 module Trixel.Views.Context.Workspace (view) where
 
+import Trixel.Views.Context.Workspace.Editor as TrEditor
+
 import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Models.Work.Scratch as TrScratch
@@ -25,7 +27,8 @@ import Material.Icons.File as FileIcons
 
 viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
 viewEditor model mode =
-  TrLayout.empty
+  \_ ->
+    TrEditor.view model mode
 
 
 updateOpenDocTitle : TrModel.Model -> (String -> TrWorkActions.Action)
@@ -172,6 +175,7 @@ viewNewDoc model mode =
             |> TrLayout.extend (Dimension.maxHeight (size + (padding * 2)))
         )
       ]
+    |> TrLayout.extend (TrLayout.padding 5)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
@@ -254,6 +258,7 @@ viewOpenDoc model mode =
 
         )
       ]
+    |> TrLayout.extend (TrLayout.padding 5)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
@@ -319,15 +324,13 @@ view model mode =
           TrState.New -> viewNewDoc
           _ -> (\ a b -> TrLayout.empty)
 
-      elementStyles =
-        TrLayout.padding 5 []
+      elementStyles = []
   in
     TrLayout.equalGroup
       TrLayout.row
       TrLayout.wrap
       elementStyles
       [ viewFunction model mode ]
-    |> TrLayout.extend (TrLayout.padding 5)
     |> TrLayout.extend (TrLayout.background model.colorScheme.document)
     |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
     |> TrLayout.extend (Position.overflow Position.AutoOverflow)

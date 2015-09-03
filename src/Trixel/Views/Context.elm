@@ -33,7 +33,8 @@ viewContext model =
           TrLayout.Portrait -> TrLayout.column
           TrLayout.Landscape -> TrLayout.row
   in
-    TrLayout.group
+    TrLayout.identifierGroup
+      model.dom.tags.workspace
       flow
       TrLayout.noWrap
       []

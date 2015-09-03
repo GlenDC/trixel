@@ -44,7 +44,7 @@ trInput =
             button isnt event.button
 
         editorPorts.setMouseButtonsDown.send buttons
-        trState.mousee.buttonsDown = buttons
+        trState.mouse.buttonsDown = buttons
 
       null
 
