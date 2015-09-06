@@ -1,6 +1,8 @@
 module Trixel.Models.Dom
   ( initialModel
   , Model
+  , Messages
+  , Tags
   , update
   )
   where

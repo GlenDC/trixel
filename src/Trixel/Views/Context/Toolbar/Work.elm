@@ -1,10 +1,14 @@
 module Trixel.Views.Context.Toolbar.Work (view) where
 
-import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 
 import Trixel.Types.Layout as TrLayout
 
+import Html
 
-view : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+import Css
+
+
+view : TrLazy.LayoutModel -> TrLayout.Mode -> Css.Styles -> Html.Html
 view model mode =
   TrLayout.empty

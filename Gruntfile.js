@@ -107,7 +107,7 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      investigate: {
+      debug: {
         options: {
           beautify: true,
         },
@@ -168,8 +168,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', 'A task to compile the entire editor', function() {
     var release = grunt.option('release');
-    var investigate = grunt.option('investigate');
-    var target = investigate ? 'investigate' : (release ? 'release' : 'dev');
+    var debug = grunt.option('debug');
+    var target = debug ? 'debug' : (release ? 'release' : 'dev');
     grunt.task.run(
       [ 'shell'
       , 'htmlmin'

@@ -6,7 +6,6 @@ import Trixel.Types.Keyboard as TrKeyboard
 
 import Trixel.Types.Layout as TrLayout
 
-import Trixel.Models.Model as TrModel
 import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Models.Work.Actions as TrWorkActions
@@ -26,7 +25,6 @@ type alias UserAction =
   , label : String
   , longLabel : String
   , description : String
-  , toggleCheck : TrModel.Model -> Bool
   }
 
 
@@ -49,31 +47,31 @@ applyShortcut userAction model =
 {-| Help functions to use a userAction to render layout elements.
 -}
 
-view : TrModel.Model -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
-view model userAction function =
+view : Bool -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
+view isToggled userAction function =
   function
     userAction.action
     userAction.shortcut
     userAction.description
-    (userAction.toggleCheck model)
+    isToggled
 
-viewLabel : TrModel.Model -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
-viewLabel model userAction function =
+viewLabel : Bool -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
+viewLabel isToggled userAction function =
   function
     userAction.action
     userAction.shortcut
     userAction.description
     userAction.label
-    (userAction.toggleCheck model)
+    isToggled
 
-viewLongLabel : TrModel.Model -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
-viewLongLabel model userAction function =
+viewLongLabel : Bool -> UserAction -> (TrWorkActions.Action -> TrInput.Shortcut -> String -> String -> Bool -> TrLayout.Generator) -> TrLayout.Generator
+viewLongLabel isToggled userAction function =
   function
     userAction.action
     userAction.shortcut
     userAction.description
     userAction.longLabel
-    (userAction.toggleCheck model)
+    isToggled
 
 
 {-| State User Actions
@@ -90,10 +88,6 @@ constructStateUserAction state shortcut label longLabel description =
   , label = label
   , longLabel = longLabel
   , description = description
-  , toggleCheck =
-      (\model ->
-        model.work.state == state
-        )
   }
 
 close : UserAction
@@ -186,7 +180,6 @@ saveDoc =
   , label = "Save"
   , longLabel = "Save Document"
   , description = "Save current document."
-  , toggleCheck = (\model -> False)
   }
 
 newDoc : UserAction
@@ -197,7 +190,6 @@ newDoc =
   , label = "Create"
   , longLabel = "Create Document"
   , description = "Create a new document."
-  , toggleCheck = (\model -> False)
   }
 
 openDoc : UserAction
@@ -208,5 +200,4 @@ openDoc =
   , label = "Open"
   , longLabel = "Open Document"
   , description = "Open the selected document."
-  , toggleCheck = (\model -> False)
   }

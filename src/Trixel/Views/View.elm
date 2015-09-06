@@ -1,33 +1,50 @@
 module Trixel.Views.View (view) where
 
-import Math.Vector2 as Vector
-import Html
-import Html.Lazy as Lazy
-
 import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 import Trixel.Types.Layout as TrLayout
 
 import Trixel.Views.Menu as TrMenuView
 import Trixel.Views.Context as TrContext
 import Trixel.Views.Footer as TrFooterView
 
+import Css.Flex as Flex
+import Css.Display as Display
 
-lazyView : TrModel.Model -> Html.Html
-lazyView model =
-  let y = Vector.getY model.work.dimensions
+import Html
+import Html.Attributes as Attributes
+
+
+lazyView : TrLazy.LayoutModel -> TrLazy.EditorModel -> Html.Html
+lazyView layoutModel editorModel = 
+  let menuHeight =
+        clamp 30 (layoutModel.height * 0.03) 80
+        |> round |> toFloat
+
+      footerHeight =
+        clamp 28 (layoutModel.height * 0.025) 70
+        |> round |> toFloat
+
+      style =
+        Display.display Display.Flex []
+        |> Flex.flow TrLayout.column TrLayout.noWrap
+        |> TrLayout.background layoutModel.colorScheme.primary.main.fill
+        |> (::) ("width", "100vw")
+        |> (::) ("height", "100vh")
+        |> Attributes.style
   in
-    TrLayout.group
-      TrLayout.column
-      TrLayout.noWrap
-      []
-      [ (0, TrMenuView.view (min (max (y * 0.03) 30) 80) model)
-      , (1, TrContext.view model)
-      , (0, TrFooterView.view (min (max (y * 0.025) 28) 70) model)
+    Html.div
+      [ style ]
+      [ TrMenuView.view menuHeight layoutModel (Flex.grow 0 [])
+      , TrContext.view layoutModel editorModel (Flex.grow 1 [])
+      , TrFooterView.view footerHeight layoutModel (Flex.grow 0 [])
       ]
-    |> TrLayout.extend (TrLayout.background model.colorScheme.primary.main.fill)
-    |> TrLayout.root
-
 
 view : TrModel.Model -> Html.Html
-view =
-  Lazy.lazy lazyView
+view model =
+  let layoutModel = TrLazy.layoutModel model
+      editorModel = TrLazy.editorModel model
+  in
+    lazyView
+      layoutModel
+      editorModel

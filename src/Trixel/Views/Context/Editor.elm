@@ -1,6 +1,6 @@
-module Trixel.Views.Context.Workspace.Editor (view) where
+module Trixel.Views.Context.Editor (view) where
 
-import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 
 import Trixel.Types.Layout as TrLayout
 
@@ -13,12 +13,14 @@ import Math.Vector3 exposing (..)
 import Math.Vector2 exposing (..)
 import Math.Matrix4 as Mat4
 
+import Css
 import Html
+import Html.Lazy
 
 
-view : TrModel.Model -> TrLayout.Mode -> Html.Html
-view model mode =
-  let (w, h) = TrHacks.getViewportDimensions model.dom.tags.workspace
+lazyView : TrLazy.EditorModel -> TrLayout.Mode -> Css.Styles -> Html.Html
+lazyView model mode styles =
+  let (w, h) = TrHacks.getViewportDimensions model.tags.workspace
       matrix = ortho2D w h
   in
     GL.webglWithConfig
@@ -35,6 +37,11 @@ view model mode =
           { mat = (Mat4.translate (vec3 50 50 0) matrix) }
       ]
     |> Html.fromElement
+
+
+view : TrLazy.EditorModel -> TrLayout.Mode -> TrLayout.Generator
+view =
+  Html.Lazy.lazy3 lazyView
 
 
 type alias Vertex =

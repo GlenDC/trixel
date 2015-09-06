@@ -1,11 +1,11 @@
 module Trixel.Views.Menu (view) where
 
-import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 import Trixel.Types.Color as TrColor
 import Trixel.Types.Input as TrInput
 import Trixel.Types.Keyboard as TrKeyboard
-import Trixel.Models.Work.Model as TrWorkModel
 
+import Trixel.Types.State as TrState
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.Layout.Input as TrLayoutInput
 import Trixel.Types.Layout.UserActions as TrUserActions
@@ -20,11 +20,16 @@ import Material.Icons.Navigation as NavigationIcons
 import Css.Border.Bottom as BorderBottom
 import Css.Border.Style as BorderStyle
 import Css.Dimension as Dimension
+import Css.Display as Display
+import Css.Flex as Flex
+import Css
 
-import Math.Vector2 as Vector
+import Html
+import Html.Attributes as Attributes
+import Html.Lazy
 
 
-viewLeftMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool -> TrModel.Model -> TrLayout.Generator
+viewLeftMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool -> TrLazy.LayoutModel -> TrLayout.Generator
 viewLeftMenu size padding color selectionColor showLabels model =
   TrLayout.autoGroup
     TrLayout.row
@@ -34,22 +39,26 @@ viewLeftMenu size padding color selectionColor showLabels model =
         selectionColor
         "assets/logo.svg"
         size padding
-      |> TrUserActions.view model TrUserActions.close
+      |> TrUserActions.view False TrUserActions.close
     , TrLayoutInput.svgResponsiveButton
         selectionColor
         ContentIcons.create
         color
         size padding
         showLabels
-      |> TrUserActions.viewLabel model TrUserActions.gotoNew
+      |> TrUserActions.viewLabel
+          (model.state == TrState.New)
+          TrUserActions.gotoNew
     , TrLayoutInput.svgResponsiveButton
         selectionColor
         FileIcons.folder_open
         color
         size padding
         showLabels
-      |> TrUserActions.viewLabel model TrUserActions.gotoOpen
-    , if TrWorkModel.hasDocument model.work
+      |> TrUserActions.viewLabel
+          (model.state == TrState.Open)
+          TrUserActions.gotoOpen
+    , if model.hasDocument
         then
           TrLayoutInput.svgResponsiveButton
             selectionColor
@@ -57,16 +66,18 @@ viewLeftMenu size padding color selectionColor showLabels model =
             color
             size padding
             showLabels
-          |> TrUserActions.viewLabel model TrUserActions.gotoSave
+          |> TrUserActions.viewLabel
+              (model.state == TrState.Save)
+              TrUserActions.gotoSave
         else TrLayout.empty
     ]
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
-viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool -> TrModel.Model -> TrLayout.Generator
+viewRightMenu : Float -> Float -> TrColor.RgbaColor -> TrColor.RgbaColor -> Bool -> TrLazy.LayoutModel -> TrLayout.Generator
 viewRightMenu size padding color selectionColor showLabels model =
   let (fullscreenIcon, labelFullscreen, functionFullscreen, descriptionFullscreen, shortcutFullscreen) =
-        if model.work.isFullscreen
+        if model.isFullscreen
           then
             ( NavigationIcons.fullscreen_exit
             , "Windowed"
@@ -103,27 +114,33 @@ viewRightMenu size padding color selectionColor showLabels model =
           color
           size padding
           showLabels
-        |> TrUserActions.viewLabel model TrUserActions.gotoAbout
+        |> TrUserActions.viewLabel
+            (model.state == TrState.About)
+            TrUserActions.gotoAbout
       , TrLayoutInput.svgResponsiveButton
           selectionColor
           ActionIcons.help_outline
           color
           size padding
           showLabels
-        |> TrUserActions.viewLabel model TrUserActions.gotoHelp
+        |> TrUserActions.viewLabel
+            (model.state == TrState.Help)
+            TrUserActions.gotoHelp
       , TrLayoutInput.svgResponsiveButton
           selectionColor
           ActionIcons.settings
           color
           size padding
           showLabels
-        |> TrUserActions.viewLabel model TrUserActions.gotoSettings
+        |> TrUserActions.viewLabel
+            (model.state == TrState.Settings)
+            TrUserActions.gotoSettings
       ]
   |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
-view : Float -> TrModel.Model -> TrLayout.Generator
-view size' model =
+lazyView : Float -> TrLazy.LayoutModel -> Css.Styles -> Html.Html
+lazyView size' model styles =
   let selectionColor =
         model.colorScheme.selection.main.fill
       color =
@@ -133,17 +150,30 @@ view size' model =
       padding = size' * 0.25
 
       showLabels =
-        (Vector.getX model.work.dimensions) > 1024
+        model.width > 1024
+
+      elements =
+        List.map
+          (\(generator) ->
+            generator (Flex.grow 1 [])
+            )
+          [ viewLeftMenu size padding color selectionColor showLabels model
+          , viewRightMenu size padding color selectionColor showLabels model
+          ]
+
+      style =
+        Display.display Display.Flex styles
+        |> Flex.flow TrLayout.row TrLayout.noWrap
+        |> BorderBottom.width (clamp 3 (size * 0.1) 9)
+        |> BorderBottom.color (TrColor.toColor model.colorScheme.primary.main.stroke)
+        |> BorderBottom.style BorderStyle.Solid
+        |> TrLayout.crossAlign TrLayout.Center
+        |> Dimension.minHeight (size + (padding * 2))
+        |> Attributes.style
   in
-    TrLayout.equalGroup
-      TrLayout.row
-      TrLayout.noWrap
-      []
-      [ viewLeftMenu size padding color selectionColor showLabels model
-      , viewRightMenu size padding color selectionColor showLabels model
-      ]
-    |> TrLayout.extend (BorderBottom.width (max 3 (min (size * 0.1) 9)))
-    |> TrLayout.extend (BorderBottom.color (TrColor.toColor model.colorScheme.primary.main.stroke))
-    |> TrLayout.extend (BorderBottom.style BorderStyle.Solid)
-    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
-    |> TrLayout.extend (Dimension.minHeight (size + (padding * 2)))
+    Html.div [ style ] elements
+
+
+view : Float -> TrLazy.LayoutModel -> Css.Styles -> Html.Html
+view =
+  Html.Lazy.lazy3 lazyView

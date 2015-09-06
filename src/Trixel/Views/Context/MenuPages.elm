@@ -1,8 +1,6 @@
-module Trixel.Views.Context.Workspace (view) where
+module Trixel.Views.Context.MenuPages (view) where
 
-import Trixel.Views.Context.Workspace.Editor as TrEditor
-
-import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 import Trixel.Models.Work.Actions as TrWorkActions
 import Trixel.Models.Work.Scratch as TrScratch
 
@@ -18,22 +16,20 @@ import Trixel.Constants as TrConstants
 
 import Css.Position as Position
 import Css.Dimension as Dimension
+import Css.Display as Display
 import Css.Flex as Flex
+import Css
 
-import Math.Vector2 as Vector
+import Html.Attributes as Attributes
+import Html.Lazy
+import Html
 
 import Material.Icons.File as FileIcons
 
 
-viewEditor : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
-viewEditor model mode =
-  \_ ->
-    TrEditor.view model mode
-
-
-updateOpenDocTitle : TrModel.Model -> (String -> TrWorkActions.Action)
+updateOpenDocTitle : TrLazy.LayoutModel -> (String -> TrWorkActions.Action)
 updateOpenDocTitle model =
-  let newDocScratch = model.work.scratch.newDoc
+  let newDocScratch = model.scratch.newDoc
   in
     (\title ->
       TrWorkActions.SetNewDocScratch
@@ -41,9 +37,9 @@ updateOpenDocTitle model =
     )
 
 
-updateOpenDocDimension : TrModel.Model -> (TrScratch.DocumentForm -> String -> TrScratch.DocumentForm) -> (String -> TrWorkActions.Action)
+updateOpenDocDimension : TrLazy.LayoutModel -> (TrScratch.DocumentForm -> String -> TrScratch.DocumentForm) -> (String -> TrWorkActions.Action)
 updateOpenDocDimension model updateFunction =
-  let newDocScratch = model.work.scratch.newDoc
+  let newDocScratch = model.scratch.newDoc
   in
     (\valueString ->
       TrWorkActions.SetNewDocScratch
@@ -51,7 +47,7 @@ updateOpenDocDimension model updateFunction =
     )
 
 
-viewNewDocInputFields : TrModel.Model -> TrLayout.Mode -> Float -> Float -> Float -> TrLayout.Generator
+viewNewDocInputFields : TrLazy.LayoutModel -> TrLayout.Mode -> Float -> Float -> Float -> TrLayout.Generator
 viewNewDocInputFields model mode width size padding =
   let labelSize = size * 0.78
 
@@ -65,7 +61,7 @@ viewNewDocInputFields model mode width size padding =
           (updateOpenDocDimension model TrScratch.newWidth)
           "Width:"
           "Width of Document"
-          (TrScratch.computeWidthString model.work.scratch)
+          (TrScratch.computeWidthString model.scratch)
            labelColor inputColor
            fieldColors.fill
            fieldColors.stroke
@@ -78,7 +74,7 @@ viewNewDocInputFields model mode width size padding =
           (updateOpenDocDimension model TrScratch.newHeight)
           "Height:"
           "Height of Document"
-          (TrScratch.computeHeightString model.work.scratch)
+          (TrScratch.computeHeightString model.scratch)
            labelColor inputColor
            fieldColors.fill
            fieldColors.stroke
@@ -96,7 +92,7 @@ viewNewDocInputFields model mode width size padding =
           (updateOpenDocTitle model)
           "Name:"
           "Name of Document"
-          (TrScratch.computeOpenDocTitle model.work.scratch)
+          (TrScratch.computeOpenDocTitle model.scratch)
            labelColor inputColor
            fieldColors.fill
            fieldColors.stroke
@@ -128,15 +124,15 @@ viewNewDocInputFields model mode width size padding =
       ]
 
 
-viewNewDoc : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewNewDoc : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
 viewNewDoc model mode =
   let selectionColor =
         model.colorScheme.selection.main.fill
       color =
         model.colorScheme.secondary.accentHigh
 
-      (x, y) = Vector.toTuple model.work.dimensions
-      size = (min (((((min x y ) * 3) + x + y) / 5) * 0.05) 50)
+      minSize = min model.width model.height
+      size = (min ((((minSize * 3) + model.width + model.height) / 5) * 0.05) 50)
       padding = size * 0.25
 
       inputsize =
@@ -147,7 +143,7 @@ viewNewDoc model mode =
             TrLayout.Landscape -> 0.89
             TrLayout.Portrait -> 0.98
         )
-        |> (*) x
+        |> (*) model.width
         |> min (TrConstants.maxReadableWidth * 1.2)
   in
     TrLayout.group
@@ -167,7 +163,7 @@ viewNewDoc model mode =
               color
               size padding
               True
-            |> TrUserActions.viewLongLabel model TrUserActions.newDoc
+            |> TrUserActions.viewLongLabel False TrUserActions.newDoc
             |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
             |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
             |> TrLayout.extend (Dimension.width width)
@@ -180,7 +176,7 @@ viewNewDoc model mode =
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
-viewDragzoneChildren : TrModel.Model -> TrLayout.Mode -> Float -> Float -> TrLayout.Generator
+viewDragzoneChildren : TrLazy.LayoutModel -> TrLayout.Mode -> Float -> Float -> TrLayout.Generator
 viewDragzoneChildren model mode size padding =
   let textSize =
         size
@@ -213,15 +209,15 @@ viewDragzoneChildren model mode size padding =
     |> TrLayout.extend (Flex.grow 1)
 
 
-viewOpenDoc : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewOpenDoc : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
 viewOpenDoc model mode =
   let selectionColor =
         model.colorScheme.selection.main.fill
       color =
         model.colorScheme.secondary.accentHigh
 
-      (x, y) = Vector.toTuple model.work.dimensions
-      size = (min (((((min x y ) * 3) + x + y) / 5) * 0.05) 50)
+      minSize = min model.width model.height
+      size = (min ((((minSize * 3) + model.width + model.height) / 5) * 0.05) 50)
       padding = size * 0.25
 
       width =
@@ -229,7 +225,7 @@ viewOpenDoc model mode =
             TrLayout.Landscape -> 0.89
             TrLayout.Portrait -> 0.98
         )
-        |> (*) x
+        |> (*) model.width
         |> min (TrConstants.maxReadableWidth * 1.2)
   in
     TrLayout.group
@@ -250,7 +246,7 @@ viewOpenDoc model mode =
               color
               size padding
               True
-            |> TrUserActions.viewLongLabel model TrUserActions.openDoc
+            |> TrUserActions.viewLongLabel False TrUserActions.openDoc
             |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
             |> TrLayout.extend (TrLayout.borderRadius (size * 0.15))
             |> TrLayout.extend (Dimension.width width)
@@ -263,14 +259,14 @@ viewOpenDoc model mode =
     |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
 
 
-viewHelp : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewHelp : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
 viewHelp model mode =
   viewMarkdown model TrArticles.help
   |> TrLayout.extend (Flex.alignItems Flex.AIStart)
   |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
-viewAbout : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewAbout : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
 viewAbout model mode =
   ( case mode of
       TrLayout.Portrait ->
@@ -291,7 +287,7 @@ viewAbout model mode =
   |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
-viewSettings : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
+viewSettings : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
 viewSettings model mode =
   viewMarkdown model
     """
@@ -303,7 +299,7 @@ If you have any request for new settings you would like to tweak, please raise a
   |> TrLayout.extend (Position.overflow Position.AutoOverflow)
 
 
-viewMarkdown : TrModel.Model -> String -> TrLayout.Generator
+viewMarkdown : TrLazy.LayoutModel -> String -> TrLayout.Generator
 viewMarkdown model content =
   TrText.markdown
     content
@@ -312,11 +308,10 @@ viewMarkdown model content =
     model.colorScheme.secondary.accentMid
 
 
-view : TrModel.Model -> TrLayout.Mode -> TrLayout.Generator
-view model mode =
+lazyView : TrLazy.LayoutModel -> TrLayout.Mode -> Css.Styles -> Html.Html
+lazyView model mode styles =
   let viewFunction =
-        case model.work.state of
-          TrState.Default -> viewEditor
+        case model.state of
           TrState.Help -> viewHelp
           TrState.About -> viewAbout
           TrState.Settings -> viewSettings
@@ -324,13 +319,28 @@ view model mode =
           TrState.New -> viewNewDoc
           _ -> (\ a b -> TrLayout.empty)
 
-      elementStyles = []
+      children =
+        [ viewFunction model mode
+        ]
+
+      elements =
+        List.map
+          (\generator ->
+            generator (Flex.grow 1 [])
+          )
+          children
+
+      style =
+        Display.display Display.Flex styles
+        |> Flex.flow TrLayout.row TrLayout.wrap
+        |> TrLayout.background model.colorScheme.document
+        |> TrLayout.justifyContent TrLayout.Center
+        |> Position.overflow Position.AutoOverflow
+        |> Attributes.style
   in
-    TrLayout.equalGroup
-      TrLayout.row
-      TrLayout.wrap
-      elementStyles
-      [ viewFunction model mode ]
-    |> TrLayout.extend (TrLayout.background model.colorScheme.document)
-    |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
-    |> TrLayout.extend (Position.overflow Position.AutoOverflow)
+    Html.div [ style ] elements
+
+
+view : TrLazy.LayoutModel -> TrLayout.Mode -> TrLayout.Generator
+view =
+  Html.Lazy.lazy3 lazyView

@@ -1,50 +1,65 @@
 module Trixel.Views.Context (view) where
 
-import Trixel.Models.Model as TrModel
-import Trixel.Models.Work.Model as TrWorkModel
+import Trixel.Models.Lazy as TrLazy
 
 import Trixel.Types.Layout as TrLayout
 import Trixel.Types.State as TrState
 
 import Trixel.Views.Context.Home as TrHome
 import Trixel.Views.Context.Toolbar as TrToolbar
-import Trixel.Views.Context.Workspace as TrWorkspace
+import Trixel.Views.Context.Editor as TrEditor
+import Trixel.Views.Context.MenuPages as TrMenuPages
 
-import Math.Vector2 as Vector
+import Css
+import Css.Flex as Flex
+import Css.Display as Display
+
+import Html
+import Html.Attributes as Attributes
 
 
-computeMode : TrModel.Model -> TrLayout.Mode
+computeMode : TrLazy.LayoutModel -> TrLayout.Mode
 computeMode model =
-  if (Vector.getX model.work.dimensions) <= 1080
+  if model.width <= 1080
     then TrLayout.Portrait
     else TrLayout.Landscape
 
 
-isNotOnHomeScreen : TrModel.Model -> Bool
+isNotOnHomeScreen : TrLazy.LayoutModel -> Bool
 isNotOnHomeScreen model =
-  TrWorkModel.hasDocument model.work || model.work.state /= TrState.Default
+  model.hasDocument || model.state /= TrState.Default
 
 
-viewContext : TrModel.Model -> TrLayout.Generator
-viewContext model =
-  let mode = computeMode model
+viewWorkContext : TrLazy.LayoutModel -> TrLazy.EditorModel -> Css.Styles -> Html.Html
+viewWorkContext layoutModel editorModel styles =
+  let mode = computeMode layoutModel
+
       flow =
         case mode of
           TrLayout.Portrait -> TrLayout.column
           TrLayout.Landscape -> TrLayout.row
+
+      viewWorkspace =
+        if layoutModel.state == TrState.Default
+          then TrEditor.view editorModel
+          else TrMenuPages.view layoutModel
+
+      style =
+        Display.display Display.Flex styles
+        |> Flex.flow flow TrLayout.noWrap
+        |> Attributes.style
   in
-    TrLayout.identifierGroup
-      model.dom.tags.workspace
-      flow
-      TrLayout.noWrap
-      []
-      [ (0, TrToolbar.view model mode)
-      , (1, TrWorkspace.view model mode)
+    Html.div
+      [ style
+      , Attributes.id layoutModel.tags.workspace
+      ]
+      [ TrToolbar.view layoutModel mode (Flex.grow 0 [])
+      , viewWorkspace mode (Flex.grow 1 [])
       ]
 
 
-view : TrModel.Model -> TrLayout.Generator
-view model =
-  if isNotOnHomeScreen model
-    then viewContext model
-    else TrHome.view model
+view : TrLazy.LayoutModel -> TrLazy.EditorModel -> Css.Styles -> Html.Html
+view layoutModel editorModel =
+  if isNotOnHomeScreen layoutModel
+    then viewWorkContext layoutModel editorModel
+    else TrHome.view layoutModel

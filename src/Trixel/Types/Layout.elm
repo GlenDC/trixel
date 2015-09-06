@@ -65,15 +65,6 @@ empty =
     )
 
 
-root : Generator -> Html.Html
-root generator =
-  [ ("width", "100vw")
-  , ("height", "100vh")
-  ]
-  |> Display.display Display.Flex
-  |> generator
-
-
 equalGroup : Direction -> Wrap -> Css.Styles -> List Generator -> Generator
 equalGroup direction wrap childStyles children =
   List.map (\child -> (1, child)) children
@@ -87,12 +78,7 @@ autoGroup direction wrap childStyles children =
 
 
 group : Direction -> Wrap -> Css.Styles -> List (Int, Generator) -> Generator
-group =
-  identifierGroup ""
-
-
-identifierGroup : String -> Direction -> Wrap -> Css.Styles -> List (Int, Generator) -> Generator
-identifierGroup id direction wrap childStyles children =
+group direction wrap childStyles children =
   let elements =
         List.map
           (\(grow, generator) ->
@@ -105,7 +91,7 @@ identifierGroup id direction wrap childStyles children =
             Display.display Display.Flex styles
             |> Flex.flow direction wrap
             |> Attributes.style
-      in Html.div [ style, Attributes.id id] elements
+      in Html.div [ style ] elements
       )
 
 

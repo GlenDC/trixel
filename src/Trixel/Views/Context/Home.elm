@@ -1,6 +1,6 @@
 module Trixel.Views.Context.Home (view) where
 
-import Trixel.Models.Model as TrModel
+import Trixel.Models.Lazy as TrLazy
 
 import Trixel.Constants as TrConstants
 
@@ -16,12 +16,18 @@ import Material.Icons.Content as ContentIcons
 import Material.Icons.Communication as CommunicationIcons
 import Material.Icons.File as FileIcons
 
-import Math.Vector2 as Vector
+import Css.Display as Display
+import Css.Flex as Flex
+import Css
+
+import Html.Attributes as Attributes
+import Html.Lazy
+import Html
 
 import Array
 
 
-button : TrUserActions.UserAction -> TrGraphics.SvgGenerator -> Float -> Float -> TrModel.Model -> TrLayout.Generator
+button : TrUserActions.UserAction -> TrGraphics.SvgGenerator -> Float -> Float -> TrLazy.LayoutModel -> TrLayout.Generator
 button userAction generator size padding model =
   TrLayoutInput.verticalSvgButton
     model.colorScheme.selection.main.fill
@@ -30,13 +36,13 @@ button userAction generator size padding model =
     (size * 0.70)
     (size * 0.14)
     padding
-  |> TrUserActions.viewLongLabel model userAction
+  |> TrUserActions.viewLongLabel False userAction
   |> TrLayout.extend (TrLayout.background model.colorScheme.secondary.main.fill)
   |> TrLayout.extend (TrLayout.margin (padding * 0.5))
   |> TrLayout.extend (TrLayout.borderRadius (size * 0.05))
 
 
-viewButtons : Float -> Float -> TrModel.Model -> TrLayout.Generator
+viewButtons : Float -> Float -> TrLazy.LayoutModel -> TrLayout.Generator
 viewButtons size padding model =
   TrLayout.autoGroup
     TrLayout.row
@@ -57,7 +63,7 @@ viewButtons size padding model =
   |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
 
 
-computeRandomTip : TrModel.Model -> String
+computeRandomTip : TrLazy.LayoutModel -> String
 computeRandomTip model =
   let defaultTip =
         "share your art on social media with the hashtag #trixelit"
@@ -76,7 +82,7 @@ computeRandomTip model =
       Maybe.Nothing -> defaultTip
 
 
-viewTip : Float -> Float -> TrModel.Model -> TrLayout.Generator
+viewTip : Float -> Float -> TrLazy.LayoutModel -> TrLayout.Generator
 viewTip size padding model =
   TrLayout.autoGroup
     TrLayout.row
@@ -98,34 +104,50 @@ viewTip size padding model =
   |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
 
 
-view : TrModel.Model -> TrLayout.Generator
-view model =
-  let (x, y) = Vector.toTuple model.work.dimensions
-      size = ((((min x y ) * 3) + x + y) / 5) * 0.25
+lazyView : TrLazy.LayoutModel -> Css.Styles -> Html.Html
+lazyView model styles =
+  let minSize = min model.width model.height 
+      size = (((minSize * 3) + model.width + model.height) / 5) * 0.25
       padding = size * 0.2
+
+      children =
+         [ (5, TrLayout.autoGroup
+                TrLayout.column
+                TrLayout.noWrap
+                []
+                [ TrText.text
+                    TrConstants.homeTitle
+                    (size * 0.5)
+                    TrText.center
+                    model.colorScheme.logo.fill
+                    True
+                  |> TrLayout.extend (TrText.bold)
+                , viewButtons size padding model
+                ]
+              |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
+              |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
+          )
+        , (3, viewTip size padding model)
+        ]
+
+      elements =
+        List.map
+          (\(grow, generator) ->
+            generator (Flex.grow grow [])
+          )
+        children
+
+      style =
+        Display.display Display.Flex styles
+        |> Flex.flow TrLayout.column TrLayout.noWrap
+        |> TrLayout.crossAlign TrLayout.Center
+        |> TrLayout.justifyContent TrLayout.Center
+        |> TrLayout.background model.colorScheme.document
+        |> Attributes.style
   in
-    TrLayout.group
-      TrLayout.column
-      TrLayout.noWrap
-      []
-      [ (5, TrLayout.autoGroup
-              TrLayout.column
-              TrLayout.noWrap
-              []
-              [ TrText.text
-                  TrConstants.homeTitle
-                  (size * 0.5)
-                  TrText.center
-                  model.colorScheme.logo.fill
-                  True
-                |> TrLayout.extend (TrText.bold)
-              , viewButtons size padding model
-              ]
-            |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
-            |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
-        )
-      , (3, viewTip size padding model)
-      ]
-    |> TrLayout.extend (TrLayout.crossAlign TrLayout.Center)
-    |> TrLayout.extend (TrLayout.justifyContent TrLayout.Center)
-    |> TrLayout.extend (TrLayout.background model.colorScheme.document)
+    Html.div [ style ] elements
+
+
+view : TrLazy.LayoutModel -> Css.Styles -> Html.Html
+view =
+  Html.Lazy.lazy2 lazyView
