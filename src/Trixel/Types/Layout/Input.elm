@@ -41,13 +41,6 @@ showShortcut shortcut =
       (TrList.tail descriptions)
 
 
-clickable : Signal.Address a -> a -> Html.Html -> Html.Html
-clickable address action element =
-  Html.toElement -1 -1 element
-  |> Input.clickable (Signal.message address action)
-  |> Html.fromElement
-
-
 button : TrWorkActions.Action -> TrColor.RgbaColor ->  String -> TrInput.Shortcut -> Bool -> TrLayout.Generator -> TrLayout.Generator
 button action hoverColor message buttons toggled generator =
   let shortcut =
@@ -66,7 +59,6 @@ button action hoverColor message buttons toggled generator =
                 |> TrNative.mouseLeave
               ] [ generator [] ]
             |> TrNative.hoverBackground hoverColor
-            |> clickable TrWork.address action
 
           buttonStyles =
             if toggled
@@ -76,6 +68,7 @@ button action hoverColor message buttons toggled generator =
       in Html.div
           [ Attributes.style buttonStyles
           , Attributes.class "tr-button-inherit"
+          , HtmlEvents.onClick TrWork.address action
           ]
           [ element ]
       )
