@@ -132,13 +132,14 @@ update action model =
     SetState state ->
       { model | state <- state }
 
-
     SetNewDocScratch docModel ->
       let scratch = model.scratch
       in
         { scratch | newDoc <- docModel }
         |> updateScratch model
 
+    ForceRedrawHack ->
+      { model | redrawHackSwitch <- not model.redrawHackSwitch }
 
     None ->
       model

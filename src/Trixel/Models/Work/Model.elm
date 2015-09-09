@@ -40,6 +40,7 @@ initialModel =
   , dimensions = (vec2 0 0)
   , isFullscreen = False
   , state = TrState.initialState
+  , redrawHackSwitch = False
   }
 
 
@@ -51,4 +52,5 @@ type alias Model =
   , dimensions : Vec2
   , isFullscreen : Bool
   , state : TrState.State
+  , redrawHackSwitch : Bool
   }

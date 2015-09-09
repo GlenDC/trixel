@@ -11,6 +11,8 @@ import Trixel.Models.Work.Model as TrWorkModel
 
 import Trixel.Views.View as TrView
 
+import Signal exposing (..)
+
 import Html
 
 
@@ -21,6 +23,8 @@ port setMouseWheel : Signal TrVector.Vector
 port setKeyboardButtonsDown : Signal TrInput.Buttons
 
 port setWindowInformation : Signal TrWorkActions.WindowContext
+
+port forceNativeRedraw : Signal Int
 
 
 -- Outgoing Javascript Ports
@@ -42,6 +46,7 @@ workSignal =
       , TrWork.keyboardButtonsSignal setKeyboardButtonsDown
       , TrWork.mouseWheelSignal setMouseWheel
       , TrWork.windowInformationSignal setWindowInformation
+      , (\_ -> TrWorkActions.ForceRedrawHack) <~ forceNativeRedraw
       , workMailbox.signal
       ]
     |> Signal.foldp TrWork.update TrWorkModel.initialModel

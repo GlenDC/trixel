@@ -48,9 +48,11 @@ type alias LayoutModel =
 editorModel : TrModel.Model -> EditorModel
 editorModel model =
   { tags = model.dom.tags
+  , redrawHackSwitch = model.work.redrawHackSwitch
   }
 
 
 type alias EditorModel =
   { tags : Tags
+  , redrawHackSwitch : Bool
   }

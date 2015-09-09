@@ -37,6 +37,8 @@ type Action
   | SetState TrState.State
   -- Update Scratch
   | SetNewDocScratch TrScratch.DocumentForm
+  -- A temporary hack (hopefully)
+  | ForceRedrawHack
 
 
 type alias WindowContext =

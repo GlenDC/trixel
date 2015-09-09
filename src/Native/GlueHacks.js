@@ -8,8 +8,8 @@ Elm.Native.GlueHacks.make = function(elm) {
         var viewport = document.getElementById(id);
         if(viewport) {
             return {
-                x: viewport.offsetWidth,
-                y: viewport.offsetHeight
+                x: Math.round(viewport.offsetWidth),
+                y: Math.round(viewport.offsetHeight)
             };
         }
 

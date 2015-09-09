@@ -7,6 +7,9 @@ trMain =
       }
       , fullscreen: fullscreen
     }
+
+    callback = -> trState.editor.ports.forceNativeRedraw.send 42
+    setTimeout callback, 35
     null
 
 
@@ -37,6 +40,7 @@ trMain =
         setMouseWheel : zeroVector
         setWindowInformation : { dimensions: zeroVector, fullscreen: false }
         setMousePosition : zeroVector
+        forceNativeRedraw : 0
       }
     )
 
