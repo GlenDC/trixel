@@ -4,7 +4,11 @@
 
 Trixel, make trixel art.
 
-Latest version can be used for free @ [http://trixel.it](http://trixel.it).
+Latest version can be used for free @ [http://www.glendc.com/trixel/](http://www.glendc.com/trixel/).
+
+## Project Frozen
+
+This project is currently no longer maintained or worked on. Feel free to fork it and continue the project in case you are interested in doing so.
 
 ## Editor Controls
 
@@ -23,11 +27,6 @@ As the GUI is still crappy at this point, here are the controls currently functi
 + **G**: Toggle Grid
 + **R**: Reset View
 + **Keyboard Arrows**: Move workspace
-
-
-## Subscribe To The Newsletter
-
-The Trixel Updates Newsletter is send every 1 to 2 weeks. It gives an overview of what's upcomming and what has changed in the live patches since the last newsletter. This way you're always up to date with what has changed. You can subscribe [here](http://eepurl.com/brwmSn).
 
 ## Contribute
 
